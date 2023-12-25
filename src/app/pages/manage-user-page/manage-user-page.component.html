@@ -1,0 +1,406 @@
+<div class="bg-transparent">
+  <div
+    class="w-full p-6 pb-6 bg-white rounded-md shadow text-font-header dark:text-font-header-dark dark:bg-content-dark">
+    <p id="user-form" class="text-2xl">ข้อมูลพนักงาน</p>
+    <br>
+    <div
+      class="text-[#566a7f] rounded-md mt-5 mb-3 shadow p-6 pb-6 w-full bg-gray-100 dark:text-[#e4e6eb] dark:bg-[#242526]">
+      <!-- user-form.component.html -->
+      <form [formGroup]="UserForm">
+        <div class="flex flex-col items-center justify-start">
+          <div class="flex items-center self-start justify-start pt-2 text-sm justify-items-start">
+            <label for="" class="mr-2">บริษัท</label>
+            <div class="flex items-center justify-start">
+              <div class="flex items-stretch">
+                <input #pccSelected (change)="selectCompany('PCCTH')" type="radio"
+                  class="w-4 h-4 self-center peer accent-[#696cff]" name="company" id="PCCTH" value="PCCTH" required
+                  formControlName="company" checked />
+                <label for="PCCTH" class="ml-2 mr-2 peer-checked:text-[#696cff]">PCCTH</label>
+              </div>
+              <div class="flex items-stretch">
+                <input #wsSelected (change)="selectCompany('WiseSoft')" type="radio"
+                  class="w-4 h-4 self-center peer accent-[#696cff]" name="company" id="WiseSoft" value="WiseSoft"
+                  required formControlName="company" />
+                <label for="WiseSoft" class="ml-2 mr-2 peer-checked:text-[#696cff]">WiseSoft</label>
+              </div>
+            </div>
+          </div>
+          <div
+            class="grid self-center justify-center my-6 space-x-2 text-sm sm:grid-cols-1 md:grid-cols-4 justify-items-center xl:flex xl:p-0">
+            <!-- ตำแหน่งและชื่อ บริษัท -->
+
+
+            <div class="flex items-center justify-center">
+              <label for="sectorName">ฝ่าย</label>
+              <div class="relative inline-flex flex-col">
+                <select (change)="setSector()" required formControlName="sectorName" id="sectorName"
+                  class="appearance-none mx-2 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-40 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder-200 ease-linear placeholder:text-[#b4b4b4] dark:placeholder-text-[#b4b4b4]">
+                  <option value="" disabled>เลือกฝ่าย</option>
+                  <option *ngFor="let sector of sectorName" [ngValue]="sector">{{
+                    sector }}</option>
+                </select>
+                <p *ngIf="UserForm.get('sectorName').invalid"
+                  class="absolute font-light text-red-700 -right-2 -top-2 dark:text-red-500">*</p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center">
+              <label for="sectorCode">รหัสฝ่าย</label>
+              <div class="relative inline-flex flex-col">
+                <input readonly type="text" required [value]="UserForm.get('sectorCode').value" id="sectorCode"
+                  class="appearance-none mx-2 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-40 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder-200 ease-linear placeholder:text-[#b4b4b4] dark:placeholder-text-[#d8adad]" />
+                <p *ngIf="UserForm.get('sectorCode').invalid"
+                  class="absolute font-light text-red-700 -right-2 -top-2 dark:text-red-500">*</p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center">
+              <label for="dept">แผนก</label>
+              <div class="relative inline-flex flex-col">
+                <select (change)="setDept()" required formControlName="deptName" id="deptName"
+                  class="appearance-none mx-2 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-40 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder-200 ease-linear placeholder-text-[#b4b4b4] dark:placeholder-text-[#b4b4b4]">
+                  <option value="" disabled>เลือกแผนก</option>
+                  <option *ngFor="let department of depts" [ngValue]="department.deptname">
+                    {{ department.deptname }}</option>
+                </select>
+                <p *ngIf="UserForm.get('deptName').invalid"
+                  class="absolute font-light text-red-700 -right-2 -top-2 dark:text-red-500">
+                  *
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center">
+              <label for="deptCode">รหัสแผนก</label>
+              <div class="relative inline-flex flex-col">
+                <input readonly type="text" required [value]="UserForm.get('deptCode').value" id="deptCode"
+                  class="appearance-none mx-2 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-40 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder-200 ease-linear placeholder-text-[#b4b4b4] dark:placeholder-text-[#d8adad]" />
+                <p *ngIf="UserForm.get('deptCode').invalid"
+                  class="absolute font-light text-red-700 -right-2 -top-2 dark:text-red-500">
+                  *
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div
+          class="text-[#566a7f] rounded-md mt-5 mb-3 shadow p-6 pb-6 w-full bg-gray-50 dark:text-[#e4e6eb] dark:bg-[#242526]">
+          <div class="grid grid-cols-9 gap-y-2">
+            <!-- Row 1 -->
+            <div class="h-12 p-2 rounded-lg">
+              <label for="" class="self-center flex-initial w-28">รหัสพนักงาน</label>
+            </div>
+            <div class="h-20 col-start-2 col-end-4 rounded-lg">
+              <input type="text" formControlName="empCode" required value="" id="empCode"
+                (keypress)="onInputKeyPressNo($event)"
+                [ngClass]="{ 'border-red-500 dark:border-red-500': UserForm.get('empCode').hasError('required') && UserForm.get('empCode').touched }"
+                class="appearance-none rounded-md border outline-none my-5 py-2 px-3 w-full xl:w-11/12 xl:my-0 xl:mx-1 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
+              <div *ngIf="isEmpCodeDuplicate && !isEmailDuplicate" class="text-sm text-red-500">
+                รหัสพนักงานนี้มีอยู่ในระบบ
+              </div>
+              <div *ngIf="isEmpCodeDuplicate && isEmailDuplicate" class="text-sm text-red-500">
+                รหัสพนักงานนี้มีอยู่ในระบบ
+              </div>
+              <div
+                *ngIf="UserForm.get('empCode').hasError('required') && UserForm.get('empCode').touched && !isEmpCodeDuplicate"
+                class="text-sm text-red-500">
+                กรุณากรอกข้อมูล
+              </div>
+            </div>
+            <div class="h-12 p-2 rounded-lg">
+              <label for="" class="self-center flex-initial w-28">คำนำหน้า</label>
+            </div>
+            <div class="h-20 col-start-5 col-end-7 rounded-lg">
+              <select formControlName="title"
+                [ngClass]="{ 'border-red-500 dark:border-red-500': UserForm.get('title').hasError('required') && UserForm.get('title').touched }"
+                class="appearance-none rounded-md border outline-none my-5 py-2 px-3 w-full xl:w-11/12 xl:my-0 xl:mx-1 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
+                <option value="" disabled selected>เลือกคำนำหน้า</option>
+                <option value="นาย">นาย</option>
+                <option value="นาง">นาง</option>
+                <option value="นางสาว">นางสาว</option>
+              </select>
+
+              <div *ngIf="UserForm.get('title').hasError('required') && UserForm.get('title').touched">
+                <span class="text-sm text-red-500">กรุณาเลือกคำนำหน้า</span>
+              </div>
+            </div>
+
+            <div class="h-12 p-2 rounded-lg">
+              <label for="" class="self-center flex-initial w-28">ชื่อ</label>
+            </div>
+            <div class="h-20 col-start-8 col-end-10 rounded-lg">
+              <input type="text" formControlName="firstname"
+                [ngClass]="{ 'border-red-500 dark:border-red-500': UserForm.get('firstname').hasError('required') && UserForm.get('firstname').touched }"
+                class="appearance-none rounded-md border outline-none my-5 py-2 px-3 w-full xl:w-11/12 xl:my-0 xl:mx-1 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
+              <div *ngIf="UserForm.get('firstname').hasError('required') && UserForm.get('firstname').touched">
+                <span class="text-sm text-red-500 ">กรุณากรอกข้อมูล</span>
+              </div>
+            </div>
+            <div class="h-12 p-2 rounded-lg">
+              <label for="" class="self-center flex-initial w-28">นามสกุล</label>
+            </div>
+            <div class="h-20 col-start-2 col-end-4 rounded-lg">
+              <input type="text" formControlName="lastname"
+                [ngClass]="{ 'border-red-500 dark:border-red-500': UserForm.get('lastname').hasError('required') && UserForm.get('lastname').touched }"
+                class="appearance-none rounded-md border outline-none my-5 py-2 px-3 w-full xl:w-11/12 xl:my-0 xl:mx-1 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
+              <div *ngIf="(UserForm.get('lastname').hasError('required') && UserForm.get('lastname').touched)"
+                class="text-sm text-red-500">
+                กรุณากรอกข้อมูล
+              </div>
+            </div>
+
+            <!-- เพิ่ม dropdown สำหรับตำแหน่ง -->
+            <div class="h-12 p-2 rounded-lg">
+              <label for="" class="self-center flex-initial w-28">ตำแหน่ง</label>
+            </div>
+            <div class="h-20 col-start-5 col-end-7 rounded-lg">
+              <select required formControlName="positionName" id="positionName"
+                class="appearance-none rounded-md border outline-none my-5 py-2 px-3 w-full xl:w-11/12 xl:my-0 xl:mx-1 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
+                <option value="" disabled>เลือกตำแหน่ง</option>
+                <option *ngFor="let position of positions" [ngValue]="position.name">{{ position.name }}
+                </option>
+              </select>
+              <p *ngIf="UserForm.get('positionName').invalid"
+                class="absolute font-light text-red-700 -right-2 -top-2 dark:text-red-500">*</p>
+            </div>
+
+
+            <div class="h-12 p-2 rounded-lg">
+              <label for="" class="self-center flex-initial text-sm">Email</label>
+            </div>
+            <div class="h-20 col-start-8 col-end-10 rounded-lg">
+              <input type="email" formControlName="email" pattern="^$|[^&#64;\s]+@[^&#64;\s]+\.[^&#64;\s]+"
+                class="appearance-none rounded-md border outline-none my-5 py-2 px-3 w-full xl:w-11/12 xl:my-0 xl:mx-1 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
+              <div *ngIf="UserForm.get('email').hasError('pattern') && UserForm.get('email').touched"
+                class="text-sm text-red-500">
+                รูปแบบอีเมลไม่ถูกต้อง (Exp &#64;pccth.com)
+              </div>
+              <div *ngIf="isEmailDuplicate && !isEmpCodeDuplicate" class="text-sm text-red-500">
+                Email นี้มีอยู่ในระบบ
+              </div>
+              <div *ngIf="isEmpCodeDuplicate && isEmailDuplicate" class="text-sm text-red-500">
+                Email มีอยู่ในระบบ
+              </div>
+            </div>
+
+            <div class="h-12 p-2 rounded-lg">
+              <label for="" class="self-center flex-initial w-28">ROLE</label>
+            </div>
+            <div class="h-20 col-start-2 col-end-4 rounded-lg">
+              <select formControlName="role"
+                [ngClass]="{ 'border-red-500 dark:border-red-500': UserForm.get('role').hasError('required') && UserForm.get('role').touched }"
+                class="appearance-none rounded-md border outline-none my-5 py-2 px-3 w-full xl:w-11/12 xl:my-0 xl:mx-1 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
+                <option value="" disabled selected>เลือก Role</option>
+                <option value="User">พนักงาน</option>
+                <option value="Admin">ผู้ดูแลระบบ</option>
+                <option value="Approver">หัวหน้างาน</option>
+                <option value="VicePresident">ผู้บริหาร</option>
+                <option value="Personnel">ฝ่ายบุคคล</option>
+                <option value="President">กรรมการผู้จัดการ</option>
+                <option value="Manager">ผู้บังคับบัญชา</option>
+              </select>
+            </div>
+          </div>
+
+          <div *ngIf="!showElements" class="flex items-center">
+            <button type="button"
+              class="ml-2 text-white p-2 w-36 rounded shadow-md border-[#696cf8] bg-[#696cf8] hover:bg-[#696cf8]"
+              (click)="toggleUpload()">
+              แสดง อัปโหลดไฟล์
+            </button>
+          </div>
+
+          <div *ngIf="showElements" class="flex items-center">
+            <label for="file-upload" class="w-28">อัปโหลดไฟล์</label>
+            <input id="file-upload"
+              class="w-50 px-2 py-1 text-gray-700 bg-white border border-gray-300 rounded-lg dark:border-[#3a3b3c] dark:bg-[#3a3b3c] dark:text-white"
+              type="file"
+              (change)="fileUpload($event)"
+              accept=".xls,.xlsx">
+            <button type="submit"
+              class="ml-2 text-white p-2 w-36 rounded shadow-md border-[#696cf8] bg-[#696cf8] hover:bg-[#696cf8]"
+              (click)="uploadData()">
+              อัปโหลดข้อมูล
+            </button>
+            <button type="button"
+              class="ml-2 text-white p-2 w-36 rounded shadow-md border-[#696cf8] bg-[#696cf8] hover:bg-[#696cf8]"
+              (click)="toggleUpload()">
+              ซ่อน อัปโหลดไฟล์
+            </button>
+          </div>
+
+          <div class="flex justify-center mt-4">
+            <button type="submit" [disabled]="UserForm.invalid "
+              (click)="isEditMode ? updateData() : postEmployeeUser()"
+              class="text-white p-2 mr-2 w-36 rounded shadow-md {{ (UserForm.invalid) ? 'cursor-not-allowed bg-gray-400 border-2 border-gray-400' : 'cursor-pointer bg-[#696cf8] hover:bg-[#696cf8] hover:text-white border-2 border-[#696cf8]' }}">
+              <i class="mr-1 fa-solid fa-plus"></i> {{ isEditMode ? 'ปรับปรุงข้อมูล' : 'บันทึกข้อมูล' }}
+            </button>
+            <div>
+              <button type="button" (click)="cancelEdit()" *ngIf="isEditMode"
+                class="p-2 text-white bg-red-400 border-2 border-red-400 rounded shadow-md cursor-pointer w-36 hover:bg-red-500">
+                <i class="mr-1 fa-solid fa-times"></i> ยกเลิก
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </form><br>
+    </div>
+
+    <div class="flex items-center justify-center">
+      <div class="flex items-center justify-center">
+        <label for="">หัวข้อที่ต้องการค้นหา</label>
+        <div class="relative inline-flex flex-col">
+          <select [formGroup]="searchForm" (change)="getSearch()" required [formGroup]="searchForm"
+            (change)="onOptionSelected($event)"
+            class="mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
+            <option value="" selected disabled>-- เลือกหัวข้อที่ต้องการค้นหา --</option>
+            <option value="company">บริษัท</option>
+            <option value="sectorName">ฝ่าย</option>
+            <option value="deptName">แผนก</option>
+            <option value="deptCode">รหัสแผนก</option>
+            <option value="empCode">รหัสพนักงาน</option>
+            <!-- <option value="firstname">First Name</option>
+                        <option value="lastname">Last Name</option> -->
+            <option value="name">ชื่อ - นามสกุล</option>
+            <option value="position">ตำแหน่ง</option>
+            <option value="email">Email</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <input type="text" placeholder="ค้นหา..." aria-label="Assignee"
+          class="peer appearance-none mx-3 rounded-md border outline-none py-2.5 px-7 xl:px-3 xl:mx-1 xl:w-44 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]"
+          required [(ngModel)]="searchValue" type="text" name="searchValue" />
+      </div>
+      <button (click)="getSearch()" [disabled]="!selectedOption || !searchValue"
+        class="mx-3 rounded-md py-2.5 px-7 xl:px-3 xl:mx-1 xl:w-44 bg-[#696cf8] text-white disabled:cursor-not-allowed disabled:bg-gray-400">ค้นหา</button>
+    </div><br><br>
+
+    <div class="w-full overflow-x-auto shadow rounded-b-md">
+      <table id="table" class="text-sm border-b-2 dark:border-[#3a3b3c]">
+        <colgroup>
+          <!-- <col style="width: 5%" /> -->
+          <col style="width: 10%" />
+          <col style="width: 10%" />
+          <col style="width: 15%" />
+          <col style="width: 15%" />
+          <col style="width: 15%" />
+          <col style="width: 20%" />
+          <col style="width: 20%" />
+          <col style="width: 20%" />
+          <col style="width: 20%" />
+        </colgroup>
+        <thead class="text-sm border-b-2 dark:border-[#3a3b3c]">
+          <tr class="h-12 text-center uppercase">
+            <!-- <th scope="col">สถานะ</th> -->
+            <th scope="col">บริษัท</th>
+            <th scope="col">ฝ่าย/แผนก</th>
+            <th scope="col">รหัสพนักงาน</th>
+            <th scope="col">ชื่อ</th>
+            <th scope="col">นามสกุล</th>
+            <th scope="col">ตำแหน่ง</th>
+            <th scope="col">Email</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col">สถานะ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of userResult"
+            class="odd:bg-white dark:odd:bg-[#3a3b3c] dark:even:bg-black even:bg-slate-100 text-center h-20 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700">
+            <td>{{user && user.companys && user.companys[0].companyName}}</td>
+            <td>
+              {{user?.sectors[0]?.sectorName}}
+              <ng-container *ngIf="user?.sectors[0]?.sectorName && user?.departments[0]?.deptName"> /
+                {{user?.departments[0]?.deptName}}</ng-container>
+            </td>
+            <td>{{user.empCode}}</td>
+            <td>{{ user.title }} {{ user.firstname }}</td>
+            <td>{{user.lastname}}</td>
+            <td>{{ user && user.position && user.position.positionName }}</td>
+            <td>{{user.email}}</td>
+            <td>
+              <button *ngIf="user.status !== 'ลาออก'" type="submit" (click)="editEmployee(user.id)"
+                class="flex items-center justify-center text-[#FFAB00] py-2  rounded w-32 border-2 border-gray-400 mr-1 hover:bg-[#FFAB00] hover:text-white hover:border-[#FFAB00]">
+                <i class="mt-1 mb-1 mr-2 bx bx-edit"></i><span class="mr-1">ปรับปรุงข้อมูล</span>
+              </button>
+            </td>
+            <td>
+              <button *ngIf="user.status !== 'ลาออก'" type="submit" (click)="openConfirmationModal(user.id, 'delete')"
+                class="flex items-center justify-center w-24 py-2 mr-1 text-red-700 border-2 border-gray-400 rounded hover:bg-red-700 hover:text-white hover:border-red-700">
+                <i class="mt-1 mb-1 mr-1 bx bx-trash"></i>ลบข้อมูล
+              </button>
+            </td>
+            <td>
+              <div class="flex items-center justify-center w-24 py-2 mr-1 text-red-700" *ngIf="user.status === 'ลาออก'">
+                {{ user.status }}
+              </div>
+              <div *ngIf="user.status !== 'ลาออก'">
+                <button type="submit" (click)="openConfirmationModal(user.id, 'leave')"
+                  class="flex items-center justify-center w-24 py-2 mr-1 text-red-700 border-2 border-gray-400 rounded hover:bg-red-700 hover:text-white hover:border-red-700">
+                  <i class="mt-1 mb-1 mr-2 fa-solid fa-person-walking-luggage"></i><span class="mr-1">ลาออก</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="px-4 py-8 text-gray-900 bg-gray-100 border-t-4 border-gray-300 rounded-b shadow-md" role="alert"
+        *ngIf="showErrorMessage">
+        <div class="flex justify-center text-center">
+          <div class="py-1">
+            <svg class="w-10 h-10 mr-4 text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20">
+              <path
+                d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
+            </svg>
+          </div>
+          <div>
+            <p class="font-bold text-gray-500">ขออภัย!</p>
+            <p class="text-sm text-gray-500">ไม่พบข้อมูลที่คุณต้องการ</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div [hidden]="isLoading" class="fixed top-0 left-0 w-full h-full opacity-80 bg-slate-300 dark:bg-[#242526]">
+  </div>
+  <div [hidden]="isLoading" class="fixed right-1/3 top-1/4 ">
+    <div class="flex flex-col items-center justify-center h-64 rounded drop-shadow-xl bg-slate-100 w-72">
+      <mat-spinner></mat-spinner>
+      <p class="mt-4 text-xl text-content-dark">{{ statetext }}</p>
+    </div>
+  </div>
+</div>
+<div *ngIf="showModal" class="fixed inset-0 z-50 flex items-start justify-end p-6">
+  <div class="relative w-full max-w-md bg-[#323232] text-white shadow-lg rounded-lg">
+    <!--body-->
+    <div class="relative flex justify-between flex-auto px-3">
+      <p class="my-4 text-sm leading-relaxed text-gray-300" *ngIf="modalType === 'leave'">
+        <i class="mt-1 mb-1 mr-2 fa-solid fa-person-walking-luggage"></i>ต้องการอัปเดตสถานะผู้ใช้เป็น 'ลาออก'
+        ใช่หรือไม่?
+      </p>
+      <p class="my-4 text-sm leading-relaxed text-gray-300" *ngIf="modalType === 'delete'">
+        <i class="mr-1 fa-solid fa-trash-can"></i> ยืนยันว่าต้องการจะลบข้อมูลพนักงานรายนี้?
+      </p>
+      <button
+        class="px-3 py-2 text-sm transition-all duration-150 ease-linear rounded text-emerald-500 focus:outline-none"
+        type="button"
+        (click)="modalType === 'leave' ? processUserStatus(selectedUserId, 'ลาออก') : deleteById(selectedUserId)">
+        ยืนยัน
+      </button>
+      <button
+        class="px-2 py-2 text-sm text-red-500 transition-all duration-150 ease-linear outline-none focus:outline-none"
+        type="button" (click)="toggleModal()">
+        ยกเลิก
+      </button>
+    </div>
+  </div>
+</div>
+<div *ngIf="showModal" class="fixed inset-0 z-40 bg-black opacity-25"></div>
+

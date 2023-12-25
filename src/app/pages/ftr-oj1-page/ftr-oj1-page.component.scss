@@ -1,0 +1,289 @@
+/* Modal Container */
+.modal-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* สีพื้นหลังในกรณีที่ Modal ปิดอยู่ */
+    z-index: 9000 !important;
+    /* ให้ Modal อยู่ข้างบนของทุกอย่าง */
+}
+
+
+// input[type='radio'][name='result']
+// {
+//   display: none; /* ซ่อน radio input เอาไว้ */
+// }
+
+
+// input[type='radio'][name='result'] + label{
+//   position: relative;
+//   padding-left: 30px; /* ปรับขนาดระยะห่างระหว่าง label และ icon */
+//   cursor: pointer;
+// }
+
+
+// input[type='radio'][name='result'] + label:before {
+//   content: '';
+//   width: 17px; /* ขนาดขอบนอกสุด */
+//   height: 17px; /* ขนาดขอบนอกสุด */
+//   background-color: white; /* สีขาว */
+//   border: 1px solid rgb(129, 129, 129); /* ขอบนอกสุดสีเทา */
+//   border-radius: 50%; /* ทำให้มีรูปร่างเป็นวงกลม */
+//   position: absolute;
+//   left: 0;
+//   top: 0;
+// }
+
+
+
+// input[type='radio'][name='result'] + label:after {
+//   content: '';
+//   width: 10px; /* ขนาดส่วนในสุด (สีน้ำเงิน) */
+//   height: 10px; /* ขนาดส่วนในสุด (สีน้ำเงิน) */
+//   background-color: #696cff; /* สีน้ำเงิน */
+//   border-radius: 50%; /* ทำให้มีรูปร่างเป็นวงกลม */
+//   position: absolute;
+//   left: 3px; /* ย้ายส่วนในสุดให้อยู่ตรงกลาง */
+//   top: 3px; /* ย้ายส่วนในสุดให้อยู่ตรงกลาง */
+//   opacity: 0; /* เริ่มต้นซ่อนส่วนในสุด */
+// }
+
+
+// input[type='radio'][name='result']:checked + label:before {
+//   border: 1px solid #696cff; /* เปลี่ยนขอบสีน้ำเงินเมื่อถูกเลือก */
+// }
+
+
+
+// input[type='radio'][name='result']:checked + label:after {
+//   opacity: 1; /* เมื่อถูกเลือกให้แสดงส่วนในสุด (สีน้ำเงิน) */
+// }
+
+/* Modal Content */
+.modal-content {
+    max-height: 90vh;
+    /* สูงสุดของ Modal (ในกรณีนี้ 90% ของความสูงของหน้าจอ) */
+    overflow-y: auto;
+    /* ให้มีการเลื่อนถ้าข้อมูลมากเกิน */
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+// .radio-toolbar [id=pass1]
+
+// :checked+label {
+//   background-color: #166534;
+//   color: white;
+// }
+// .radio-toolbar 
+// [id=pass2],
+// :checked+label {
+//   background-color: #166534;
+//   color: white;
+// }
+
+///////////////////////////////////////////////////////////////////
+.radio-toolbar input[type="radio"][id="pass1"]:checked+label {
+    background-color: #166534;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="pass2"]:checked+label {
+    background-color: #166534;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="pass3"]:checked+label {
+    background-color: #166534;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="pass4"]:checked+label {
+    background-color: #166534;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="pass5"]:checked+label {
+    background-color: #166534;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="pass6"]:checked+label {
+    background-color: #166534;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="pass7"]:checked+label {
+    background-color: #166534;
+    color: white;
+}
+
+
+// ////////////////////////////////////////////////////
+.radio-toolbar input[type="radio"][id="fail1"]:checked+label {
+    background-color: #7d0e0e;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="fail2"]:checked+label {
+    background-color: #7d0e0e;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="fail3"]:checked+label {
+    background-color: #7d0e0e;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="fail4"]:checked+label {
+    background-color: #7d0e0e;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="fail5"]:checked+label {
+    background-color: #7d0e0e;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="fail6"]:checked+label {
+    background-color: #7d0e0e;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="fail7"]:checked+label {
+    background-color: #7d0e0e;
+    color: white;
+}
+
+// ////////////////////////////////////////////////////
+.radio-toolbar input[type="radio"][id="none1"]:checked+label {
+    background-color: #d8a31a;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="none2"]:checked+label {
+    background-color: #d8a31a;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="none3"]:checked+label {
+    background-color: #d8a31a;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="none4"]:checked+label {
+    background-color: #d8a31a;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="none5"]:checked+label {
+    background-color: #d8a31a;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="none6"]:checked+label {
+    background-color: #d8a31a;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="none7"]:checked+label {
+    background-color: #d8a31a;
+    color: white;
+}
+
+// .red
+// [id=fail1]:checked+label {
+//   background-color: #8f1b1b;
+//   color: white;
+// }
+
+// .yellow
+// [id=none1]:checked+label {
+//   background-color: #dc911a;
+//   color: white;
+// }
+
+.radio-toolbar-g9 input[type="radio"][id="good1"]:checked+label {
+    background-color: #166534;
+    color: white;
+}
+
+.radio-toolbar-g9 input[type="radio"][id="good2"]:checked+label {
+    background-color: #166534;
+    color: white;
+}
+
+.radio-toolbar-g9 input[type="radio"][id="good3"]:checked+label {
+    background-color: #166534;
+    color: white;
+}
+.radio-toolbar-g9 input[type="radio"][id="good4"]:checked+label {
+    background-color: #166534;
+    color: white;
+}
+
+.radio-toolbar-g9 input[type="radio"][id="good5"]:checked+label {
+    background-color: #166534;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="pass4"]:checked+label {
+    background-color: #166534;
+    color: white;
+}
+
+.radio-toolbar input[type="radio"][id="pass5"]:checked+label {
+    background-color: #166534;
+    color: white;
+}
+
+// ////////////////////////////////////////////////////
+.radio-toolbar-g9 input[type="radio"][id="fair1"]:checked+label {
+    background-color: #d8a31a;
+    color: white;
+}
+.radio-toolbar-g9 input[type="radio"][id="fair2"]:checked+label {
+    background-color: #d8a31a;
+    color: white;
+}
+.radio-toolbar-g9 input[type="radio"][id="fair3"]:checked+label {
+    background-color: #d8a31a;
+    color: white;
+}
+.radio-toolbar-g9 input[type="radio"][id="fair4"]:checked+label {
+    background-color: #d8a31a;
+    color: white;
+}
+.radio-toolbar-g9 input[type="radio"][id="fair5"]:checked+label {
+    background-color: #d8a31a;
+    color: white;
+}
+///////////////////////////////////////////////////
+.radio-toolbar-g9 input[type="radio"][id="poor1"]:checked+label {
+    background-color: #7d0e0e;
+    color: white;
+}
+.radio-toolbar-g9 input[type="radio"][id="poor2"]:checked+label {
+    background-color: #7d0e0e;
+    color: white;
+}
+.radio-toolbar-g9 input[type="radio"][id="poor3"]:checked+label {
+    background-color: #7d0e0e;
+    color: white;
+}
+.radio-toolbar-g9 input[type="radio"][id="poor4"]:checked+label {
+    background-color: #7d0e0e;
+    color: white;
+}
+.radio-toolbar-g9 input[type="radio"][id="poor5"]:checked+label {
+    background-color: #7d0e0e;
+    color: white;
+}
+

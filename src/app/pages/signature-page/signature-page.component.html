@@ -1,0 +1,57 @@
+<div class="bg-transparent">
+  <div class="w-full p-6 bg-white rounded-md shadow text-font-header dark:text-font-header-dark dark:bg-content-dark">
+    <p class="text-2xl">อัปโหลดลายเซ็น</p>
+    <br>
+    <div class="text-[#566a7f] rounded-md shadow p-6 h-auto w-full bg-gray-100 dark:text-[#e4e6eb] dark:bg-[#242526]">
+      <!-- แบบฟอร์มเพื่อเลือกไฟล์รูปภาพและ UserId -->
+      <form (ngSubmit)="uploadImage()" enctype="multipart/form-data">
+        <div id="main" class="grid grid-cols-4 gap-1 m-1 justify-evenly">
+          <div class="flex items-center h-12 rounded-lg">
+            เลือกพนักงานที่ต้องการอัปโหลดลายเซ็น
+          </div>
+          <div class="flex items-center h-12 col-start-3 col-end-4 rounded-lg">
+            เลือกรูปภาพลายเซ็น
+          </div>
+        </div>
+        <div id="main" class="grid grid-cols-4 gap-1 m-1 justify-evenly">
+          <div class="flex items-center h-12 rounded-lg">
+            <select [(ngModel)]="userId" name="userId" (change)="onUserIdSelected()"
+              class="mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-full dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
+              <option *ngFor="let user of users" [value]="user.id">คุณ {{ user.firstname }}</option>
+            </select>
+
+
+          </div>
+          <div class="h-12 col-start-3 col-end-4 rounded-lg">
+            <input
+              class="relative m-0 block w-full min-w-0 py-1 xl:px-3 rounded border bg-white file:overflow-hidden file:rounded-none file:border-0 file:border-inherit file:bg-gray-200 file:px-3 file:py-2 file:text-black file:transition file:duration-150 file:ease-in-out file:[margin-inline-end:0.75rem] hover:file:bg-neutral-200 focus:border-gray-600 focus:text-neutral-700 focus:shadow-te-gray-600 focus:outline-none dark:border-[#3a3b3c] dark:bg-[#3a3b3c] dark:text-white dark:focus:border-gray-600"
+              id="file_input" type="file" (change)="onFileSelected($event)">
+            <img [src]="previewImageUrl" *ngIf="previewImageUrl" alt="รูปภาพลายเซ็น" style="background-color: white;">
+          </div>
+          <div class="h-12 pl-4 rounded-lg">
+            <button class="p-2 text-white border-2 border-blue-400 rounded shadow-md w-36"
+              [ngClass]="{'bg-blue-400 cursor-pointer': userId && selectedImage, 'bg-gray-400 border-gray-400 cursor-not-allowed': !userId || !selectedImage}">
+              อัปโหลดรูปภาพ
+            </button>
+          </div>
+          <img [src]="signatureImageUrl" alt="Signature Image" style="background-color: white;"
+            *ngIf="signatureImageUrl && userId !== 0; else noSignature">
+          <ng-template #noSignature>
+            <p *ngIf="userId !== 0" class="text-red-500">
+              <ng-container *ngIf="userId !== 200; else signatureNotFound">
+                ยังไม่มีลายเซ็นอยู่ในระบบ
+              </ng-container>
+              <ng-template #signatureNotFound>
+                <ng-container *ngIf="userId === 404; else noMessage" >
+                  ยังไม่มีลายเซ็นอยู่ในระบบ
+                </ng-container>
+                <ng-template #noMessage></ng-template>
+              </ng-template>
+            </p>
+          </ng-template>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<div class="shadow rounded ">
+  <div class="border-t border-r border-l rounded-t p-3 grid grid-cols-1 justify-between items-center lg:flex dark:border-content-dark">
+    <div class="flex justify-start items-center text-font-header dark:text-font-header-dark">
+      <input type="button" (click)="today()" value="Today" class="rounded border font-semibold text-base px-6 py-2 mr-2 cursor-pointer hover:bg-[#8082ff] hover:text-white dark:border-border-dark">
+      <button type="button" (click)="decrement()" [disabled]="prevBtnDisabled" class="rounded py-2 px-3 mr-1 hover:bg-gray-200 dark:hover:bg-border-dark">
+        <em class="bx bx-chevron-up text-lg dark:"></em>
+      </button>
+      <button type="button" (click)="increment()" [disabled]="nextBtnDisabled" class="rounded py-2 px-3 mr-3 hover:bg-gray-200 dark:hover:bg-border-dark">
+        <em class="bx bx-chevron-down text-lg"></em>
+      </button>
+      <span class="text-3xl hidden justify-start md:flex">{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</span>
+    </div>
+    <span class="text-2xl flex justify-center mt-3 md:hidden dark:text-font-header-dark">{{ viewDate | calendarDate:(view + 'ViewTitle'):'en' }}</span>
+    <div class="text-font-header  grid grid-cols-3 font-semibold text-sm dark:text-font-header-dark">
+      <button type="button" (click)="changeView('day')" [class.active]="view === 'day'" class="px-6 py-2 mr-2 border-b-2 border-transparent cursor-pointer hover:border-b-2 hover:border-[#8082ff]">
+        <em class="bx bx-calendar-alt"></em>
+        <br class="md:hidden" />
+       <span>Day</span> 
+      </button>
+      <button type="button" (click)="changeView('week')" [class.active]="view === 'week'" class="px-6 py-2 mr-2 border-b-2 border-transparent cursor-pointer hover:border-b-2 hover:border-[#8082ff]">
+        <em class="bx bx-calendar-week"></em>
+        <br class="md:hidden" />
+        <span>Week</span>
+      </button>
+      <button type="button" (click)="changeView('month')" [class.active]="view === 'month'" class="px-6 py-2 mr-2 border-b-2 border-transparent cursor-pointer hover:border-b-2 hover:border-[#8082ff] ">
+        <em class="bx bx-calendar"></em>
+        <br class="md:hidden" />
+        <span>Month</span>
+      </button>
+    </div>
+  </div>
+
+  <div [ngSwitch]="view">
+    <mwl-calendar-month-view *ngSwitchCase="'month'" [viewDate]="viewDate" [events]="events"
+      (beforeViewRender)="beforeMonthViewRender($event)">
+    </mwl-calendar-month-view>
+    <mwl-calendar-week-view *ngSwitchCase="'week'" [viewDate]="viewDate" [events]="events">
+    </mwl-calendar-week-view>
+    <mwl-calendar-day-view *ngSwitchCase="'day'" [viewDate]="viewDate" [events]="events">
+    </mwl-calendar-day-view>
+  </div>
+
+  <div class="border-b border-r border-l rounded-b p-8 flex justify-start items-center dark:border-content-dark">
+  </div>
+</div>

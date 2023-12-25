@@ -1,0 +1,82 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$pcc-sd-portal-web-primary: mat.define-palette(mat.$indigo-palette);
+$pcc-sd-portal-web-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$pcc-sd-portal-web-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$pcc-sd-portal-web-theme: mat.define-light-theme((
+  color: (
+    primary: $pcc-sd-portal-web-primary,
+    accent: $pcc-sd-portal-web-accent,
+    warn: $pcc-sd-portal-web-warn,
+  )
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($pcc-sd-portal-web-theme);
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* angular-cli file: src/styles.css */
+@import "../node_modules/angular-calendar/css/angular-calendar.css";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai&family=Sarabun&display=swap');
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  // margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
+  margin: 0; font-family: 'Noto Sans Thai', sans-serif;
+}
+
+::-webkit-scrollbar {
+  height: 0.5rem;
+  width: 0.5rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,.2);
+  border-radius: 15rem;
+
+  &:hover {
+    background-color: #696CFF;
+  }
+}
+
+.dark::-webkit-scrollbar-thumb {
+  background-color: rgba(255,255,255,.2);
+
+  &:hover {
+    background-color: #696CFF;
+  }
+}
+
+.cdk-global-overlay-wrapper, .cdk-overlay-container {
+  z-index: 99999 !important;
+}

@@ -1,0 +1,38 @@
+<div class="text-font-header rounded-md shadow p-6 w-full bg-white dark:text-font-header-dark dark:bg-content-dark">
+    <p class="text-2xl">สิทธิ์การใช้งาน</p>
+    <form class="grid grid-cols-1 justify-between items-center my-6 xl:my-14 xl:flex">
+        <div class="grid grid-cols-1 justify-between items-center xl:flex">
+            <input type="text" class="appearance-none rounded-md border outline-none my-5 py-2 px-3 w-full xl:w-60 xl:my-0 xl:mx-1 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]" placeholder="กรอกชื่อที่ต้องการค้นหา">
+            <input type="button" class="bg-[#696cff] text-white font-bold py-2 px-4 my-5 rounded cursor-pointer drop-shadow w-full xl:w-60 xl:my-0 dark:bg-[#8385ff]" value="ค้นหา">
+        </div>
+            <input type="button" class="bg-green-400 text-white font-bold py-2 px-4 my-5 rounded cursor-pointer drop-shadow w-full xl:w-60 xl:my-0 dark:bg-[#53e287]" value="Report Login">
+    </form>
+    <div class="w-full overflow-x-auto">
+      <table class="table-auto text-base w-[75rem] lg:w-full" >
+          <thead class="text-sm border-b-2 dark:border-[#3a3b3c]">
+            <tr>
+              <th class="text-start pl-4 w-auto lg:w-72">ชื่อ - นามสกุล</th>
+              <th class="text-start">ตำแหน่ง</th>
+              <th class="text-start">อีเมล</th>
+              <th class="text-start">เบอรโทรศัพท์</th>
+              <th class="text-center">สิทธิ์การใช้งาน</th>
+              <th class="text-center"></th>
+            </tr>
+          </thead>
+          <tbody *ngFor="let items of arrayList; let i = index">
+            <tr class="border-b-2 {{i % 2 === 0 ? 'bg-gray-50 dark:bg-[#3a3b3c]/50' : '' }} dark:border-[#3a3b3c]">
+              <td class="py-5 pl-4 break-words">{{items.name}}</td>
+              <td class="break-words">{{items.positionJob}}</td>
+              <td class="break-words">{{items.email}}</td>
+              <td class="break-words">{{items.phone}}</td>
+              <td class="text-center {{ items.authority === 'ผู้ดูแลระบบ' ? 'text-red-400/90 text:bg-[#f15b5b]/80' : 'text-green-500/90 dark:text-[#27da69]/80'}}">
+                {{items.authority}}
+              </td>
+              <td>
+                <button *ngIf="items.authority !== 'ผู้ดูแลระบบ'" type="submit" class="text-white p-2 ml-4 w-24 rounded shadow-md cursor-pointer bg-[#ffab00]">ให้สิทธิ์</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,77 @@
+<div class="bg-transparent">
+  <div class="flex flex-col gap-y-4">
+    <div class="px-2 py-1 rounded-md lg:py-3 lg:px-6 bg-content shadow-card dark:bg-content-dark dark:shadow-none">
+      <div class="flex items-center justify-end">
+        <div>
+          <button type="button" class="px-6 py-2 text-white transition-all duration-150 rounded bg-font-link hover:bg-font-link-hover">
+            เพิ่มโปรเจค
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col gap-y-6">
+      <div>
+        <input type="checkbox" id="toggle-favorite" class="hidden toggle-control">
+        <label for="toggle-favorite" class="p-2 text-xl font-medium rounded-md cursor-pointer select-none text-font-header hover:bg-gray-200/30">
+          รายการที่ติดดาว
+        </label>
+        <div class="mt-3 overflow-hidden toggle-content">
+          <div class="grid items-stretch grid-cols-4 gap-4 my-2">
+            <a *ngFor="let item of projectsFavorite" [routerLink]="['/job-day-add/todo-list-job/'.concat(item.projectId.toString())]" class="relative p-3 border rounded-md border-gray-200/80 shadow-card bg-content">
+              <div>
+                <div class="flex gap-x-2">
+                  <div class="mt-[0.45rem]">
+                    <span class="relative top-0 flex w-3 h-3">
+                        <span class="absolute inline-flex w-full h-full bg-red-400 rounded-full opacity-75 animate-ping"></span>
+                        <span class="relative inline-flex w-3 h-3 bg-red-500 rounded-full"></span>
+                    </span>
+                  </div>
+                  <h2 class="text-xl font-medium text-font-header">{{ item.projectName }}</h2>
+                </div>
+                <p class="mt-1 text-sm text-font-description line-clamp-2">{{ item.projectDescription }}</p>
+              </div>
+              <div class="flex items-center justify-between mt-4">
+                <div>
+                  <small class="text-font-description/80">สร้างวันที่ 03 มี.ค. 2564</small>
+                </div>
+                <div>
+                  <small class="text-font-description/80">จำนวน <span class="font-medium">{{ 0 }}</span> คน</small>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div>
+        <input type="checkbox" id="toggle-all-project" class="hidden toggle-control">
+        <label for="toggle-all-project" class="p-2 text-xl font-medium rounded-md cursor-pointer select-none text-font-header hover:bg-gray-200/30">รายการโปรเจคที่เข้าร่วมทั้งหมด</label>
+        <div class="mt-3 overflow-hidden toggle-content">
+          <div class="grid items-stretch grid-cols-4 gap-4 my-2">
+            <a *ngFor="let item of projects; let index = index" [routerLink]="['/job-day-add/todo-list-job/'.concat(item.projectId.toString())]" class="p-3 border rounded-md shadow-card bg-content border-gray-200/80">
+              <div>
+                <div class="flex gap-x-2">
+                  <div *ngIf="index === 0" class="mt-[0.45rem]">
+                    <span class="relative top-0 flex w-3 h-3">
+                        <span class="absolute inline-flex w-full h-full bg-red-400 rounded-full opacity-75 animate-ping"></span>
+                        <span class="relative inline-flex w-3 h-3 bg-red-500 rounded-full"></span>
+                    </span>
+                  </div>
+                  <h2 class="text-xl font-medium text-font-header">{{ item.projectName }}</h2>
+                </div>
+                <p class="mt-1 text-sm text-font-description line-clamp-2">{{ item.projectDescription }}</p>
+              </div>
+              <div class="flex items-center justify-between mt-4">
+                <div>
+                  <small class="text-font-description/80">สร้างวันที่ 03 มี.ค. 2564</small>
+                </div>
+                <div>
+                  <small class="text-font-description/80">จำนวน <span class="font-medium">{{ 0 }}</span> คน</small>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

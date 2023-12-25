@@ -1,0 +1,318 @@
+<div class="bg-transparent">
+    <div
+        class="w-full p-6 pb-6 bg-white rounded-md shadow text-font-header dark:text-font-header-dark dark:bg-content-dark">
+        <p class="text-2xl ">งบประมาณการฝึกอบรมประจำปี</p>
+        <br>
+        <form action="" [formGroup]="trainingForm">
+            <div
+                class="text-[#566a7f] rounded-md my-3 shadow p-6 w-full bg-gray-100 dark:text-[#e4e6eb] dark:bg-[#242526]">
+                <div class="flex items-center self-start justify-start pt-2 mb-2 text-sm justify-items-start">
+                    <label for="" class="mr-2">บริษัท</label>
+                    <div class="flex flex-row items-center justify-start">
+                        <div class="flex items-stretch">
+                            <input #pccSelected formControlName="companyName" (change)="selectCompany('PCCTH')"
+                                type="radio" class="w-4 h-4 self-center peer accent-[#696cff]" name="company" id="pcc"
+                                value="PCCTH" checked />
+                            <label for="pcc" class="ml-2 mr-2 peer-checked:text-[#696cff]">PCCTH</label>
+                        </div>
+                        <div class="flex items-stretch">
+                            <input #wsSelected formControlName="companyName" (change)="selectCompany('WiseSoft')"
+                                type="radio" class="w-4 h-4 self-center peer accent-[#696cff]" name="company" id="ws"
+                                value="WiseSoft" />
+                            <label for="ws" class="ml-2 mr-2 peer-checked:text-[#696cff]">WiseSoft</label>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="flex flex-row justify-center">
+                    <div class="grow">
+                        <label for="year" class="self-center">ความต้องการการฝึกอบรมสำหรับปี</label>
+                        <select id="year" formControlName="year"
+                            [ngClass]="{  'border-red-500 dark:border-red-500': trainingForm.get('year')?.hasError('required') && trainingForm.get('year')?.touched  }"
+                            class="appearance-none rounded-md border outline-none my-5 py-2 px-3 w-full xl:w-7/12 xl:my-0 xl:mx-1 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
+                            <option value="" disabled selected class="text-gray-600 dark:text-gray-600">YYYY</option>
+                            <option *ngFor="let year of getYearsRange()" [value]="year">{{ year }}</option>
+
+                        </select>
+
+                        <div *ngIf="(trainingForm.get('year')?.hasError('required') && trainingForm.get('year')?.touched) || invalidYearInput"
+                            class="text-sm text-red-500">
+                            <span class="pl-48 text-sm text-red-500 ">กรุณาเลือกปีที่ต้องการ</span>
+                        </div>
+                    </div>
+                    <div class="grow">
+                        <label for="" class="self-center pr-4">ฝ่าย/แผนก</label>
+                        <select type="text" formControlName="department" (click)="onDepartmentClick()"
+                            [ngClass]="{ 'border-red-500 dark:border-red-500': trainingForm.get('department')?.hasError('required') && trainingForm.get('department')?.touched }"
+                            class="appearance-none rounded-md border outline-none my-5 py-2 px-3 w-full xl:w-8/12 xl:my-0 xl:mx-1 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
+                            <option value="" disabled>เลือกแผนก</option>
+                            <option *ngFor="let dept of depts " [ngValue]="dept">
+                                {{ dept.deptName + " " + dept.deptCode }}
+                            </option>
+                        </select>
+                        <div
+                            *ngIf="trainingForm.get('department')?.hasError('required') && trainingForm.get('department')?.touched">
+                            <span class="pl-20 text-sm text-red-500 ">กรุณาเลือกฝ่ายที่ต้องการ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-[#566a7f] rounded-md  shadow p-6 w-full bg-gray-100 dark:text-[#e4e6eb] dark:bg-[#242526]">
+                <div class="grid grid-cols-9 mt-8">
+
+                    <div class="relative h-12 pl-2 rounded-lg">
+                        <label for="" class="self-center flex-initial text-sm">งบประมาณการอบรม</label>
+                    </div>
+                    <div class="h-20 col-start-2 col-end-4 rounded-lg">
+                        <div class="relative">
+                            <span
+                                class="absolute inset-y-0 left-0 flex items-center pointer-events-none z-20 pl-4 text-gray-500 dark:placeholder:text-[#b4b4b4]">฿
+                            </span>
+                            <input type="text" formControlName="budgetTraining" (keypress)="onInputKeyPressFee($event)"
+                                (blur)="onBlurFee($event)"
+                                [ngClass]="{ 'border-red-500 dark:border-red-500': trainingForm.get('budgetTraining')?.hasError('required') && trainingForm.get('budgetTraining')?.touched }"
+                                class="py-2 px-3 pl-9 pr-16 block w-full border-gray-200 shadow-sm rounded-md focus:border-blue-500 focus:ring-blue-500 dark:placeholder:text-[#b4b4b4] dark:border-border-dark dark:bg-[#3a3b3c] appearance-none border outline-none my-5 xl:w-11/12 xl:my-0 xl:mx-1  focus:ring-1 focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4]"
+                                placeholder="0.00">
+                            <span
+                                class="absolute inset-y-0 right-0 flex items-center pointer-events-none z-20 pr-6 text-gray-500 dark:text-[#b4b4b4]">บาท</span>
+                        </div>
+                        <div *ngIf="(trainingForm.get('budgetTraining')?.hasError('required') && trainingForm.get('budgetTraining')?.touched) || invalidFeeInput"
+                            class="text-sm text-red-500">
+                            กรุณากรอกข้อมูล
+                        </div>
+                    </div>
+
+
+                    <div class="relative h-12 pl-2 rounded-lg">
+                        <label for="" class="self-center flex-initial text-sm">งบประมาณการสอบ Certificate</label>
+                    </div>
+                    <div class="h-20 col-start-5 col-end-7 rounded-lg">
+                        <div class="relative">
+                            <span
+                                class="absolute inset-y-0 left-0 flex items-center pointer-events-none z-20 pl-4 text-gray-500 dark:placeholder:text-[#b4b4b4]">฿</span>
+                            <input type="text" formControlName="budgetCer"
+                                (keypress)="onInputKeyPressAccommodation($event)" (blur)="onBlurAccommodation($event)"
+                                [ngClass]="{ 'border-red-500 dark:border-red-500': trainingForm.get('budgetCer')?.hasError('required') && trainingForm.get('budgetCer')?.touched }"
+                                class="appearance-none rounded-md border outline-none my-5 py-2 px-3 pl-9 pr-16 w-full xl:w-11/12 xl:my-0 xl:mx-1 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]"
+                                placeholder="0.00">
+                            <span
+                                class="absolute inset-y-0 right-0 flex items-center pointer-events-none z-20 pr-6 text-gray-500 dark:text-[#b4b4b4]">บาท</span>
+                        </div>
+                        <div *ngIf="(trainingForm.get('budgetCer')?.hasError('required') && trainingForm.get('budgetCer')?.touched) || invalidAccommodationExpInput"
+                            class="text-sm text-red-500">
+                            กรุณากรอกข้อมูล
+                        </div>
+                    </div>
+
+                    <div class="relative h-12 p-2 rounded-lg">
+                        <label for="" class="self-center flex-initial w-28">งบประมาณรวม</label>
+                    </div>
+                    <div class="h-20 col-start-8 col-end-10 rounded-lg">
+                        <div class="relative">
+                            <span
+                                class="absolute inset-y-0 left-0 flex items-center pointer-events-none z-20 pl-4 text-gray-500 dark:placeholder:text-[#b4b4b4]">฿</span>
+                            <input readonly type="text" formControlName="total_exp" (focus)="onTotalBudget()"
+                                [ngClass]="{ 'border-red-500 dark:border-red-500': trainingForm.get('total_exp')?.hasError('required') && trainingForm.get('totalExp')?.touched }"
+                                class="appearance-none rounded-md border outline-none my-5 py-2 px-3 pl-9 pr-16 w-full xl:w-11/12 xl:my-0 xl:mx-1 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]"
+                                placeholder="0.00">
+                            <span
+                                class="absolute inset-y-0 right-0 flex items-center pointer-events-none z-20 pr-6 text-gray-500 dark:text-[#b4b4b4]">บาท</span>
+                        </div>
+                        <div *ngIf="(trainingForm.get('total_exp')?.hasError('required') && trainingForm.get('total_exp')?.touched) || invalidtotal_expInput"
+                            class="text-sm text-red-500">
+                            กรุณากรอกข้อมูล
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+
+
+
+        <div class="flex justify-center my-6">
+            <div>
+                <button type="submit" (click)="addSv1Btn()" [disabled]="trainingForm.invalid"
+                    class="text-white p-2 w-30 rounded shadow-md {{ (trainingForm.invalid) ? 'cursor-not-allowed bg-gray-400 border-2 border-gray-400' : 'cursor-pointer bg-[#696cf8] hover:bg-[#696cf8] hover:text-white border-2 border-[#696cf8]' }}">
+                    <i class="mr-1 fa-solid fa-plus"></i> เพิ่มข้อมูล
+                </button>
+            </div>
+            <div class="mx-2">
+                <button type="button" (click)="refreshBtn()"
+                    class="text-[#696cf8] p-2 w-30 rounded shadow-md bg-transparent border-2 border-[#696cf8] hover:bg-[#7376fa] hover:text-white">
+                    <i class="mr-1 fa-solid fa-refresh"></i> เคลียร์ข้อมูล
+                </button>
+            </div>
+        </div>
+        <hr>
+        <div class="flex justify-center">
+            <p #yearAndDepartment
+                class="p-2 m-3 text-xl text-center font-medium rounded-md select-none text-font-header dark:text-[#e4e6eb]">
+                ความต้องการการฝึกอบรมสำหรับปี {{ trainingForm.value.year ? trainingForm.value.year : '...' }}<br>
+                ฝ่าย/แผนก {{ trainingForm.value.department.deptCode ? trainingForm.value.department.deptName : '...' }}
+            </p>
+        </div>
+
+        <div class="w-full overflow-x-auto shadow rounded-b-md">
+            <!-- เทเบิลใหญ่สุด -->
+            <table id="data-table" class="table-auto text-[#566a7f] text-base lg:w-full dark:text-white">
+                <colgroup>
+                    <col style="width: 10%;" *ngIf="shouldDisplayYear" />
+                    <col style="width: 90%;" />
+                </colgroup>
+                <thead class="text-sm bg-white border-b dark:bg-neutral-800 dark:shadow-none">
+                    <tr class="h-16 text-center border-b-2 border-b-gray-300">
+                        <th scope="col" *ngIf="shouldDisplayYear">ปี</th>
+                        <th scope="col" *ngIf="shouldDisplayYear">ข้อมูล</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- วนลูปปี -->
+                    <ng-container *ngFor="let year of rows; let i = index">
+                        <!-- ตรวจสอบว่าปีปัจจุบันนั้นซ้ำกับปีก่อนหน้าหรือไม่ -->
+                        <ng-container *ngIf="i === 0 || year.year !== rows[i - 1].year">
+                            <tr>
+                                <td class="border-b-2 border-b-gray-300 text-center">
+                                    <!-- แสดงปี -->
+                                    {{ year.year }}
+                                </td>
+                                <!-- สร้าง accordion ภายในคอลัมน์ทั้งหมด -->
+                                <mat-accordion>
+                                    <mat-expansion-panel [expanded]="isFooterVisible"
+                                        class="dark:hover:bg-[#2a2a2b] dark:bg-[#3a3b3c]">
+                                        <mat-expansion-panel-header class="border-b-2 border-b-gray-300">
+                                            <mat-panel-title class="dark:text-white">
+                                                ข้อมูลของปี {{ year.year }}
+                                            </mat-panel-title>
+                                            <button *ngIf="!showedit" type="button" (click)="editSv1Btn()"
+                                                class="text-[#696cf8] p-2 w-30 rounded shadow-md bg-transparent border-2 border-[#696cf8] hover:bg-[#696cf8] hover:text-white">
+                                                <i class="mr-1 fa-regular fa-pen-to-square"></i> แก้ไข
+                                            </button>
+                                        </mat-expansion-panel-header>
+                                        <!-- เนื้อหาของ mat-expansion-panel -->
+                                        <div>
+                                            <table id="data-table2"
+                                                class="table-auto text-[#566a7f] text-base lg:w-full dark:text-white">
+                                                <colgroup>
+                                                    <col style="width: 20%;" />
+                                                    <col style="width: 20%;" />
+                                                    <col style="width: 20%;" />
+                                                    <col style="width: 20%;" />
+                                                    <col style="width: 20%;" />
+                                                </colgroup>
+                                                <thead
+                                                    class="text-sm bg-white border-b dark:bg-neutral-800 dark:shadow-none">
+                                                    <tr class="h-16 text-center border-b-2 border-b-gray-300">
+                                                        <th scope="col" *ngIf="shouldDisplayCompany"
+                                                            style="width: 15%;">บริษัท</th>
+                                                        <th scope="col" *ngIf="shouldDisplayDept" style="width: 15%;">
+                                                            ฝ่าย</th>
+                                                        <th scope="col" style="width: 15%;">งบประมาณการอบรม</th>
+                                                        <th scope="col" style="width: 15%;">งบประมาณการสอบ Certificate
+                                                        </th>
+                                                        <th scope="col" style="width: 15%;">งบประมาณรวม</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tbody>
+                                                    <!--ข้อมูลของปี-->
+                                                    <ng-container *ngFor="let innerRow of rows">
+                                                        <ng-container
+                                                            *ngIf="innerRow.year === year.year && (i === 0 || innerRow.year !== rows[i - 1].year)">
+                                                            <tr
+                                                                class="dark:bg-[#3a3b3c] text-center truncate h-12 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700">
+                                                                <td
+                                                                    *ngIf="shouldDisplayCompany && (i === 0 || innerRow.company !== lastDisplayedCompany)">
+                                                                    {{ innerRow.company }}
+                                                                </td>
+                                                                <td *ngIf="shouldDisplayDept">
+                                                                    {{ innerRow.departmentCode }}
+                                                                </td>
+                                                                <td class="text-right pr-6">{{
+                                                                    innerRow.budgetTraining | number:'1.2-2' }}</td>
+                                                                <td class="text-right pr-6">{{
+                                                                    innerRow.budgetCer | number:'1.2-2' }}</td>
+                                                                <td class="text-right pr-6 ">{{
+                                                                    innerRow.total_exp | number:'1.2-2' }}</td>
+                                                            </tr>
+                                                        </ng-container>
+                                                    </ng-container>
+                                                </tbody>
+                                                <tfoot *ngIf="totalBudget && rows.length > 0"
+                                                    class="border-t-2 border-b-2 border-t-gray-300 border-b-gray-300">
+                                                    <tr class="h-12 text-center">
+                                                        <td colspan="2">ยอดเงินรวม</td>
+                                                        <td class="text-right pr-6">{{ totalBudget.budgetTrain |
+                                                            number:'1.2-2'}}</td>
+                                                        <td class="text-right pr-6">{{ totalBudget.budgetCer |
+                                                            number:'1.2-2'}}</td>
+                                                        <td class="text-right pr-6">{{ totalBudget.budgetTotal |
+                                                            number:'1.2-2'}}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="6">
+                                                            <hr style="border: 1px solid #dcdcdc; width: 100%;">
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="h-12 text-center">
+                                                        <td colspan="2">ยอดเงินคงเหลือ</td>
+                                                        <td class="text-right pr-6">{{ RemainBudget?.budgetTrain |
+                                                            number:'1.2-2' }}</td>
+                                                        <td class="text-right pr-6">{{ RemainBudget?.budgetCer |
+                                                            number:'1.2-2' }}</td>
+                                                        <td class="text-right pr-6">{{ RemainBudget?.budgetTotal |
+                                                            number:'1.2-2' }}</td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </mat-expansion-panel>
+                                </mat-accordion>
+                            </tr>
+                        </ng-container>
+                    </ng-container>
+                </tbody>
+            </table>
+
+
+
+            <div class="px-4 py-8 text-gray-900 bg-gray-100 border-t-4 border-gray-300 dark:border-[#3a3b3c] dark:bg-[#3a3b3c]  rounded-b shadow-md"
+                role="alert" *ngIf="showdataErrorMessage">
+                <div class="flex justify-center text-center">
+                    <div class="py-1">
+                        <svg class="w-10 h-10 mr-4 text-gray-500 fill-current dark:text-white "
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path
+                                d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-500 dark:text-white ">ไม่พบข้อมูล!</p>
+                        <p class="text-sm text-gray-500 dark:text-white ">ยังไม่มีข้อมูลงบประมาณ</p>
+                    </div>
+                </div>
+            </div>
+            <div class="px-4 py-8 text-gray-900 bg-gray-100 border-t-4 border-gray-300 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] rounded-b shadow-md"
+                role="alert" *ngIf="showErrorMessage && !showdataErrorMessage">
+                <div class="flex justify-center text-center">
+                    <div class="py-1">
+                        <svg class="w-10 h-10 mr-4 text-gray-500 fill-current dark:text-white"
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path
+                                d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-500 dark:text-white">ขออภัย!</p>
+                        <p class="text-sm text-gray-500 dark:text-white">ไม่พบข้อมูลงบประมาณ</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+    </div>

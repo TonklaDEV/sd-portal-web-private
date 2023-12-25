@@ -1,0 +1,299 @@
+<div class="bg-transparent">
+  <div class="grid items-stretch grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3 xl:gap-5">
+    <div class="p-6 rounded-md basis-1/3 bg-content shadow-card dark:bg-content-dark dark:shadow-none">
+      <div class="flex flex-col gap-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-medium xl:text-xl text-font-header dark:text-font-header-dark">รายชื่อระบบงานที่ทำ Code Review</h3>
+            <small class="text-xs font-medium xl:text-base text-font-description/50 dark:text-font-description-dark">72 Project/WAR File</small>
+          </div>
+          <div>
+            <input type="checkbox" id="code" class="hidden">
+            <label for="code" class="p-1 cursor-pointer">
+              <em class="bx bx-dots-vertical-rounded text-[1.4rem] text-font-header dark:text-font-header-dark"></em>
+            </label>
+            <div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="text-center">
+            <h3 class="text-lg font-medium xl:text-3xl text-font-header dark:text-font-header-dark">72</h3>
+            <p class="text-sm font-medium xl:text-base text-font-header dark:text-font-header-dark">จำนวน Project/WAR File</p>
+          </div>
+          <div>
+            <apx-chart
+              [series]="chartOptionsProjectReview.series"
+              [labels]="chartOptionsProjectReview.labels"
+              [chart]="chartOptionsProjectReview.chart"
+              [plotOptions]="chartOptionsProjectReview.plotOptions"
+              [dataLabels]="chartOptionsProjectReview.dataLabels"
+              [stroke]="chartOptionsProjectReview.stroke"
+              [legend]="chartOptionsProjectReview.legend"
+            ></apx-chart>
+          </div>
+        </div>
+        <div class="flex flex-col gap-y-4">
+          <div class="flex items-start justify-start p-2 rounded-md cursor-pointer select-none gap-x-4 hover:bg-gray-100/50 dark:hover:bg-border-dark">
+            <div>
+              <div class="mt-1 px-2 py-1 xl:px-3 xl:py-2 bg-[#E4E4F6] text-[#696CFF] rounded-md">
+                <em class="bx bx-folder-minus mt-1 text-[1.4rem]"></em>
+              </div>
+            </div>
+            <div class="flex flex-col gap-y-2">
+              <div>
+                <h4 class="text-sm font-medium xl:text-base text-font-header dark:text-font-header-dark">RD-0006-64 (NewVAT)</h4>
+                <small class="text-font-description/50 dark:text-font-description-dark">ระยะเวลาโครงการ: 730 วัน</small>
+              </div>
+              <div>
+                <p class="text-sm xl:text-base text-font-header dark:text-font-header-dark">22 Project/WAR File</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-start justify-start p-2 rounded-md cursor-pointer select-none gap-x-4 hover:bg-gray-100/50 dark:hover:bg-border-dark">
+            <div>
+              <div class="mt-1 px-2 py-1 xl:px-3 xl:py-2 bg-[#E4E4F6] text-[#696CFF] rounded-md">
+                <em class="bx bx-folder-minus mt-1 text-[1.4rem]"></em>
+              </div>
+            </div>
+            <div class="flex flex-col gap-y-2">
+              <div>
+                <h4 class="text-sm font-medium xl:text-base text-font-header dark:text-font-header-dark">ED-0026-63 addOnLicense</h4>
+                <small class="text-font-description/50 dark:text-font-description-dark">จัดทำระบบ SSO DR site</small>
+              </div>
+              <div>
+                <p class="text-sm xl:text-base text-font-header dark:text-font-header-dark">6 Project/WAR File</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-start justify-start p-2 rounded-md cursor-pointer select-none gap-x-4 hover:bg-gray-100/50 dark:hover:bg-border-dark">
+            <div>
+              <div class="mt-1 px-2 py-1 bg-[#E4E4F6] text-[#696CFF] rounded-md">
+                <em class="bx bx-folder-minus mt-1 text-[1.4rem]"></em>
+              </div>
+            </div>
+            <div class="flex flex-col gap-y-2">
+              <div>
+                <h4 class="text-sm font-medium xl:text-base text-font-header dark:text-font-header-dark">CGD-0052-64 (DR Microservice)</h4>
+                <small class="text-font-description/50 dark:text-font-description-dark">(e-GP) ระยะที่ 1 (DR Microservice)</small>
+              </div>
+              <div>
+                <p class="text-sm xl:text-base text-font-header dark:text-font-header-dark">40 Project/WAR File</p>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-start justify-start p-2 rounded-md cursor-pointer select-none gap-x-4 hover:bg-gray-100/50 dark:hover:bg-border-dark">
+            <div>
+              <div class="mt-1 px-2 py-1 bg-[#E4E4F6] text-[#696CFF] rounded-md">
+                <em class="bx bx-folder-minus mt-1 text-[1.4rem]"></em>
+              </div>
+            </div>
+            <div class="flex flex-col gap-y-2">
+              <div>
+                <h4 class="text-sm font-medium xl:text-base text-font-header dark:text-font-header-dark">PCCTH DATA Project</h4>
+                <small class="text-font-description/50 dark:text-font-description-dark">Code Review As A service phase 1</small>
+              </div>
+              <div>
+                <p class="text-sm xl:text-base text-font-header dark:text-font-header-dark">4 Project/WAR File</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="p-6 rounded-md basis-1/3 bg-content shadow-card dark:bg-content-dark dark:shadow-none">
+      <div class="grid grid-cols-2 gap-2 mb-10">
+        <div class="col-span-1">
+          <button type="button" class="w-full px-6 py-2 text-white transition-all duration-150 rounded bg-font-link hover:bg-font-link-hover">
+            ข้อมูล Issues
+          </button>
+        </div>
+        <div class="col-span-1">
+          <button type="button" class="w-full px-6 py-2 transition-all duration-150 rounded text-font-link bg-content hover:bg-font-link hover:text-content dark:bg-content-dark dark:hover:bg-font-link">
+            Coverage
+          </button>
+        </div>
+        <div class="col-span-1">
+          <button type="button" class="w-full px-6 py-2 transition-all duration-150 rounded text-font-link bg-content hover:bg-font-link hover:text-content dark:bg-content-dark dark:hover:bg-font-link">
+            Security
+          </button>
+        </div>
+      </div>
+      <div class="flex items-start justify-start gap-x-4">
+        <div>
+          <div class="mt-1 px-2 py-1 bg-[#E4E4F6] text-[#696CFF] rounded-md">
+            <em class="bx bx-message-error mt-1 text-[1.4rem]"></em>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-medium text-font-header dark:text-font-header-dark">จำนวน Issues ทั้งหมด</h4>
+          <div class="flex items-center gap-x-4">
+            <p class="text-base font-medium xl:text-lg text-font-header dark:text-font-header-dark">30739</p>
+            <small class="text-xs xl:text-sm text-[#71dd37] font-semibold flex items-center gap-x-1">
+              <div class="mt-1">
+                <em class="bx bx-chevron-up"></em>
+              </div>
+              <span>78% จากทั้งหมดถูกแก้ไขแล้ว</span>
+            </small>
+          </div>
+        </div>
+      </div>
+      <div>
+        <apx-chart
+          [series]="chartOptionsIssueDetail.series"
+          [colors]="chartOptionsIssueDetail.colors"
+          [chart]="chartOptionsIssueDetail.chart"
+          [plotOptions]="chartOptionsIssueDetail.plotOptions"
+          [dataLabels]="chartOptionsIssueDetail.dataLabels"
+          [stroke]="chartOptionsIssueDetail.stroke"
+          [fill]="chartOptionsIssueDetail.fill"
+          [xaxis]="chartOptionsIssueDetail.xaxis"
+          [yaxis]="chartOptionsIssueDetail.yaxis"
+          [grid]="chartOptionsIssueDetail.grid"
+          [tooltip]="chartOptionsIssueDetail.tooltip"
+        ></apx-chart>
+      </div>
+      <div class="flex items-center justify-center text-font-header dark:text-font-header-dark">
+        <div class="text-center">
+          <p>วันที่แก้ไขล่าสุด</p>
+          <small class="text-font-description/50 dark:text-font-description-dark">2022-05-20</small>
+        </div>
+      </div>
+    </div>
+    <div class="p-6 rounded-md md:col-span-2 xl:col-span-1 basis-1/3 bg-content shadow-card dark:bg-content-dark dark:shadow-none">
+      <div class="flex flex-col gap-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-medium md:text-xl xl:text-2xl text-font-header dark:text-font-header-dark">บันทึกการแก้ไข Issues</h3>
+          </div>
+          <div>
+            <input type="checkbox" id="code" class="hidden">
+            <label for="code" class="p-1 cursor-pointer">
+              <em class="bx bx-dots-vertical-rounded text-[1.4rem] text-font-header dark:text-font-header-dark"></em>
+            </label>
+            <div>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-1">
+          <div class="flex items-start justify-start p-2 rounded-md select-none gap-x-4">
+            <div>
+              <div class="mt-1 px-2 py-1 bg-[#E4E4F6] text-[#696CFF] rounded-md">
+                <em class="bx bx-news mt-1 text-[1.4rem]"></em>
+              </div>
+            </div>
+            <div class="flex flex-col gap-y-2">
+              <div>
+                <h4 class="text-base font-medium xl:text-lg text-font-header dark:text-font-header-dark">ข่าวสารน่ารู้ประจำวัน</h4>
+                <small class="text-font-description/50 line-clamp-2 dark:text-font-description-dark">
+                  เฟซบุ๊กใช้ HTTP/3 เกิน 75% แล้ว
+                  เฟซบุ๊กรายงานถึงการย้ายโปรโตคอลไปยัง HTTP/3 หรือ QUIC
+                  [https://www.blognone.com/node/106406]
+                </small>
+              </div>
+              <div>
+                <a [routerLink]="['/pccth/']" class="text-sm xl:text-base text-font-link hover:text-font-link-hover">ดูบทความ</a>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-start justify-start p-2 rounded-md select-none gap-x-4">
+            <div>
+              <div class="mt-1 px-2 py-1 bg-[#E4E4F6] text-[#696CFF] rounded-md">
+                <em class="bx bx-news mt-1 text-[1.4rem]"></em>
+              </div>
+            </div>
+            <div class="flex flex-col gap-y-2">
+              <div>
+                <h4 class="text-base font-medium xl:text-lg text-font-header dark:text-font-header-dark">บทความเทคโนโลยีน่ารู้</h4>
+                <small class="text-font-description/50 line-clamp-2 dark:text-font-description-dark">
+                  ไมโครซอฟท์ออกส่วนขยาย Microsoft Edge Tools, เรียกใช้ Edge DevTools ดีบัก DOM/ตรวจสอบเน็ตเวิร์คได้จาก VS Code ทำให้ความสามารถของส่วนขยายในตอนนี้ไม่ใช่
+                </small>
+              </div>
+              <div>
+                <a [routerLink]="['/pccth/']" class="text-sm xl:text-base text-font-link hover:text-font-link-hover">ดูบทความ</a>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-start justify-start p-2 rounded-md select-none gap-x-4">
+            <div>
+              <div class="mt-1 px-2 py-1 bg-[#E4E4F6] text-[#696CFF] rounded-md">
+                <em class="bx bx-news mt-1 text-[1.4rem]"></em>
+              </div>
+            </div>
+            <div class="flex flex-col gap-y-2">
+              <div>
+                <h4 class="text-base font-medium xl:text-lg text-font-header dark:text-font-header-dark">ประกาศประจำวัน</h4>
+                <small class="text-font-description/50 line-clamp-2 dark:text-font-description-dark">
+                  กำหนดวิธีการอบรมระบบงานสารสนเทศหลัก และ ประเมิน ดังนี้
+                  1. อบรมที่ห้อง PCC3  ตามวันเวลา ที่แจ้ง
+                  2. ให้ผู้สอนเปิด MS Team เชิญ SA ทุกคนเข้าร่วมใน
+                </small>
+              </div>
+              <div>
+                <a [routerLink]="['/pccth/']" class="text-sm xl:text-base text-font-link hover:text-font-link-hover">ดูบทความ</a>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-start justify-start p-2 rounded-md select-none gap-x-4">
+            <div>
+              <div class="mt-1 px-2 py-1 bg-[#E4E4F6] text-[#696CFF] rounded-md">
+                <em class="bx bx-news mt-1 text-[1.4rem]"></em>
+              </div>
+            </div>
+            <div class="flex flex-col gap-y-2">
+              <div>
+                <h4 class="text-base font-medium xl:text-lg text-font-header dark:text-font-header-dark">คู่มือการใช้งาน</h4>
+                <small class="text-font-description/50 line-clamp-2 dark:text-font-description-dark">
+                  SonarQube ตอนที่ 1 https://code.pccth.com/sonarqube_001/
+                  SonarQube ตอนที่ 2 https://code.pccth.com/sonarqube-t-nthii-2/
+                  SonarQube ตอนที่ 3 https://code.pccth.com/sonarqube-t-nthii-2/
+                  SonarQube ตอนที่ 3 https://code.pccth.com/sonarqube-t-nthii-2/
+                  SonarQube ตอนที่ 3 https://code.pccth.com/sonarqube-t-nthii-2/
+                </small>
+              </div>
+              <div>
+                <a [routerLink]="['/pccth/']" class="text-sm xl:text-base text-font-link hover:text-font-link-hover">ดูบทความ</a>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-start justify-start p-2 rounded-md select-none gap-x-4">
+            <div>
+              <div class="mt-1 px-2 py-1 bg-[#E4E4F6] text-[#696CFF] rounded-md">
+                <em class="bx bx-news mt-1 text-[1.4rem]"></em>
+              </div>
+            </div>
+            <div class="flex flex-col gap-y-2">
+              <div>
+                <h4 class="text-base font-medium xl:text-lg text-font-header dark:text-font-header-dark">วิธีการใช้งาน CMS</h4>
+                <small class="text-font-description/50 line-clamp-2 dark:text-font-description-dark">
+                  สามารถใช้งานได้ดังนี้ ดาวน์โหลดคู่มือด้านล่าง
+                </small>
+              </div>
+              <div>
+                <a [routerLink]="['/pccth/']" class="text-sm xl:text-base text-font-link hover:text-font-link-hover">ดูบทความ</a>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-start justify-start p-2 rounded-md select-none gap-x-4">
+            <div>
+              <div class="mt-1 px-2 py-1 bg-[#E4E4F6] text-[#696CFF] rounded-md">
+                <em class="bx bx-news mt-1 text-[1.4rem]"></em>
+              </div>
+            </div>
+            <div class="flex flex-col gap-y-2">
+              <div>
+                <h4 class="text-base font-medium xl:text-lg text-font-header dark:text-font-header-dark">หน้าสำรอง 1</h4>
+                <small class="text-font-description/50 line-clamp-2 dark:text-font-description-dark">
+                  หน้าสำรอง 1 เพิ่มข้อมูลภายหลัง
+                </small>
+              </div>
+              <div>
+                <a [routerLink]="['/pccth/']" class="text-sm xl:text-base text-font-link hover:text-font-link-hover">ดูบทความ</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

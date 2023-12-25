@@ -1,0 +1,43 @@
+
+<div class="px-2 py-1 rounded-md lg:py-3 lg:px-6 bg-content shadow-card dark:bg-content-dark dark:shadow-none">
+  <div class="relative w-full p-2 bg-content dark:bg-content-dark">
+    <button type="button" class="absolute z-10 hidden outline-none lg:block top-1/2 -left-2" (click)="onNextRightClick(container)">
+      <div class="w-8 h-8 p-1 rounded-full bg-gray-300/60 dark:bg-gray-100/5">
+        <div class="w-6 h-6 rounded-full bg-font-link dark:bg-font-active-link-dark">
+          <em class="bx bx-chevron-left mt-[0.15rem]  text-[1.2rem] text-white"></em>
+        </div>
+      </div>
+    </button>
+    <div class="w-full mx-auto overflow-x-scroll overflow-y-hidden lg:overflow-x-hidden bg-content dark:bg-content-dark">
+      <div #container class="flex justify-start w-full p-2 transition duration-700 ease-out gap-x-4 bg-content dark:bg-content-dark">
+        <a [routerLink]="['/pccth/']" *ngFor="let data of mockData" class="w-[18.5rem] lg:w-96 p-4 border-2 rounded-md border-gray-200/50 h-80 lg:h-[29.5rem] bg-content transition-all duration-150 hover:shadow dark:bg-content-dark dark:border-gray-100/5 dark:hover:border-gray-100/20 dark:shadow-gray-100/5">
+          <div class="flex flex-col w-full h-full gap-y-4">
+            <div >
+              <div class="w-64 lg:w-[22rem] h-auto rounded-md overflow-hidden">
+                <img [src]="data.image" [alt]="data.title" class="w-full h-full">
+              </div>
+            </div>
+
+            
+
+            <div class="flex flex-col items-start w-full h-full gap-y-4">
+              <div>
+                <h3 class="text-xl lg:text-2xl text-font-header dark:text-font-header-dark">{{ data.title }}</h3>
+              </div>
+              <p class="text-sm lg:text-base line-clamp-3 lg:line-clamp-6 text-font-description dark:text-font-description-dark">
+                {{ data.description }}
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+    <button type="button" class="absolute z-10 hidden outline-none lg:block top-1/2 -right-4 lg:-right-2" (click)="onNextLeftClick(container)">
+      <div class="w-8 h-8 p-1 rounded-full bg-gray-300/60 dark:bg-gray-100/5">
+        <div class="w-6 h-6 rounded-full bg-font-link dark:bg-font-active-link-dark">
+          <em class="bx bx-chevron-right mt-[0.15rem] text-[1.2rem] text-white"></em>
+        </div>
+      </div>
+    </button>
+  </div>
+</div>

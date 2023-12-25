@@ -1,0 +1,404 @@
+<div *ngIf="!hidden" class="relative z-[60]" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 {{ display ? 'open-bg' : 'close-bg' }}"></div>
+  <div class="fixed inset-0 z-10 overflow-y-hidden">
+    <div class="flex my-auto justify-center min-h-full text-center sm:p-0">
+      <div class="relative overflow-y-hidden text-left transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-[60rem] sm:max-h-[35rem] {{ display ? 'open-modal' : 'close-modal' }}">
+        <div class="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
+          <div class="sm:flex sm:items-start">
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+              <h3 class="text-3xl font-semibold leading-6 text-font-header" id="modal-title">UX/UI Design</h3>
+              <div class="mt-2">
+                <p class="text-xs text-font-description">กลุ่ม/หมวดหมู่ <span class="text-font-header font-semibold">กำลังดำเนินการ</span></p>
+              </div>
+            </div>
+          </div>
+          <div class="mt-2 max-w-full max-h-[28rem] overflow-y-scroll">
+            <div class="pr-2 mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+              <div class="my-2">
+                <div class="flex items-center gap-x-2">
+                  <div class="mt-[0.4rem]">
+                    <em class="bx bx-spreadsheet text-[1.125rem] text-font-header font-medium"></em>
+                  </div>
+                  <h4 class="text-base text-font-header font-semibold">คำอธิบาย/รายละเอียด</h4>
+                </div>
+                <div class="mt-1">
+                  <p class="text-sm text-font-description">Design the user interface for the new website.</p>
+                </div>
+              </div>
+              <div class="my-2">
+                <div class="flex items-center gap-x-2">
+                  <div class="mt-[0.4rem]">
+                    <em class="bx bx-purchase-tag text-[1.125rem] text-font-header font-medium"></em>
+                  </div>
+                  <h4 class="text-base text-font-header font-semibold">ป้าย</h4>
+                </div>
+                <div class="select-none">
+                  <div class="flex flex-wrap gap-2 mt-1">
+                    <div class="px-2 py-1 bg-gray-200/40 text-sm text-font-header">Design</div>
+                    <div class="px-2 py-1 bg-gray-200/40 text-sm text-font-header">UX/UI Design</div>
+                    <div class="px-2 py-1 bg-gray-200/40 text-sm text-font-header">Web Design</div>
+                  </div>
+                </div>
+              </div>
+              <div class="my-2">
+                <div class="flex items-center gap-x-2">
+                  <div class="mt-[0.4rem]">
+                    <em class="bx bx-time text-[1.125rem] text-font-header font-medium"></em>
+                  </div>
+                  <h4 class="text-base text-font-header font-semibold">ระยะเวลาวันที่ครบกำหนด</h4>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center gap-x-2">
+                  <div class="mt-[0.4rem]">
+                    <em class="bx bx-bell text-[1.125rem] text-font-header font-medium"></em>
+                  </div>
+                  <h4 class="text-base text-font-header font-semibold">การแจ้งเตือน</h4>
+                </div>
+              </div>
+              <div class="my-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex flex-row-reverse items-center gap-x-2">
+                    <h4 class="text-base text-font-header font-semibold">สมาชิกทั้งหมด</h4>
+                    <div class="mt-[0.4rem]">
+                      <em class="bx bx-group text-[1.125rem] text-font-header font-medium"></em>
+                    </div>
+                  </div>
+                  <div>
+                    <div>
+                      <button type="button" class="px-2 py-1 bg-gray-200/40 text-font-header hover:bg-gray-200/80">เพิ่มสมาชิก</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-1">
+                  <div class="grid grid-cols-3 max-h-44 overflow-y-scroll gap-y-3 w-full items-stretch">
+                    <div class="p-2 flex items-center space-x-4 hover:bg-font-description-hover select-none">
+                      <div class="flex-shrink-0">
+                        <img class="w-8 h-8 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg" alt="Neil image">
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">Ratchapol Thongta</p>
+                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">ratchapolt@pccth.com</p>
+                      </div>
+                    </div>
+                    <div class="p-2 flex items-center space-x-4 hover:bg-font-description-hover select-none">
+                      <div class="flex-shrink-0">
+                        <img class="w-8 h-8 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg" alt="Neil image">
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">Sompong Lasvagas</p>
+                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">sompongl@pccth.com</p>
+                      </div>
+                    </div>
+                    <div class="p-2 flex items-center space-x-4 hover:bg-font-description-hover select-none">
+                      <div class="flex-shrink-0">
+                        <img class="w-8 h-8 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg" alt="Neil image">
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate dark:text-white">Prayut Redwan</p>
+                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">prayutr@pccth.com</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="my-4 flex gap-x-6">
+                <div class="basis-1/2">
+                  <div class="flex items-center justify-between">
+                    <div class="flex flex-row-reverse items-center gap-x-2">
+                      <h4 class="text-base text-font-header font-semibold">ไฟล์แนบ</h4>
+                      <div class="mt-[0.4rem]">
+                        <em class="bx bx-paperclip text-[1.125rem] text-font-header font-medium"></em>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-x-2">
+                      <div>
+                        <button type="button" class="px-2 py-1 bg-gray-200/40 text-sm text-font-header hover:bg-gray-200/80">ซ่อนรายการ</button>
+                      </div>
+                      <div>
+                        <button type="button" class="px-2 py-1 bg-gray-200/40 text-sm text-font-header hover:bg-gray-200/80">เพิ่มไฟล์</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-3 flex flex-col gap-y-2">
+                    <div>
+                      <button type="button" class="w-full flex gap-x-2 text-start rounded-md hover:bg-gray-200/30">
+                        <div class="w-[4.875rem] h-[4rem] flex items-center justify-center bg-gray-200/60 rounded-md">
+                          <span class="text-[1rem] text-font-header font-medium">DOCX</span>
+                        </div>
+                        <div class="mt-1">
+                          <h5 class="text-base text-font-header">รายละเอียดการออกแบบหน้าจอ Dashboard.docx</h5>
+                          <span>
+                            <span class="text-xs text-font-description">เพิ่มโดย <span class="text-font-header font-semibold">Ratchapol Thongta</span></span>
+                            <span class="text-xs text-font-description"> เมื่อ <span class="text-font-header font-semibold">11 ม.ย. 64</span></span>
+                          </span>
+                        </div>
+                      </button>
+                    </div>
+                    <div>
+                      <button type="button" class="w-full flex gap-x-2 text-start rounded-md hover:bg-gray-200/30">
+                        <div class="w-[4.875rem] h-[4rem] flex items-center justify-center bg-gray-200/60 rounded-md">
+                          <span class="text-[1rem] text-font-header font-medium">DOCX</span>
+                        </div>
+                        <div class="mt-1">
+                          <h5 class="text-base text-font-header">รายละเอียดการออกแบบหน้าจอข่าวสาร.docx</h5>
+                          <span>
+                            <span class="text-xs text-font-description">เพิ่มโดย <span class="text-font-header font-semibold">Ratchapol Thongta</span></span>
+                            <span class="text-xs text-font-description"> เมื่อ <span class="text-font-header font-semibold">11 ม.ย. 64</span></span>
+                          </span>
+                        </div>
+                      </button>
+                    </div>
+                    <div>
+                      <button type="button" class="w-full flex gap-x-2 text-start rounded-md hover:bg-gray-200/30">
+                        <div class="w-[4.875rem] h-[4rem] flex items-center justify-center bg-gray-200/60 rounded-md">
+                          <span class="text-[1.25rem] text-font-header font-medium">PDF</span>
+                        </div>
+                        <div class="mt-1">
+                          <h5 class="text-base text-font-header">รายละเอียดการออกแบบหน้าจอหน้าหลัก.pdf</h5>
+                          <span>
+                            <span class="text-xs text-font-description">เพิ่มโดย <span class="text-font-header font-semibold">Ratchapol Thongta</span></span>
+                            <span class="text-xs text-font-description"> เมื่อ <span class="text-font-header font-semibold">11 ม.ย. 64</span></span>
+                          </span>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="basis-1/2">
+                  <div class="flex items-center justify-between">
+                    <div class="flex flex-row-reverse items-center gap-x-2">
+                      <h4 class="text-base text-font-header font-semibold">รายการที่ต้องดำเนินงาน</h4>
+                      <div class="mt-[0.4rem]">
+                        <em class="bx bx-task text-[1.125rem] text-font-header font-medium"></em>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-x-2">
+                      <div>
+                        <button type="button" class="px-2 py-1 bg-gray-200/40 text-sm text-font-header hover:bg-gray-200/80">ซ่อนรายการ</button>
+                      </div>
+                      <div>
+                        <button type="button" class="px-2 py-1 bg-gray-200/40 text-sm text-font-header hover:bg-gray-200/80">เพิ่มรายการ</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-4">
+                    <div class="flex-start flex h-4 w-full overflow-hidden rounded bg-gray-200/50 font-sans text-xs font-medium">
+                      <div class="flex h-full items-baseline justify-center overflow-hidden break-all bg-font-link text-white" style="width: 66.6%">
+                        66.6% เสร็จสิ้น
+                      </div>
+                    </div>
+                    <div class="mt-4 flex flex-col gap-y-2">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-x-3">
+                          <div class="mt-1">
+                            <input type="checkbox" class="w-4 h-4 text-font-link bg-gray-100 border-gray-300 rounded accent-font-link cursor-pointer" [checked]="true">
+                          </div>
+                          <div>
+                            <h5 class="text-sm text-font-header font-medium line-through">ออกแบบหน้าจอ Dashboard</h5>
+                          </div>
+                        </div>
+                        <div class="flex items-center gap-x-2">
+                          <div class="p-1 rounded bg-[#E2F2DE]">
+                            <span class="text-xs text-font-description/50">สิ้นสุด 11 ม.ย. 64</span>
+                          </div>
+                          <div>
+                            <div>
+                              <img class="w-8 h-8 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg" alt="Neil image">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-x-3">
+                          <div class="mt-1">
+                            <input type="checkbox" class="w-4 h-4 text-font-link bg-gray-100 border-gray-300 rounded accent-font-link cursor-pointer" [checked]="true">
+                          </div>
+                          <div>
+                            <h5 class="text-sm text-font-header font-medium line-through">ออกแบบหน้าจอข่าวสาร</h5>
+                          </div>
+                        </div>
+                        <div class="flex items-center gap-x-2">
+                          <div class="p-1 rounded bg-[#E2F2DE]">
+                            <span class="text-xs text-font-description/50">สิ้นสุด 12 ม.ย. 64</span>
+                          </div>
+                          <div>
+                            <div>
+                              <img class="w-8 h-8 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg" alt="Neil image">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-x-3">
+                          <div class="mt-1">
+                            <input type="checkbox" class="w-4 h-4 text-font-link bg-gray-100 border-gray-300 rounded accent-font-link cursor-pointer">
+                          </div>
+                          <div>
+                            <h5 class="text-sm text-font-header font-medium">ออกแบบหน้าจอหน้าหลัก</h5>
+                          </div>
+                        </div>
+                        <div class="flex items-center gap-x-2">
+                          <div class="p-1 bg-gray-200/30 rounded">
+                            <span class="text-xs text-font-description/50">สิ้นสุด 13 ม.ย. 64</span>
+                          </div>
+                          <div>
+                            <div>
+                              <img class="w-8 h-8 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg" alt="Neil image">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="my-4" id="comment-group">
+                <div class="flex items-center gap-x-6">
+                  <div class="flex flex-row-reverse items-center gap-x-2">
+                    <h4 class="text-base text-font-header font-semibold">แสดงความคิดเห็น</h4>
+                    <div class="mt-2">
+                      <em class="bx bx-conversation text-[1.125rem] text-font-header font-medium"></em>
+                    </div>
+                  </div>
+                  <div>
+                    <div>
+                      <button type="button" class="px-2 py-1 bg-gray-200/40 text-sm text-font-header hover:bg-gray-200/80">ซ่อนข้อความ</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4">
+                  <form class="mb-6 flex items-start gap-x-2">
+                    <div>
+                      <img class="w-8 h-8 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg" alt="Neil image">
+                    </div>
+                    <div class="w-full bg-white rounded-lg rounded-t-lg border border-gray-200">
+                      <div class="py-2 px-4 mb-2 dark:bg-gray-800 dark:border-gray-700">
+                        <label for="comment" class="sr-only">Your comment</label>
+                        <textarea id="comment" rows="3" class="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800" placeholder="เขียนความคิดเห็น..." required></textarea>
+                      </div>
+                      <div class="py-2 px-4 bg-gray-200/40 border-t border-gray-200 flex items-center justify-between">
+                        <div>
+                          <button type="submit" class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-font-link rounded-lg hover:bg-font-link-hover">
+                            ส่งข้อความ
+                          </button>
+                        </div>
+                        <div class="flex items-center gap-x-2">
+                          <div>
+                            <button type="button" class="px-2 py-1 bg-transparent rounded-full cursor-pointer hover:bg-gray-200/30 text-font-header hover:text-font-link">
+                              <span class="mt-1">
+                                <em class="text-lg font-medium bx bx-paperclip"></em>
+                              </span>
+                            </button>
+                          </div>
+                          <div>
+                            <button type="button" class="px-2 py-1 bg-transparent rounded-full cursor-pointer hover:bg-gray-200/30 text-font-header hover:text-font-link">
+                              <span class="mt-1">
+                                <em class="text-lg font-medium bx bx-image"></em>
+                              </span>
+                            </button>
+                          </div>
+                          <div>
+                            <button type="button" class="px-2 py-1 bg-transparent rounded-full cursor-pointer hover:bg-gray-200/30 text-font-header hover:text-font-link">
+                              <span class="mt-1">
+                                <em class="text-lg font-medium bx bx-at"></em>
+                              </span>
+                            </button>
+                          </div>
+                          <div>
+                            <button type="button" class="px-2 py-1 bg-transparent rounded-full cursor-pointer hover:bg-gray-200/30 text-font-header hover:text-font-link">
+                              <span class="mt-1">
+                                <em class="text-lg font-medium bx bx-smile"></em>
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                  <article class="py-6 mb-3 text-base border-t border-gray-200 bg-white rounded-lg dark:bg-gray-900">
+                    <div class="flex justify-between items-center mb-3">
+                      <div class="flex items-center">
+                        <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
+                          <img class="w-8 h-8 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg" alt="Neil image">
+                          <span class="ml-2 text-font-header font-medium">
+                            Ratchapol Thongta
+                          </span>
+                        </p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                          <time datetime="2022-02-08" title="February 8th, 2022" class="text-font-description text-xs">11 เม.ย. 64</time>
+                        </p>
+                      </div>
+                      <div>
+                        <input type="checkbox" id="comment-options" class="hidden">
+                        <label for="comment-options" class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                          <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                          </svg>
+                          <span class="sr-only">Comment settings</span>
+                        </label>
+                        <div>
+                          <!-- Write -->
+                        </div>
+                      </div>
+                    </div>
+                    <p class="text-gray-500 dark:text-gray-400">
+                      แก้แบบส่วน header ให้เป็นแบบนี้ดีกว่า
+                    </p>
+                    <div class="flex items-center mt-4 space-x-4">
+                      <button type="button" class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400">
+                        <svg aria-hidden="true" class="mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                        <span class="mt-[0.05rem]">
+                          ตอบกลับ
+                        </span>
+                      </button>
+                    </div>
+                  </article>
+                  <article class="p-6 mb-3 ml-6 lg:ml-12 text-base bg-white rounded-lg dark:bg-gray-900">
+                    <div class="flex justify-between items-center mb-3">
+                      <div class="flex items-center">
+                        <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
+                          <img class="w-8 h-8 rounded-full" src="https://randomuser.me/api/portraits/men/1.jpg" alt="Neil image">
+                          <span class="ml-2 text-font-header font-medium">
+                            Sompong Lasvagas
+                          </span>
+                        </p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                          <time datetime="2022-02-08" title="February 8th, 2022" class="text-font-description text-xs">11 เม.ย. 64</time>
+                        </p>
+                      </div>
+                      <div>
+                        <input type="checkbox" id="comment-options" class="hidden">
+                        <label for="comment-options" class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                          <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                          </svg>
+                          <span class="sr-only">Comment settings</span>
+                        </label>
+                        <div>
+                          <!-- Write -->
+                        </div>
+                      </div>
+                    </div>
+                    <p class="text-gray-500 dark:text-gray-400">รับทราบครับ</p>
+                    <div class="flex items-center mt-4 space-x-4">
+                      <button type="button" class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400">
+                        <svg aria-hidden="true" class="mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                        <span class="mt-[0.05rem]">
+                          ตอบกลับ
+                        </span>
+                      </button>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="px-4 py-3 bg-gray-50 sm:flex sm:flex-row-reverse sm:px-6">
+          <button type="button" class="inline-flex justify-center w-full px-3 py-2 mt-3 text-sm font-semibold text-gray-900 bg-white rounded-md shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" (click)="close()">Cancel</button>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</div>

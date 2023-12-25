@@ -1,0 +1,139 @@
+<app-modal-item-card-detail #itemCardDetail></app-modal-item-card-detail>
+<app-delete-modal #delete></app-delete-modal>
+<div class="bg-transparent">
+  <div class="flex flex-col flex-auto gap-y-6">
+    <div class="px-2 py-1 rounded-md lg:py-3 lg:px-6 bg-content shadow-card dark:bg-content-dark dark:shadow-none">
+      <div class="flex items-center justify-between">
+        <div>
+          <button type="button" class="flex px-4 py-2 text-center transition-all duration-150 border-2 rounded gap-x-3 border-font-link text-font-link hover:bg-font-link hover:text-white">
+            ย้อนกลับ
+          </button>
+        </div>
+        <div class="flex items-center gap-x-1">
+          <button type="button" class="px-[0.6rem] py-1 outline-none hover:bg-gray-300/30 hover:rounded dark:hover:bg-gray-100/5" (click)="onAddFavoriteProject()">
+            <em class="mt-[0.48rem] {{ isFavoriteProject ? 'text-red-500 bx bxs-heart' : 'text-gray-700 bx bx-heart' }} text-[1.25rem] dark:text-font-header-dark font-medium"></em>
+          </button>
+          <button type="button" class="px-[0.6rem] py-1 outline-none hover:bg-gray-300/30 hover:rounded dark:hover:bg-gray-100/5">
+            <em class="mt-2 text-gray-700 bx bx-bell text-[1.25rem] dark:text-font-header-dark font-medium"></em>
+          </button>
+          <button type="button" class="px-[0.6rem] py-1 outline-none hover:bg-gray-300/30 hover:rounded dark:hover:bg-gray-100/5" (click)="onOpenDialogDeleteProject()">
+            <em class="mt-2 text-gray-700 bx bx-trash text-[1.25rem] dark:text-font-header-dark font-medium"></em>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      (cdkDropListDropped)="changePositionGroupTodoList($event)"
+      class="list flex flex-row gap-4 w-[78rem] overflow-x-scroll"
+    >
+      <div cdkDrag *ngFor="let group of mockTodoListData;" class="min-w-[26rem] flex flex-col p-3 gap-y-4 box">
+        <div *cdkDragPlaceholder class="custom-placeholder-group"></div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-x-4">
+            <h1 class="text-2xl font-medium cursor-move text-font-header">{{ group.todoGroupName }}</h1>
+            <h5 class="mt-[0.2rem] text-sm font-medium text-font-description">{{ group.child.todoListItems.length }} รายการ</h5>
+          </div>
+          <div>
+            <div class="px-2 py-1 mt-1 bg-transparent rounded-full cursor-pointer hover:bg-gray-200/30">
+              <em class="text-lg font-medium bx bx-plus text-font-header"></em>
+            </div>
+          </div>
+        </div>
+        <div
+          cdkDropList
+          [id]="group.child.childId"
+          [cdkDropListData]="group.child.todoListItems"
+          [cdkDropListConnectedTo]="getItemsListIdsConnectedTo(group.todoGroupId)"
+          (cdkDropListDropped)="drop($event)"
+          class="list h-[32rem] overflow-y-scroll"
+        >
+          <div class="flex flex-col gap-4">
+            <div cdkDrag *ngFor="let item of group.child.todoListItems" class="h-full p-4 border-2 rounded-md shadow cursor-move select-none bg-content border-gray-200/50 box">
+              <div class="custom-placeholder" *cdkDragPlaceholder></div>
+              <div class="flex flex-col h-full">
+                <div>
+                  <div>
+                    <h3 class="text-xl font-medium text-font-header">{{ item.title }}</h3>
+                  </div>
+                </div>
+                <small *ngIf="item.description !== undefined && item.description !== ''" class="mt-1 text-font-description line-clamp-1">
+                  {{ item?.description }}
+                </small>
+                <div *ngIf="item.tags !== undefined && item.tags.length > 0" class="flex flex-wrap items-center mt-2 gap-x-2">
+                  <div *ngFor="let tag of item.tags"  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    {{ tag }}
+                  </div>
+                </div>
+                <div class="flex items-center w-full mt-2 gap-x-4">
+                  <div class="flex items-center gap-x-4 basis-[45%]">
+                    <div *ngIf="item.users !== undefined && item.users.length > 0" class="relative">
+                      <div class="flex -space-x-2 overflow-hidden">
+                        <ng-container *ngFor="let user of item.users; let i = index">
+                          <div *ngIf="i < 2" [attr.data-name]="user.name" class="inline-block overflow-hidden rounded-full cursor-pointer w-9 h-9 ring-2 ring-white image-frame-user">
+                            <img src="{{ user.image }}" alt="{{ 'user-image-' + user.email }}" class="w-full h-full" />
+                          </div>
+                        </ng-container>
+                      </div>
+                    </div>
+                    <div class="p-2 rounded-md hover:bg-gray-200/30" *ngIf="showNumberOtherUsers(item)">
+                      <span class="text-sm font-medium text-font-link">+ {{ showNumberOfOtherUsers(item) }} คน</span>
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-y-1 basis-[55%]">
+                    <div class="flex items-center justify-end gap-x-2">
+                      <div *ngIf="item.projectCheck !== undefined" class="flex items-center gap-x-2 text-font-header bg-[#E4E4F6] rounded-sm px-1 py-[0.2rem]">
+                        <em class="bx bx-checkbox-checked text-[1.125rem]"></em>
+                        <div class="text-[0.875rem] pr-[0.18rem]">
+                          <span>{{ item.projectCheck.projectDone }}</span>
+                          <span>/</span>
+                          <span>{{ item.projectCheck.projectTotal }}</span>
+                        </div>
+                      </div>
+                      <div *ngIf="item.notification !== undefined && item.notification !== false" class="px-1 pt-1 rounded-sm bg-yellow-300/50 text-font-header">
+                        <em class="bx bx-bell text-[1.125rem]"></em>
+                      </div>
+                    </div>
+                    <div *ngIf="item.startDate !== undefined && item.endDate !== undefined" class="flex items-center justify-end gap-x-2 text-font-description">
+                      <div class="mt-[0.2rem]">
+                        <em class="bx bx-time text-[1.125rem]"></em>
+                      </div>
+                      <div class="text-sm">
+                        <span>{{ item.startDate }}</span>
+                        <span> - </span>
+                        <span>{{ item.endDate }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-around mt-2">
+                  <button type="button" class="px-2 py-1 bg-transparent rounded-full cursor-pointer outline-none hover:bg-gray-200/30 text-font-header hover:text-font-link">
+                    <span class="mt-1">
+                      <em class="text-lg font-medium bx bx-chat"></em>
+                    </span>
+                  </button>
+                  <button type="button" class="px-2 py-1 bg-transparent rounded-full cursor-pointer outline-none hover:bg-gray-200/30 text-font-header hover:text-yellow-300" (click)="onOpenDialogItem(item.todoId)">
+                    <span class="mt-1">
+                      <em class="text-lg font-medium bx bx-edit"></em>
+                    </span>
+                  </button>
+                  <button type="button" class="px-2 py-1 bg-transparent rounded-full cursor-pointer outline-none hover:bg-gray-200/30 text-font-header hover:text-[#f25]" (click)="onOpenDialogDeleteCard(item.todoId, item.title)">
+                    <span class="mt-1">
+                      <em class="text-lg font-medium bx bx-trash"></em>
+                    </span>
+                  </button>
+                  <button type="button" class="px-2 py-1 bg-transparent rounded-full cursor-pointer outline-none hover:bg-gray-200/30 text-font-header hover:text-font-link" (click)="onOpenDialogItem(item.todoId)">
+                    <span class="mt-1">
+                      <em class="text-lg font-medium bx bx-dots-horizontal-rounded"></em>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

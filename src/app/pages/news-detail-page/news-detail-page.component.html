@@ -1,0 +1,50 @@
+<p class="text-4xl text-slate-500 dark:text-white">ข้อมูล ข่าวสาร</p>
+<div class="bg-transparent">
+  <div class="flex flex-col bg-content rounded-xl px-5 py-5 my-8 shadow-card dark:bg-content-dark dark:shadow-none">
+
+    <div class="flex justify-end">
+      <input type="button"
+        class="bg-[#696cff] text-white font-bold py-2 px-4 rounded cursor-pointer drop-shadow w-60 dark:bg-[#8385ff]"
+        value="ย้อนกลับ" (click)="back()">
+    </div>
+
+    <div class="flex flex-col mt-14">
+      <form class="">
+        <div class=" w-full flex flex-col justify-start my-7 lg:grid lg:grid-cols-6 lg:gap-2">
+          <label class="text-xl text-slate-500 dark:text-white my-3 lg:justify-self-end lg:mx-3" for="basic-default-phone">หัวข้อข่าวสาร :</label>
+          <div class="col-span-5">
+            <p class="text-xl text-slate-500 dark:text-white font-light justify-start my-3">
+              เอกสารภาพประกอบ การ upload Angular project ด้วย sonarqube
+            </p>
+          </div>
+          <label class="text-xl text-slate-500 dark:text-white my-3 lg:justify-self-end lg:mx-3" for="basic-default-message"> เนื้อหาข่าวสาร
+            :</label>
+          <div class="col-span-5">
+            <textarea id="basic-default-message" class="text-xl form-control my-3 w-full text-slate-500 dark:text-white shadow-lg dark:shadow-none rounded-xl border-black "
+              placeholder="Hi, Do you have a moment to talk Joe?" aria-label="Hi, Do you have a moment to talk Joe?"
+              aria-describedby="basic-icon-default-message2" cols="30" rows="10" disabled>
+                ตัวอย่าง ไฟล์ sonar-project.properties
+                sonar.host.url=http://code.pccth.com/sonarqube
+                sonar.login=************
+                sonar.password=*********
+                sonar.projectKey=edintra-web-prc-develop_SD1_kangwan
+                sonar.projectName=edintra-web-prc-develop_SD1_Kangwan
+                sonar.projectVersion=1.1
+                sonar.sourceEncoding=UTF-8
+                sonar.sources=projects
+                sonar.exclusions=**/node_modules/**
+                sonar.tests=projects
+                sonar.test.inclusions=**/*.spec.ts
+                sonar.typescript.lcov.reportPaths=coverage/lcov.info</textarea>
+          </div>
+          <label class="text-4xl my-3 lg:justify-self-end lg:mx-3 text-slate-500 dark:text-white" for="basic-default-phone">ไฟล์แนบ :</label>
+          <div class="col-span-5 text-4xl my-3 font-bold text-green-700 dark:text-green-400">
+            <a href="https://data.pccth.com/sd/uploads/news/README_sonarqube_step_PCC.pdf" target="_blak">
+              <p> Download </p>
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

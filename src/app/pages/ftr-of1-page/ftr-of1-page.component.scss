@@ -1,0 +1,200 @@
+// input[type='radio'][name='budget']:after {
+//   width: 15px;
+//   height: 15px;
+//   border-radius: 15px;
+//   top: -2px;
+//   left: -1px;
+//   position: relative;
+//   // background-color: #d1d3d1;
+//   content: '';
+//   display: inline-block;
+//   visibility: visible;
+//   border: 1px solid rgb(129, 129, 129);
+//   margin-top: 5px;
+// }
+input[type=file]::file-selector-button {
+  margin-right: 20px;
+  border: none;
+  background: #084cdf;
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  transition: background .2s ease-in-out;
+}
+
+input[type=file]::file-selector-button:hover {
+  background: #0d45a5;
+}
+// input[type='radio'][name='budget']:checked:after {
+//   width: 15px;
+//   height: 15px;
+//   border-radius: 10px;
+//   top: -2px;
+//   left: -1px;
+//   position: relative;
+//   background-color: #696cff;
+//   content: '';
+//   display: inline-block;
+//   visibility: visible;
+//   border: 1px solid rgb(129, 129, 129);
+// }
+
+input[type='radio'][name='budget'],
+input[type='radio'][name='action'],
+input[type='radio'][name='company'],
+input[type='radio'][name='result']
+{
+  display: none; /* ซ่อน radio input เอาไว้ */
+}
+
+input[type='radio'][name='budget'] + label,
+input[type='radio'][name='action'] + label,
+input[type='radio'][name='company'] + label,
+input[type='radio'][name='result'] + label{
+  position: relative;
+  padding-left: 30px; /* ปรับขนาดระยะห่างระหว่าง label และ icon */
+  cursor: pointer;
+}
+
+input[type='radio'][name='budget'] + label:before,
+input[type='radio'][name='action'] + label:before,
+input[type='radio'][name='company'] + label:before,
+input[type='radio'][name='result'] + label:before {
+  content: '';
+  width: 17px; /* ขนาดขอบนอกสุด */
+  height: 17px; /* ขนาดขอบนอกสุด */
+  background-color: white; /* สีขาว */
+  border: 1px solid rgb(129, 129, 129); /* ขอบนอกสุดสีเทา */
+  border-radius: 50%; /* ทำให้มีรูปร่างเป็นวงกลม */
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+
+input[type='radio'][name='budget'] + label:after,
+input[type='radio'][name='action'] + label:after,
+input[type='radio'][name='company'] + label:after,
+input[type='radio'][name='result'] + label:after {
+  content: '';
+  width: 10px; /* ขนาดส่วนในสุด (สีน้ำเงิน) */
+  height: 10px; /* ขนาดส่วนในสุด (สีน้ำเงิน) */
+  background-color: #696cff; /* สีน้ำเงิน */
+  border-radius: 50%; /* ทำให้มีรูปร่างเป็นวงกลม */
+  position: absolute;
+  left: 3px; /* ย้ายส่วนในสุดให้อยู่ตรงกลาง */
+  top: 3px; /* ย้ายส่วนในสุดให้อยู่ตรงกลาง */
+  opacity: 0; /* เริ่มต้นซ่อนส่วนในสุด */
+}
+
+input[type='radio'][name='budget']:checked + label:before,
+input[type='radio'][name='action']:checked + label:before,
+input[type='radio'][name='company']:checked + label:before,
+input[type='radio'][name='result']:checked + label:before {
+  border: 1px solid #696cff; /* เปลี่ยนขอบสีน้ำเงินเมื่อถูกเลือก */
+}
+
+
+input[type='radio'][name='budget']:checked + label:after,
+input[type='radio'][name='action']:checked + label:after,
+input[type='radio'][name='company']:checked + label:after,
+input[type='radio'][name='result']:checked + label:after {
+  opacity: 1; /* เมื่อถูกเลือกให้แสดงส่วนในสุด (สีน้ำเงิน) */
+}
+
+
+
+.radio-toolbar input[type="radio"]:checked + label {
+  background-color: #166534;
+  color: white;
+}
+
+.radio-toolbar input[type="radio"][id="pass1"]:checked + label {
+  background-color: #166534;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="pass2"]:checked + label {
+  background-color: #166534;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="pass3"]:checked + label {
+  background-color: #166534;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="pass4"]:checked + label {
+  background-color: #166534;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="pass5"]:checked + label {
+  background-color: #166534;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="pass6"]:checked + label {
+  background-color: #166534;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="pass7"]:checked + label {
+  background-color: #166534;
+  color: white;
+}
+
+// ////////////////////////////////////////////////////
+.radio-toolbar input[type="radio"][id="fail1"]:checked + label {
+  background-color: #7d0e0e;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="fail2"]:checked + label {
+  background-color: #7d0e0e;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="fail3"]:checked + label {
+  background-color: #7d0e0e;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="fail4"]:checked + label {
+  background-color: #7d0e0e;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="fail5"]:checked + label {
+  background-color: #7d0e0e;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="fail6"]:checked + label {
+  background-color: #7d0e0e;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="fail7"]:checked + label {
+  background-color: #7d0e0e;
+  color: white;
+}
+
+// ////////////////////////////////////////////////////
+.radio-toolbar input[type="radio"][id="none1"]:checked + label {
+  background-color: #d8a31a;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="none2"]:checked + label {
+  background-color: #d8a31a;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="none3"]:checked + label {
+  background-color: #d8a31a;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="none4"]:checked + label {
+  background-color: #d8a31a;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="none5"]:checked + label {
+  background-color: #d8a31a;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="none6"]:checked + label {
+  background-color: #d8a31a;
+  color: white;
+}
+.radio-toolbar input[type="radio"][id="none7"]:checked + label {
+  background-color: #d8a31a;
+  color: white;
+}

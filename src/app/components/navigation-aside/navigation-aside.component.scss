@@ -1,0 +1,29 @@
+@tailwind components;
+
+.active-link {
+  color: theme('colors.font-link');
+}
+
+.dark .active-link {
+  color: theme('colors.font-header-dark-active') !important;
+}
+
+.submenu-admin, .submenu-job, .submenu-training {
+  max-height: 0;
+  transition: max-height 0.3s ease-out;
+}
+
+.toggle-submenu-admin:checked ~ .submenu-admin, .toggle-submenu-job:checked ~ .submenu-job, .toggle-submenu-training:checked ~ .submenu-training {
+  max-height: 100vh;
+  transition: max-height 0.3s ease-in;
+}
+
+.toggle-submenu-admin:checked ~ label > div > em, .toggle-submenu-job:checked ~ label > div > em, .toggle-submenu-training:checked ~ label > div > em {
+  transform: rotate(90deg);
+  transition: transform 0.3s linear;
+}
+
+.toggle-submenu-admin:not(:checked) ~ label > div > em, .toggle-submenu-job:not(:checked) ~ label > div > em, .toggle-submenu-training:not(:checked) ~ label > div > em {
+  transform: rotate(0deg);
+  transition: transform 0.3s linear;
+}

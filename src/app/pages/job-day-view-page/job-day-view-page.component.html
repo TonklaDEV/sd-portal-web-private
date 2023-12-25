@@ -1,0 +1,38 @@
+<div class="text-[#566a7f] rounded-md shadow p-6 w-full bg-white dark:text-[#e4e6eb] dark:bg-[#242526]">
+    <p class="text-2xl">งานประจำวัน</p>
+    <form class="grid grid-cols-1 justify-start items-center my-6 p-5 text-sm xl:flex xl:p-0">
+        <app-selector [arrayList]="arrayList1" [classList]="'my-5 w-full xl:w-44 xl:mx-1'" (valueSelect)="onSystemSelValue($event)"></app-selector>
+        <input type="text" class="appearance-none rounded-md border outline-none my-5 py-2.5 px-7 xl:px-3 xl:mx-1 xl:w-44 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]" placeholder="กรุณากรอกชื่อ Project">
+        <app-selector [arrayList]="arrayList2" [classList]="'my-5 w-full xl:w-44 xl:mx-1'" (valueSelect)="onStatusSelValue($event)"></app-selector>
+        <app-selector [arrayList]="arrayList3" [classList]="'my-5 w-full xl:w-44 xl:mx-1'" (valueSelect)="onServeritySelValue($event)"></app-selector>
+        <input type="button" class="bg-[#696cf8] text-white font-bold py-2.5 px-4 my-5 rounded cursor-pointer drop-shadow dark:bg-[#8385ff] xl:h-1/2 xl:w-44 xl:ml-1 xl:mr-2" value="ค้นหา">
+    </form>
+    <div class="w-full overflow-x-auto">
+        <table class="table-auto text-[#566a7f] text-base w-[75rem] lg:w-full dark:text-white" >
+            <thead class="text-sm border-b-2 dark:border-[#3a3b3c]">
+                <tr class="text-center h-12 uppercase">
+                    <th scope="col">โปรแกรม</th>
+                    <th scope="col">severity</th>
+                    <th scope="col">การแก้ไข</th>
+                    <th scope="col">ประเภท</th>
+                    <th scope="col">สถานะ</th>
+                    <th scope="col">effort</th>
+                    <th scope="col">message</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let items of arrayTable; let i = index"  class="text-sm text-center">
+                <tr class="h-16 border-b-2 {{i % 2 === 0 ? 'bg-gray-50 dark:bg-[#3a3b3c]/50' : '' }} dark:border-[#3a3b3c]">
+                    <td>{{items.program}}</td>
+                    <td>{{items.severity}}</td>
+                    <td>{{items.improvement}}</td>
+                    <td>{{items.category}}</td>
+                    <td>{{items.status}}</td>
+                    <td>{{items.effort}}</td>
+                    <td>{{items.message}}</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

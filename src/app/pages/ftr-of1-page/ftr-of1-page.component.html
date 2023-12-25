@@ -1,0 +1,483 @@
+<div class="bg-transparent ">
+  <div class="w-full p-6 bg-white rounded-md shadow text-font-header dark:text-font-header-dark dark:bg-content-dark">
+    <p *ngIf="trainID == 0"
+      class="p-2 text-2xl font-medium rounded-md select-none text-font-header dark:text-[#e4e6eb]">
+      บันทึกการส่งพนักงานเข้ารับการฝึกอบรม
+    </p>
+    <div class="text-[#566a7f] relative rounded-md shadow p-6 w-full bg-gray-100 dark:text-[#e4e6eb] dark:bg-[#242526]">
+      <p class="pb-3 text-xl">ส่วนที่ 1 : การส่งพนักงานเข้ารับการฝึกอบรม</p>
+      <form [formGroup]="sectionOne">
+        <div class="flex flex-col items-center justify-start">
+          <div class="flex items-center self-start justify-start pt-2 text-sm justify-items-start">
+            <label for="" class="mr-2">บริษัท</label>
+            <div class="flex items-center justify-start">
+              <div class="flex items-stretch">
+                <input #pccSelected formControlName="companyName" (change)="selectCompany('PCCTH')" type="radio"
+                  class="w-4 h-4 self-center peer accent-[#696cff]" name="company" id="pcc" value="PCCTH" checked />
+                <label for="pcc" class="ml-2 mr-2 peer-checked:text-[#696cff]">PCCTH</label>
+              </div>
+              <div class="flex items-stretch">
+                <input #wsSelected formControlName="companyName" (change)="selectCompany('WiseSoft')" type="radio"
+                  class="w-4 h-4 self-center peer accent-[#696cff]" name="company" id="ws" value="WiseSoft" />
+                <label for="ws" class="ml-2 mr-2 peer-checked:text-[#696cff]">WiseSoft</label>
+              </div>
+            </div>
+          </div>
+          <div
+            class="grid self-center justify-center my-6 space-x-2 text-sm sm:grid-cols-1 md:grid-cols-3 justify-items-center xl:flex xl:p-0">
+            <div class="flex items-center justify-center">
+              <label for="" class="">ฝ่าย/แผนก</label>
+              <div class="relative inline-flex flex-col">
+                <select (change)="setDept()" required formControlName="dept"
+                  class="mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
+                  <option value="" disabled>เลือกแผนก</option>
+                  <option *ngFor="let dept of depts" [ngValue]="dept.deptname">
+                    {{ dept.deptname }}
+                  </option>
+                </select>
+                <p *ngIf="sectionOne.get('dept')?.invalid"
+                  class="absolute font-light text-red-700 -right-2 -top-2 dark:text-red-500">
+                  *
+                </p>
+              </div>
+            </div>
+            <div>
+              <label for="">รหัสฝ่าย/แผนก</label>
+              <div class="relative inline-flex flex-col">
+                <input readonly type="text" formControlName="deptCode" [(ngModel)]="deptCodeModel" [minlength]="4"
+                  [maxlength]="4"
+                  class="appearance-none bg-white mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#d8adad]" />
+                <p *ngIf="sectionOne.get('deptCode')?.invalid"
+                  class="absolute font-light text-red-700 -right-2 -top-2 dark:text-red-500">
+                  *
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center">
+              <label for="" class="flex-initial text-end">วัน/เดือน/ปี</label>
+              <div class="relative inline-flex flex-col">
+                <input type="text" formControlName="date" required
+                  class="appearance-none bg-white mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]"
+                  readonly />
+                <p *ngIf="sectionOne.get('date')?.invalid"
+                  class="absolute font-light text-red-700 -right-2 -top-2 dark:text-red-500">
+                  *
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <fieldset>
+
+          <div class="flex flex-col items-center justify-center">
+            <div class="grid mb-2 space-x-10 text-sm sm:grid-cols-1 md:grid-cols-2 justify-items-end xl:flex xl:p-0">
+              <div class="relative flex items-center space-x-2">
+                <input #trainingRadio (click)="onDateClick('training')" formControlName="action" id="training"
+                  type="radio" value="training" name="action"
+                  class="w-4 h-4 checked:bg-[#696cff] disabled:bg-[#696cff] disabled:text-[#696cff] disabled:accent-[#696cff] bg-[#696cff] text-[#696cff] self-center peer accent-[#a5a5df]"
+                  [disabled]="isCancel" />
+                <label for="training" class="ml-2 self-center peer-checked:text-[#696cff]">ฝึกอบรม/สัมมนา</label>
+                <input #trainingDate readonly (click)="onDateClick('training')" type="text" placeholder="DD/MM/YYYY"
+                  [disabled]="isCancel"
+                  class="appearance-none bg-white mx-3 rounded-md border outline-none py-2.5 px-7 xl:px-3 xl:mx-1 xl:w-44 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]" />
+                <span *ngIf="
+                    sectionOne.get('action')?.value == 'training' &&
+                    sectionOne.get('actionDate')?.invalid
+                  " class="absolute text-red-700 -right-2 -top-2 dark:text-red-500">*</span>
+              </div>
+
+              <div class="relative flex items-center ml-auto space-x-2">
+                <input #getCertificateRadio (click)="onDateClick('getCertificate')" formControlName="action"
+                  name="action" id="getCertificate" type="radio" value="getCertificate"
+                  class="w-4 h-4 self-center bg-[#696cff] disabled:bg-[#696cff] disabled:text-[#696cff] checked:bg-[#696cff] disabled:accent-[#696cff] peer accent-[#696cff]"
+                  [disabled]="isCancel" />
+                <label for="getCertificate" class="ml-4 self-center text-start peer-checked:text-[#696cff]">สอบ
+                  Certificate</label>
+                <input #getCertificateDate (click)="onDateClick('getCertificate')" readonly type="text"
+                  placeholder="DD/MM/YYYY" [disabled]="isCancel"
+                  class="w-[150px] appearance-none bg-white rounded-md border outline-none py-2.5 px-7 xl:px-3 xl:mx-1 xl:w-44 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]" />
+                <span
+                  *ngIf="sectionOne.get('action')?.value == 'getCertificate' && sectionOne.get('actionDate')?.invalid"
+                  class="absolute text-red-700 -right-2 -top-2 dark:text-red-500">*</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center justify-center">
+            <div class="grid self-end grid-cols-2 text-sm gap-y-2 justify-items-end">
+              <div class="inline-flex items-center">
+                <label for="">หัวข้อในการอบรม/สัมมนา</label>
+                <div class="relative">
+
+                  <select name="topic" formControlName="topic"
+                    class="grow mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]"
+                    (change)="genDataTopic()">
+                    <option value="" disabled>หัวข้อในการอบรม/สัมมนา</option>
+                    <option *ngFor="let topic of course" [ngValue]="topic.courseName">
+                      {{ topic.courseName }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="inline-flex items-center">
+                <label for="">วัตถุประสงค์ในการอบรม/สัมมนา</label>
+                <div class="relative">
+                  <input type="text" required formControlName="objt" [(ngModel)]="topic_ojt"
+                    value="พัฒนาทักษะด้าน Spring Framework"
+                    class="grow bg-white appearance-none mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]" />
+                </div>
+              </div>
+              <div class="inline-flex items-center">
+                <label for="">วันเวลาฝึกอบรม</label>
+                <input type="text" readonly [(ngModel)]="topic_date" [formControl]="trainDateCtrl"
+                  class="grow appearance-none mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]" />
+              </div>
+              <div class="inline-flex items-center">
+                <label for="">เพิ่มเติม</label>
+                <input type="text" readonly [formControl]="topicNoteCtrl"
+                  class="grow appearance-none mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]" />
+              </div>
+              <div class="inline-flex items-center">
+                <label for="">โครงการ</label>
+                <input type="text" readonly [formControl]="projectPriceCtrl"
+                  class="grow appearance-none mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]" />
+              </div>
+              <input type="text" class="hidden" formControlName="endDate">
+              <input type="text" class="hidden" formControlName="startDate">
+              <div class="inline-flex items-center">
+                <label for="">ค่าใช้จ่าย/คน</label>
+                <div class="relative">
+                  <input type="text" readonly required formControlName="fee" value="0.00"
+                    (keypress)="onInputKeyPressFee($event)" (blur)="onBlurFee($event)"
+                    class="appearance-none bg-white mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]" />
+                  <div class="absolute inset-y-0 right-0 z-20 flex items-center pr-4 pointer-events-none">
+                    <span class="text-gray-500  dark:text-[#b4b4b4]">บาท/คน (ก่อน Vat7%)</span>
+                  </div>
+                  <span *ngIf="sectionOne.get('fee')?.invalid"
+                    class="absolute text-red-700 -right-2 -top-2 dark:text-red-500">*</span>
+
+                </div>
+
+              </div>
+              <div class="inline-flex items-center">
+                <label for="">สถาบันที่จัดอบรม</label>
+                <div class="relative">
+                  <input type="text" [(ngModel)]="topic_inst" formControlName="company" required readonly
+                    class="appearance-none bg-white mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#7c7c7c]" />
+                </div>
+              </div>
+
+              <div class="inline-flex items-center">
+                <label for="">สถานที่ฝึกอบรม</label>
+                <div class="relative">
+                  <input type="text" formControlName="location" [(ngModel)]="topic_location" required readonly
+                    class="appearance-none bg-white mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]" />
+                </div>
+              </div>
+
+              <div class="col-span-2">
+                <div
+                  class="grid mb-2 text-sm gap-x-10 sm:grid-cols-1 md:grid-cols-2 justify-items-center xl:flex xl:p-0">
+                  <div class="flex items-stretch">
+                    <input [attr.disabled]="false" #budgetRadio
+                      class="appearance-none w-4 h-4 peer accent-[#696cff] self-start" id="onBudget" type="radio"
+                      value="อยู่ในงบประมาณ" name="budget" formControlName="budget" />
+                    <label for="onBudget" class="ml-2 peer-checked:text-[#696cff]">อยู่ในงบประมาณ</label>
+                  </div>
+                  <div class="flex items-stretch">
+                    <input [attr.disabled]="false" #etcRadio id="etc" type="radio" name="budget" disabled
+                      class="appearance-none w-4 h-4 peer self-start accent-[#696cff]" disabled />
+                    <label for="etc" class="ml-2 peer-checked:text-[#696cff]">อื่นๆ (กรุณาระบุรายละเอียด)</label>
+                    <div class="relative">
+                      <textarea #etcDetails readonly formControlName="budget" rows="3"
+                        class="resize-none bg-white text-red-500 appearance-none mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-red-500 dark:placeholder:text-red-500"></textarea>
+
+                      <span *ngIf="sectionOne.get('budget')?.invalid"
+                        class="absolute text-red-700 -right-2 -top-2 dark:text-red-500">*</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-base underline">
+            รายละเอียดเกี่ยวกับผู้เข้ารับการอบรม
+          </p>
+          <div class="flex items-center justify-center">
+            <div class="grid my-6 space-x-2 text-sm sm:grid-cols-1 md:grid-cols-3 justify-items-center xl:flex xl:p-0">
+              <div class="inline-flex items-center">
+                <label for="">รหัสพนักงาน</label>
+                <div class="relative">
+                  <input type="text" [(ngModel)]="empCode" formControlName="empCode" value="221459" readonly
+                    class="peer appearance-none mx-3 rounded-md border outline-none py-2.5 px-7 bg-white xl:px-3 xl:mx-1 xl:w-44 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]" />
+                </div>
+              </div>
+              <div class="flex items-center justify-center">
+                <label for="" class="flex-initial text-end">ชื่อ-สกุลผู้เข้ารับการอบรม/สัมมนา</label>
+                <div class="relative">
+
+                  <input type="text" placeholder="โปรดระบุ ชื่อ-สกุล" aria-label="Assignee"
+                    class="peer bg-white appearance-none mx-3 rounded-md border outline-none py-2.5 px-7 xl:px-3 xl:mx-1 xl:w-44 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]"
+                    required (click)="onclickEmp()" (change)="genEmpdata()" (blur)="genEmpdata()"
+                    (ngModelChange)="genEmpdata()" [(ngModel)]="empName" [formControl]="empNameCtrl"
+                    [matAutocomplete]="auto" />
+                  <input type="text" formControlName="empName" class="hidden">
+                  <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+                    <mat-option [disabled]="check != 'ROLE_Admin'" *ngFor="let emp of filteredOptions | async"
+                      [value]="emp">
+                      {{ emp }}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <span
+                    class="absolute invisible text-red-700 -right-2 -top-2 peer-invalid:visible dark:text-red-500">*</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-center">
+                <label for="" class="flex-initial text-end">ตำแหน่งผู้เข้ารับการอบรม</label>
+                <div class="relative">
+                  <input type="text" required [(ngModel)]="empPosition" readonly formControlName="empRole"
+                    value="Programmer"
+                    class="peer bg-white appearance-none mx-3 rounded-md border outline-none py-2.5 px-7 xl:px-3 xl:mx-1 xl:w-44 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]" />
+                  <span
+                    class="absolute invisible text-red-700 -right-2 -top-2 peer-invalid:visible dark:text-red-500">*</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr>
+          <br>
+          <!--เลือกผู้อนุมัติอันใหม่-->
+          <div id="main" class="grid grid-cols-5 gap-1 justify-evenly">
+            <!--หัวหน้างาน-->
+            <div class="inline-flex items-center h-12 rounded-lg">
+              <p class="ml-4 mr-2 underline">หัวหน้างาน</p>
+            </div>
+            <div class="h-12 rounded-lg">
+              <select [disabled]="isCancel" [formControl]="approver1Ctrl"
+                (change)="findApprovesId(this.approver1Ctrl.value || '',1)"
+                class="mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
+                <option [hidden]="isCancel" value="" disabled selected>เลือกหัวหน้างาน</option>
+                <option [hidden]="isCancel" *ngFor="let approver of Approvers" [ngValue]="approver.firstname">
+                  คุณ {{ approver.firstname }}
+                </option>
+              </select>
+            </div>
+
+            <!--ผู้บังคับบัญชา-->
+            <div class="inline-flex items-center h-12 col-start-1 rounded-lg">
+              <p class="ml-4 mr-2 underline">ผู้บังคับบัญชา</p>
+            </div>
+            <div class="h-12 rounded-lg">
+              <select
+                class="mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#0e0b0b]"
+                [formControl]='approver2Ctrl' (change)="findApprovesId(this.approver2Ctrl.value || '',2)">
+                <option [hidden]="isCancel" value="" disabled selected>เลือกผู้บังคับบัญชา</option>
+                <option [hidden]="isCancel" *ngFor="let approver of Managers" [ngValue]="approver.firstname">
+                  คุณ {{ approver.firstname }}
+                </option>
+              </select>
+            </div>
+
+            <!--ผู้บริหาร-->
+            <div class="inline-flex items-center h-12 col-start-1 rounded-lg">
+              <p class="ml-4 mr-2 underline">ผู้บริหาร</p>
+            </div>
+            <div class="h-12 rounded-lg">
+              <select
+                class="mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]"
+                [formControl]='approver3Ctrl' (change)="findApprovesId(this.approver3Ctrl.value || '',3)">
+                <option [hidden]="isCancel" value="" disabled selected>เลือกผู้บริหาร</option>
+                <option [hidden]="isCancel" *ngFor="let vice of vicePresidents" [ngValue]="vice.firstname">
+                  คุณ {{ vice.firstname }}
+                </option>
+              </select>
+            </div>
+
+            <!--กรรมการผู้จัดการ-->
+            <div class="inline-flex items-center h-12 col-start-1 rounded-lg">
+              <p class="ml-4 mr-2 underline">กรรมการผู้จัดการ</p>
+            </div>
+            <div class="h-12 rounded-lg">
+              <select
+                class="mx-3 rounded-md border outline-none py-2.5 px-2 xl:px-3 xl:mx-1 w-60 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:ring-[#696cff] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]"
+                [formControl]='approver4Ctrl' (change)="findApprovesId(this.approver4Ctrl.value || '',4)">
+                <option [hidden]="isCancel" value="" disabled selected>เลือกกรรมการผู้จัดการ</option>
+                <option [hidden]="isCancel" *ngFor="let pres of Presidents" [ngValue]="pres.firstname">
+                  คุณ {{ pres.firstname }}
+                </option>
+              </select>
+            </div>
+            <div class="mt-2 ml-2 inline-flex items-center h-12 col-start-2 rounded-lg">
+              <div class="h-12 rounded-lg">
+                <button type="button" (click)="refreshBtn()"
+                  class="inline-flex text-[#696cf8] p-2  rounded shadow-md border-2 border-[#696cf8] hover:bg-[#7376fa] hover:text-white">
+                  <i class="mr-2 text-xs fa-solid fa-refresh"></i> เคลียร์ข้อมูล
+                </button>
+              </div>
+            </div>
+          </div>
+          <br>
+          <hr>
+          <br>
+          <p class="mb-4 text-base underline">
+            เอกสารเพิ่มเติม
+          </p>
+          <div class="flex">
+            <div class="basis-1/4">
+              <input
+                class="min-w-full px-2 py-1 text-gray-700 bg-white border border-gray-300 rounded-lg dark:border-[#3a3b3c] dark:bg-[#3a3b3c] dark:text-white"
+                type="file" multiple (change)="fileOnChange($event)">
+            </div>
+            <div class="ml-4 basis-3/4">
+              <div *ngIf="files.length || editModeTrainingfile.length">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead class="bg-gray-50 dark:bg-gray-600">
+                    <tr>
+                      <th
+                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
+                        ชื่อ</th>
+                      <th
+                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
+                      </th>
+                      <th
+                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200 dark:bg-[#3a3b3c] dark:divide-gray-700">
+                    <tr *ngFor="let file of files; let i = index">
+                      <td class="px-6 py-4 whitespace-nowrap">{{ file.name }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <button *ngIf="check == 'ROLE_Admin'"
+                          class="px-6 py-2 mb-1 mr-1 text-red-500 uppercase transition-all duration-150 ease-linear bg-transparent border border-red-500 rounded-md outline-none text-md focus:outline-none hover:bg-red-500 hover:text-white"
+                          type="button" (click)="removeFile(i)">
+                          ลบไฟล์
+                        </button>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap"></td>
+                    </tr>
+                    <tr *ngFor="let file of editModeTrainingfile; let i = index">
+                      <td class="px-6 py-4 whitespace-nowrap">{{ file.fileName }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <button *ngIf="check == 'ROLE_Admin'"
+                          class="px-6 py-2 mb-1 mr-1 text-red-500 uppercase transition-all duration-150 ease-linear bg-transparent border border-red-500 rounded-md outline-none text-md focus:outline-none hover:bg-red-500 hover:text-white"
+                          type="button" (click)="removeFileEditMode(i)">
+                          ลบไฟล์
+                        </button>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <button
+                          class="px-6 py-2 mb-1 mr-1 text-blue-600 uppercase transition-all duration-150 ease-linear bg-transparent border border-blue-600 rounded-md outline-none text-md focus:outline-none hover:bg-blue-600 hover:text-white"
+                          type="button" (click)="DownloadFile(i)">
+                          ดาวน์โหลดไฟล์
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="flex mt-3 text-sm justify-items-start">
+            <div class="flex flex-row">
+              <p class="mr-2 underline">หมายเหตุ</p>
+              :
+            </div>
+            <p class="">
+              1. กรุณาแนบรายละเอียดเกี่ยวกับหลักสูตรการฝึกอบรม/สัมมนา <br />2.
+              กรุณาส่งแบบฟอร์มนี้ ก่อนเข้ารับการอบรมอย่างน้อย 5 วันทำการ
+            </p>
+          </div>
+
+        </fieldset>
+        <div class="flex justify-center mt-2" [class.hidden]="Editmode">
+          <button type="submit"
+            [disabled]="!isFormValid()"
+            (click)="pushData()"
+            class="flex items-center justify-center p-2 text-white rounded shadow-md"
+            [ngClass]="{
+              'cursor-not-allowed bg-gray-400': !isFormValid(),
+              'cursor-pointer bg-green-700 hover:bg-green-600': isFormValid()
+            }"
+          >
+            <i class="mr-2 text-2xl fa-solid fa-plus"></i>เพิ่มข้อมูล
+          </button>
+        </div>
+        
+      </form>
+
+      <div [hidden]="isLoading" class="absolute top-0 left-0 w-full h-full opacity-80 bg-slate-300 dark:bg-[#242526]">
+      </div>
+      <div [hidden]="isLoading" class="absolute right-1/3 top-1/4 ">
+        <div class="flex flex-col items-center justify-center h-64 rounded drop-shadow-xl bg-slate-100 w-72">
+          <mat-spinner></mat-spinner>
+          <p class="text-xl text-content-dark">Now Loading...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-full text-[#566a7f] rounded-md overflow-x-auto shadow mt-6  dark:text-[#e4e6eb] dark:bg-[#242526]"
+      [hidden]="listEmp.length < 1 || Editmode">
+      <table class="w-full text-sm border-b-2 dark:border-[#50575e]">
+        <colgroup>
+          <col style="width: 5%" />
+          <col style="width: 5%" />
+          <col style="width: 10%" />
+          <col style="width: 5%" />
+          <col style="width: 20%" />
+          <col style="width: 20%" />
+          <col style="width: 10%" />
+          <col style="width: 10%" />
+          <col style="width: 10%" />
+          <col style="width: 5%" />
+        </colgroup>
+        <thead class="text-sm border-b-2 dark:border-[#3a3b3c]">
+          <tr class="h-12 text-center uppercase">
+            <th scope="col">บริษัท</th>
+            <th scope="col">รหัส</th>
+            <th scope="col">ชื่อผู้ที่เข้าการอบรม</th>
+            <th scope="col">ตำแหน่ง</th>
+            <th scope="col">แผนก/ฝ่าย</th>
+            <th scope="col">เรื่อง</th>
+            <th scope="col">หมายเหตุ</th>
+            <th scope="col">ผู้อนุมัติ</th>
+            <th scope="col">ค่าใช้จ่าย</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of listEmp; let i = index"
+            class="odd:bg-white dark:odd:bg-[#3a3b3c] dark:even:bg-black even:bg-slate-100 text-center h-20 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700">
+            <td>{{ data.company }}</td>
+            <td>{{ data.empCode }}</td>
+            <td>{{ data.empName }}</td>
+            <td>{{ data.empPosition }}</td>
+            <td>{{ data.empDept }}</td>
+            <td>{{ data.courseName }}</td>
+            <td>{{ data.action }}</td>
+            <td>{{ data.approver }}</td>
+            <td>{{ data.cost }}</td>
+            <td>
+              <i class='text-red-700 bx bx-minus-circle bx-flip-horizontal bx-sm hover:text-red-700'
+                (click)="removeData(i)"></i>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <br />
+    <div [hidden]="listEmp.length < 1 || Editmode" class="flex justify-center">
+      <div [hidden]="listEmp.length < 1 || Editmode">
+        <button type="submit" (click)="save()"
+          class="flex items-center justify-center p-2 text-white bg-green-700 rounded shadow-md cursor-pointer hover:bg-green-600">
+          <i class="mr-2 text-2xl bx bx-mail-send"></i>บันทึกข้อมูล
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
