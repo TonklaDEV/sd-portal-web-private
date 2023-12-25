@@ -21,6 +21,7 @@ import Swal from 'sweetalert2';
   styleUrls: ['./manage-user-page.component.scss'],
 })
 export class ManageUserPageComponent implements OnInit {
+  test: any;
   UserForm: any;
   invalidNoInput: boolean = false;
   dept: string = ''; // เพิ่มคุณสมบัติ 'dept' เป็น string
