@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -14,7 +20,7 @@ import {
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { isThisHour } from 'date-fns';
-import { switchMap } from 'rxjs';
+import { switchMap, tap } from 'rxjs';
 import { AuthService } from 'src/app/api-services/auth.service';
 import { FtrOj1ServicesService } from 'src/app/api-services/ftr-oj1-services.service';
 import { SignatureService } from 'src/app/api-services/signature.service';
@@ -30,7 +36,7 @@ import Swal from 'sweetalert2';
   templateUrl: './ftr-oj1-page.component.html',
   styleUrls: ['./ftr-oj1-page.component.scss'],
 })
-export class FtrOj1PageComponent implements OnInit , AfterViewInit{
+export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   modal: boolean = false;
   searchForm: any;
   empName: any;
@@ -74,10 +80,9 @@ export class FtrOj1PageComponent implements OnInit , AfterViewInit{
   approveStatus = '';
 
   //page declare
-  pageLength : number = 0
+  pageLength: number = 0;
   @ViewChild(MatPaginator)
-  paginator !: MatPaginator
-
+  paginator!: MatPaginator;
 
   signatureForm!: FormGroup; // เพิ่มตัวแปรสำหรับ FormGroup
   allParentsResult: any;
@@ -157,7 +162,9 @@ export class FtrOj1PageComponent implements OnInit , AfterViewInit{
   role!: string;
   UserId: any;
   cancheckG9!: boolean;
+  isloading!: boolean;
   async ngOnInit() {
+    this.isloading = true;
     this.getGeneric9Data;
     this.role = this.authService.checkRole();
     this.UserId = this.authService.getUID();
@@ -184,11 +191,11 @@ export class FtrOj1PageComponent implements OnInit , AfterViewInit{
       this.getFindTrainingByApproveId(this.UserId);
       this.sectionG9.enable();
     } else if (this.role === 'ROLE_Admin') {
-      await this.getSectorID(UID);
+      this.getSectorID(UID);
       this.sectionG9.disable();
     } else if (this.role == 'ROLE_Personnel') {
       // this.getFindTrainingByPersonnel(this.UserId);
-      await this.getSectorID(UID);
+      this.getSectorID(UID);
       this.sectionG9.enable();
     }
     // console.log('USER ID : ', this.UserId);
@@ -196,13 +203,19 @@ export class FtrOj1PageComponent implements OnInit , AfterViewInit{
   }
 
   ngAfterViewInit(): void {
-      
+    this.paginator.page.pipe(tap(() => this.loadingpage())).subscribe();
   }
-
-  loadingpage(){
-    this.pageLength = this.parentResult.length
-    console.log(this.pageLength);
-
+  filterMode = false;
+  loadingpage() {
+    const pageIndex = this.paginator?.pageIndex ?? 0;
+    const pageSize = this.paginator?.pageSize ?? 0;
+    const startIndex = pageIndex * pageSize;
+    const endIndex = startIndex + pageSize;
+    if (this.filterMode) {
+      this.parentResult = this.allFilterParentsResult.slice(startIndex, endIndex)
+    } else {
+      this.parentResult = this.allParentsResult.slice(startIndex, endIndex);
+    }
   }
 
   getAdminManageDept(UID: number) {
@@ -261,8 +274,8 @@ export class FtrOj1PageComponent implements OnInit , AfterViewInit{
           // let filteredDept = firstFilter.filter((item: any) =>
           //   item.training.user.departments?.some((dept: any) => deptIds.includes(dept.id))
           // );
-          this.parentResult = firstFilter;
-          this.allParentsResult = this.parentResult;
+          this.allParentsResult = firstFilter;
+          this.parentResult = this.allParentsResult.slice(0, 3);
           this.notiStatus();
 
           console.log('result', result);
@@ -275,6 +288,9 @@ export class FtrOj1PageComponent implements OnInit , AfterViewInit{
           } else {
             this.showdataErrorMessage = false; // Hide the error message
           }
+
+          this.pageLength = this.parentResult.length;
+          this.isloading = false;
         }
         // console.log('byid', this.parentResult);
       },
@@ -300,29 +316,32 @@ export class FtrOj1PageComponent implements OnInit , AfterViewInit{
   getFindAll(dept: any) {
     // console.log('click');
     this.ftroj1.findAllTraining().subscribe({
-      next:(result) => {
+      next: (result) => {
         // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
         // เรียงข้อมูลตามคอลัมน์ 'propertyName' ในลำดับ 'asc'
         //this.parentResult = result;
         // console.log('testtt', this.parentResult);
         if (this.role == 'ROLE_Admin') {
-          this.parentResult = result?.filter((item: any) =>
+          let filtereddept = result?.filter((item: any) =>
             dept?.some(
               (filter: any) =>
                 filter?.id == item?.training?.user?.departments[0]?.id
             )
           );
+          this.allParentsResult = filtereddept;
+          this.parentResult = this.allParentsResult.slice(0, 3);
         } else {
-          this.parentResult = result;
+          this.allParentsResult = result;
+          this.parentResult = this.allParentsResult.slice(0, 3);
         }
-        this.allParentsResult = this.parentResult;
 
         if (this.parentResult.length === 0) {
           this.showdataErrorMessage = true; // Show the error message
         } else {
           this.showdataErrorMessage = false; // Hide the error message
         }
-        this.loadingpage()
+        this.pageLength = this.allParentsResult.length;
+        this.isloading = false;
       },
       error: console.log,
     });
@@ -1685,16 +1704,17 @@ export class FtrOj1PageComponent implements OnInit , AfterViewInit{
   }
 
   selectedStatus: any;
+  allFilterParentsResult: any;
   filterStatus() {
     let hasData = false; // ประกาศตัวแปรเพื่อตรวจสอบว่ามีข้อมูลหลังการกรองหรือไม่
-
+    this.filterMode = true;
     if (this.selectedStatus == 'allApprove') {
       if (this.role === 'ROLE_Admin' || this.role === 'ROLE_Personnel') {
         let data = this.allParentsResult.filter((item: any) => {
           return item.result_status.trim() === 'อนุมัติ';
         });
-        this.parentResult = data;
-
+        this.allFilterParentsResult = data;
+        this.parentResult = this.allFilterParentsResult.slice(0, 3);
         if (data.length > 0) {
           hasData = true;
         }
@@ -1702,7 +1722,8 @@ export class FtrOj1PageComponent implements OnInit , AfterViewInit{
         let data = this.allParentsResult.filter((item: any) => {
           return item.isDo.trim() === 'อนุมัติ';
         });
-        this.parentResult = data;
+        this.allFilterParentsResult = data;
+        this.parentResult = this.allFilterParentsResult.slice(0, 3);
         hasData = false;
 
         if (data.length > 0) {
@@ -1714,7 +1735,8 @@ export class FtrOj1PageComponent implements OnInit , AfterViewInit{
         let data = this.allParentsResult.filter((item: any) => {
           return item.result_status.trim() === 'รอประเมิน';
         });
-        this.parentResult = data;
+        this.allFilterParentsResult = data;
+        this.parentResult = this.allFilterParentsResult.slice(0, 3);
         hasData = false;
 
         if (data.length > 0) {
@@ -1726,7 +1748,8 @@ export class FtrOj1PageComponent implements OnInit , AfterViewInit{
             item.isDo.trim() !== 'อนุมัติ' && item.result_status === 'รอประเมิน'
           );
         });
-        this.parentResult = data;
+        this.allFilterParentsResult = data;
+        this.parentResult = this.allFilterParentsResult.slice(0, 3);
         hasData = false;
 
         if (data.length > 0) {
@@ -1754,9 +1777,11 @@ export class FtrOj1PageComponent implements OnInit , AfterViewInit{
         });
 
         if (data.length > 0) {
-          this.parentResult = data;
+          this.allFilterParentsResult = data;
+          this.parentResult = this.allFilterParentsResult.slice(0, 3);
           hasData = true;
         } else {
+          this.allFilterParentsResult = [];
           this.parentResult = [];
         }
       } else {
@@ -1771,7 +1796,8 @@ export class FtrOj1PageComponent implements OnInit , AfterViewInit{
             item.result_status === 'อนุมัติ';
           return dafaultCheck || g9check;
         });
-        this.parentResult = data;
+        this.allFilterParentsResult = data;
+        this.parentResult = this.allFilterParentsResult.slice(0, 3);
         hasData = false;
 
         if (data.length > 0) {
@@ -1790,13 +1816,23 @@ export class FtrOj1PageComponent implements OnInit , AfterViewInit{
           item.result_status === 'อนุมัติ';
         return dafaultCheck || g9check;
       });
-      this.parentResult = data;
+      this.allFilterParentsResult = data;
+      this.parentResult = this.allFilterParentsResult.slice(0, 3);
       hasData = false;
 
       if (data.length > 0) {
         hasData = true;
       }
     }
+    else if (this.selectedStatus == 'All'){
+      this.allFilterParentsResult = this.allParentsResult
+      this.parentResult = this.allFilterParentsResult.slice(0,3)
+      hasData = false;
+      if (this.parentResult.length > 0) {
+        hasData = true;
+      }
+    }
+    this.pageLength = this.allFilterParentsResult.length; // กำหนดขนาดให้ paginator ขณะ filter
 
     // ตรวจสอบว่าไม่มีข้อมูลหลังการกรอง
     if (!hasData) {
