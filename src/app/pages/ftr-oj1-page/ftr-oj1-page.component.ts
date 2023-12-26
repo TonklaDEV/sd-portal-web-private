@@ -5,6 +5,7 @@ import {
   UntypedFormControl,
   Validators,
 } from '@angular/forms';
+import { PageEvent } from '@angular/material/paginator';
 import {
   MatSnackBar,
   MatSnackBarHorizontalPosition,
@@ -73,6 +74,8 @@ export class FtrOj1PageComponent implements OnInit {
 
   signatureForm!: FormGroup; // เพิ่มตัวแปรสำหรับ FormGroup
   allParentsResult: any;
+  pageForm!: FormGroup;
+  pageEvent!: PageEvent;
 
   constructor(
     private fb: FormBuilder,
@@ -83,6 +86,11 @@ export class FtrOj1PageComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private _snackBar: MatSnackBar
   ) {
+    this.pageForm = this.fb.group({
+      length: [''],
+      pageSize: [''],
+      pageIndex: ['']
+    });
     this.sectionTwo = this.fb.group({
       evaluatorName: [''],
       evaluatorRole: [''],
@@ -107,8 +115,6 @@ export class FtrOj1PageComponent implements OnInit {
       userId3: 0,
       userId4: 0,
     });
-
-
 
     this.searchForm = this.fb.group({
       company: new UntypedFormControl(null, [Validators.required]),
@@ -151,7 +157,6 @@ export class FtrOj1PageComponent implements OnInit {
   UserId: any;
   cancheckG9!: boolean;
   ngOnInit(): void {
-    
     this.getGeneric9Data;
     this.role = this.authService.checkRole();
     this.UserId = this.authService.getUID();
@@ -165,12 +170,16 @@ export class FtrOj1PageComponent implements OnInit {
     this.showCourseData();
     this.initsector();
     // console.log('this login role : ',this.role);
-    console.log("role",this.role);
+    console.log('role', this.role);
 
     if (this.role === 'ROLE_User') {
       this.getFindTrainingByUserId(this.UserId);
       this.sectionG9.disable();
-    } else if (this.role === 'ROLE_Approver' || this.role === 'ROLE_Manager' || this.role === 'ROLE_President') {
+    } else if (
+      this.role === 'ROLE_Approver' ||
+      this.role === 'ROLE_Manager' ||
+      this.role === 'ROLE_President'
+    ) {
       this.getFindTrainingByApproveId(this.UserId);
       this.sectionG9.enable();
     } else if (this.role === 'ROLE_Admin') {
@@ -227,7 +236,11 @@ export class FtrOj1PageComponent implements OnInit {
     this.ftroj1.findTrainingByApproveId(id).subscribe({
       next: (result: any) => {
         // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
-        if (this.role === 'ROLE_Approver' || this.role == 'ROLE_Manager' || this.role == 'ROLE_President') {
+        if (
+          this.role === 'ROLE_Approver' ||
+          this.role == 'ROLE_Manager' ||
+          this.role == 'ROLE_President'
+        ) {
           this.parentResult = result;
           this.allParentsResult = this.parentResult;
           this.notiStatus();
@@ -418,8 +431,8 @@ export class FtrOj1PageComponent implements OnInit {
         // alert('กรุณาเลือกข้อมูลที่หัวข้อ แผนกบุคคล');
         Swal.fire({
           // title: "The Internet?",
-          text: "กรุณาเลือกข้อมูลที่หัวข้อ แผนกบุคคล",
-          icon: "warning"
+          text: 'กรุณาเลือกข้อมูลที่หัวข้อ แผนกบุคคล',
+          icon: 'warning',
         });
         // this._snackBar.open('กรุณาเลือกข้อมูลที่หัวข้อ แผนกบุคคล', 'ปิด', {
         //   horizontalPosition: this.horizontalPosition,
@@ -815,8 +828,8 @@ export class FtrOj1PageComponent implements OnInit {
             // alert('โปรดระบุ เหตุผล และ แผนการพัฒนา');
             Swal.fire({
               // title: "The Internet?",
-              text: "โปรดระบุ เหตุผล และ แผนการพัฒนา",
-              icon: "warning"
+              text: 'โปรดระบุ เหตุผล และ แผนการพัฒนา',
+              icon: 'warning',
             });
             // this._snackBar.open('โปรดระบุ เหตุผล และ แผนการพัฒนา', 'ปิด', {
             //   horizontalPosition: this.horizontalPosition,
@@ -830,8 +843,8 @@ export class FtrOj1PageComponent implements OnInit {
             // alert('ไม่จำเป็นต้องระบุ แผนการพัฒนา');
             Swal.fire({
               // title: "The Internet?",
-              text: "ไม่จำเป็นต้องระบุ แผนการพัฒนา",
-              icon: "warning"
+              text: 'ไม่จำเป็นต้องระบุ แผนการพัฒนา',
+              icon: 'warning',
             });
             // this._snackBar.open('ไม่จำเป็นต้องระบุ แผนการพัฒนา', 'ปิด', {
             //   horizontalPosition: this.horizontalPosition,
@@ -843,8 +856,8 @@ export class FtrOj1PageComponent implements OnInit {
         // alert('กรุณาประเมินผล');
         Swal.fire({
           // title: "The Internet?",
-          text: "กรุณาประเมินผล",
-          icon: "warning"
+          text: 'กรุณาประเมินผล',
+          icon: 'warning',
         });
         // this._snackBar.open('กรุณาประเมินผล', 'ปิด', {
         //   horizontalPosition: this.horizontalPosition,
@@ -1196,8 +1209,8 @@ export class FtrOj1PageComponent implements OnInit {
     if (!selectedCompany) {
       Swal.fire({
         // title: "The Internet?",
-        text: "โปรดเลือกบริษัทก่อน",
-        icon: "warning"
+        text: 'โปรดเลือกบริษัทก่อน',
+        icon: 'warning',
       });
       // this._snackBar.open('โปรดเลือกบริษัทก่อน', 'ปิด', {
       //   horizontalPosition: this.horizontalPosition,
@@ -1328,8 +1341,8 @@ export class FtrOj1PageComponent implements OnInit {
         .get('evaluatorName')
         ?.setValue(
           res.responseData.result.firstname +
-          ' ' +
-          res.responseData.result.lastname
+            ' ' +
+            res.responseData.result.lastname
         );
       this.sectionTwo
         .get('evaluatorRole')
@@ -1388,7 +1401,7 @@ export class FtrOj1PageComponent implements OnInit {
     let combinedFileID = Array.from(new Set([...fileID, ...filesID]));
 
     if (!combinedFileID || combinedFileID.length === 0) {
-      combinedFileID = [0]
+      combinedFileID = [0];
     }
     let adminEditData = {
       userId: this.EditSectionOneForm.userId,
@@ -1402,7 +1415,7 @@ export class FtrOj1PageComponent implements OnInit {
       approve3_id: this.EditSectionOneForm.approve3_id,
       approve4_id: this.EditSectionOneForm.approve4_id,
       budget: this.EditSectionOneForm.budget,
-      fileID: combinedFileID
+      fileID: combinedFileID,
     };
 
     // console.log('adminEditData: ',adminEditData);
@@ -1512,8 +1525,8 @@ export class FtrOj1PageComponent implements OnInit {
           // alert('ยังไม่เพิ่มลายเซ็น');
           Swal.fire({
             // title: "The Internet?",
-            text: "ยังไม่เพิ่มลายเซ็น",
-            icon: "warning"
+            text: 'ยังไม่เพิ่มลายเซ็น',
+            icon: 'warning',
           });
           // this._snackBar.open('ยังไม่เพิ่มลายเซ็น', 'ปิด', {
           //   horizontalPosition: this.horizontalPosition,
@@ -1542,34 +1555,32 @@ export class FtrOj1PageComponent implements OnInit {
     let training = this.allParentsResult.filter((items: any) => {
       return items.training.id == id;
     });
-    let SignatureDetails = training[0].training.status
-    this.signatureParams.trainId = training[0].training.id
+    let SignatureDetails = training[0].training.status;
+    this.signatureParams.trainId = training[0].training.id;
 
-    console.log(this.signatureForm.get('trainId'))
+    console.log(this.signatureForm.get('trainId'));
     for (let index = 0; index < SignatureDetails.length; index++) {
-      let position = SignatureDetails[index].indexOfSignature
-      let UID = SignatureDetails[index].approveId.id
-      this.initsignature(UID, position)
+      let position = SignatureDetails[index].indexOfSignature;
+      let UID = SignatureDetails[index].approveId.id;
+      this.initsignature(UID, position);
     }
-    this.printFormValues()
-
+    this.printFormValues();
   }
   private initsignature(userid: number, position: number) {
     switch (position) {
       case 1:
-        this.signatureParams.userId4 = userid
+        this.signatureParams.userId4 = userid;
         break;
       case 2:
-        this.signatureParams.userId1 = userid
+        this.signatureParams.userId1 = userid;
         break;
       case 3:
-        this.signatureParams.userId2 = userid
+        this.signatureParams.userId2 = userid;
         break;
       case 4:
-        this.signatureParams.userId3 = userid
+        this.signatureParams.userId3 = userid;
         break;
     }
-
   }
   PdfWithSignature(id: number) {
     // console.log('idddd', id);
@@ -1713,18 +1724,24 @@ export class FtrOj1PageComponent implements OnInit {
         }
       }
     } else if (this.selectedStatus == 'waitEval') {
-      if (this.role == 'ROLE_VicePresident' || this.role == 'ROLE_Approver' || this.role == 'ROLE_Manager' || this.role == 'ROLE_President') {
-        let data = this.allParentsResult.filter(
-          (item: any) => {
-            const dafaultCheck = item.training.approve1.id == this.UserId &&
-              item.training.result[0].result === null &&
-              item.result_status === 'อนุมัติ'
+      if (
+        this.role == 'ROLE_VicePresident' ||
+        this.role == 'ROLE_Approver' ||
+        this.role == 'ROLE_Manager' ||
+        this.role == 'ROLE_President'
+      ) {
+        let data = this.allParentsResult.filter((item: any) => {
+          const dafaultCheck =
+            item.training.approve1.id == this.UserId &&
+            item.training.result[0].result === null &&
+            item.result_status === 'อนุมัติ';
 
-            const g9check = item.training.resultGeneric9[0].result1 === null &&
-              item.result_status === 'อนุมัติ' && item.training.approve1.id == this.UserId
-            return dafaultCheck || g9check
-          }
-        );
+          const g9check =
+            item.training.resultGeneric9[0].result1 === null &&
+            item.result_status === 'อนุมัติ' &&
+            item.training.approve1.id == this.UserId;
+          return dafaultCheck || g9check;
+        });
 
         if (data.length > 0) {
           this.parentResult = data;
@@ -1733,17 +1750,17 @@ export class FtrOj1PageComponent implements OnInit {
           this.parentResult = [];
         }
       } else {
-        let data = this.allParentsResult.filter(
-          (item: any) => {
-            const dafaultCheck = item.training.approve1.id == this.UserId &&
-              item.training.result[0].result === null &&
-              item.result_status === 'อนุมัติ'
+        let data = this.allParentsResult.filter((item: any) => {
+          const dafaultCheck =
+            item.training.approve1.id == this.UserId &&
+            item.training.result[0].result === null &&
+            item.result_status === 'อนุมัติ';
 
-            const g9check = item.training.resultGeneric9[0].result1 === null &&
-              item.result_status === 'อนุมัติ'
-            return dafaultCheck || g9check
-          }
-        );
+          const g9check =
+            item.training.resultGeneric9[0].result1 === null &&
+            item.result_status === 'อนุมัติ';
+          return dafaultCheck || g9check;
+        });
         this.parentResult = data;
         hasData = false;
 
@@ -1753,15 +1770,15 @@ export class FtrOj1PageComponent implements OnInit {
       }
     } else if (this.selectedStatus == 'Eval') {
       let data = this.allParentsResult.filter((item: any) => {
-
-        const dafaultCheck = item.training.approve1.id == this.UserId &&
+        const dafaultCheck =
+          item.training.approve1.id == this.UserId &&
           item.training.result[0].result !== null &&
-          item.result_status === 'อนุมัติ'
+          item.result_status === 'อนุมัติ';
 
-        const g9check = item.training.resultGeneric9[0].result1 !== null &&
-          item.result_status === 'อนุมัติ'
-        return dafaultCheck || g9check
-
+        const g9check =
+          item.training.resultGeneric9[0].result1 !== null &&
+          item.result_status === 'อนุมัติ';
+        return dafaultCheck || g9check;
       });
       this.parentResult = data;
       hasData = false;
@@ -1839,7 +1856,7 @@ export class FtrOj1PageComponent implements OnInit {
       }
     }
     if (this.searchForm.value.courseName) {
-      params.courseID = this.getCourseID()
+      params.courseID = this.getCourseID();
     }
 
     console.log(params);
@@ -1851,8 +1868,8 @@ export class FtrOj1PageComponent implements OnInit {
         // alert("ไม่มีข้อมูล");
         Swal.fire({
           // title: "The Internet?",
-          text: "ไม่มีข้อมูล",
-          icon: "warning"
+          text: 'ไม่มีข้อมูล',
+          icon: 'warning',
         });
         // this._snackBar.open('ไม่มีข้อมูล', 'ปิด', {
         //   horizontalPosition: this.horizontalPosition,
@@ -1900,8 +1917,8 @@ export class FtrOj1PageComponent implements OnInit {
         ) {
           Swal.fire({
             // title: "The Internet?",
-            text: "ไม่มีข้อมูล",
-            icon: "warning"
+            text: 'ไม่มีข้อมูล',
+            icon: 'warning',
           });
           // this._snackBar.open('ไม่มีข้อมูล', 'ปิด', {
           //   horizontalPosition: this.horizontalPosition,
@@ -1960,7 +1977,7 @@ export class FtrOj1PageComponent implements OnInit {
           text: 'การอบรมนี้ถูกยกเลิกแล้ว',
           icon: 'success',
         });
-        this.cancelTrain(id)
+        this.cancelTrain(id);
       }
     });
   }
@@ -2007,10 +2024,10 @@ export class FtrOj1PageComponent implements OnInit {
     console.log(this.sectionG9.value);
   }
 
-  gettedFiles: File[] = []
-  filesID: Number[] = []
+  gettedFiles: File[] = [];
+  filesID: Number[] = [];
   getfilesOutput(files: File[]) {
-    this.gettedFiles = files
+    this.gettedFiles = files;
   }
 
   async uploadAndPushFileID() {
