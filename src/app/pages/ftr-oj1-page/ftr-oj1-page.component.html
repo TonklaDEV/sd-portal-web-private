@@ -311,8 +311,7 @@
                 class="flex items-center justify-center w-20 py-2 mr-1 text-red-700 ">ถูกยกเลิก</span>
             </td>
             <td *ngIf="role == 'ROLE_Admin'">
-              <button *ngIf="user.result_status === 'อนุมัติ'" type="submit"
-                (click)="printReport(user.training.id)"
+              <button *ngIf="user.result_status === 'อนุมัติ'" type="submit" (click)="printReport(user.training.id)"
                 class="flex items-center justify-center w-20 py-2 mr-1 text-[#000080] border-2 border-gray-400 rounded hover:bg-[#000080] hover:text-white hover:border-[#000080] dark:text-[#3b82f6] dark:hover:text-white">
                 <i class="mr-2 fa-solid fa-print"></i> พิมพ์
               </button>
@@ -439,6 +438,8 @@
           </tr>
         </tbody>
       </table>
+      <mat-paginator [length]="100" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page">
+      </mat-paginator>
 
       <div
         class="px-4 py-8 text-gray-900 bg-gray-100 border-t-4 border-gray-300 dark:border-[#3a3b3c] dark:bg-[#3a3b3c]  rounded-b shadow-md"
@@ -501,7 +502,8 @@
         <div class="relative flex-auto p-6">
           <!-- ส่วน 1 -->
           <app-ftr-of1-page [hidden]="g9modal" (sectionOneOutput)="secOneChangeValue($event)"
-            (nonInbuget)="onbudgetCheck($event)" (Outputfiles)="getfilesOutput($event)" [trainID]="TrainID"></app-ftr-of1-page>
+            (nonInbuget)="onbudgetCheck($event)" (Outputfiles)="getfilesOutput($event)"
+            [trainID]="TrainID"></app-ftr-of1-page>
           <!-- ส่วน 2 -->
           <div [hidden]="g9modal" [ngClass]="{'hidden':approveStatus != 'อนุมัติ'}"
             class="text-[#566a7f] rounded-md shadow my-6 p-6 w-full bg-gray-100 dark:text-[#e4e6eb] dark:bg-[#242526]">

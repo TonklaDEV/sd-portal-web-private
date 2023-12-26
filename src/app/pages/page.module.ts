@@ -42,7 +42,7 @@ import { NewsTableComponent } from './news-page/components/news-table/news-table
 import { NewsPageComponent } from './news-page/news-page.component';
 import { SignInPageComponent } from './sign-in-page/sign-in-page.component';
 import { SignaturePageComponent } from './signature-page/signature-page.component';
-
+import { MatPaginatorModule } from '@angular/material/paginator';
 @NgModule({
   declarations: [
     HomePageComponent,
@@ -76,10 +76,11 @@ import { SignaturePageComponent } from './signature-page/signature-page.componen
     SignaturePageComponent,
     ManageUserPageComponent,
     ManageCoursePageComponent,
-    SafePipe
+    SafePipe,
   ],
   imports: [
     MatSelectModule,
+    MatPaginatorModule,
     MatProgressSpinnerModule,
     SharedModule,
     MatDatepickerModule,
@@ -92,10 +93,8 @@ import { SignaturePageComponent } from './signature-page/signature-page.componen
       provide: DateAdapter,
       useFactory: adapterFactory,
     }),
-    MatExpansionModule
+    MatExpansionModule,
   ],
-  providers: [
-    FtrOf1Service
-  ]
+  providers: [FtrOf1Service],
 })
 export class PageModule {}
