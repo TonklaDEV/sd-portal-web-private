@@ -1,11 +1,11 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   UntypedFormControl,
   Validators,
 } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import {
   MatSnackBar,
   MatSnackBarHorizontalPosition,
@@ -23,13 +23,14 @@ import {
   EditSectionTwo,
 } from 'src/environments/interfaces/environment-options.interface';
 import Swal from 'sweetalert2';
+
 // import { FtrOj1ServicesService } from './ftr-oj1-services.service';
 @Component({
   selector: 'app-ftr-oj1-page',
   templateUrl: './ftr-oj1-page.component.html',
   styleUrls: ['./ftr-oj1-page.component.scss'],
 })
-export class FtrOj1PageComponent implements OnInit {
+export class FtrOj1PageComponent implements OnInit , AfterViewInit{
   modal: boolean = false;
   searchForm: any;
   empName: any;
@@ -72,9 +73,14 @@ export class FtrOj1PageComponent implements OnInit {
   //sectionTwo enable check
   approveStatus = '';
 
+  //page declare
+  pageLength : number = 0
+  @ViewChild(MatPaginator)
+  paginator !: MatPaginator
+
+
   signatureForm!: FormGroup; // เพิ่มตัวแปรสำหรับ FormGroup
   allParentsResult: any;
-  pageForm!: FormGroup;
   pageEvent!: PageEvent;
 
   constructor(
@@ -86,11 +92,6 @@ export class FtrOj1PageComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private _snackBar: MatSnackBar
   ) {
-    this.pageForm = this.fb.group({
-      length: [''],
-      pageSize: [''],
-      pageIndex: ['']
-    });
     this.sectionTwo = this.fb.group({
       evaluatorName: [''],
       evaluatorRole: [''],
@@ -156,7 +157,7 @@ export class FtrOj1PageComponent implements OnInit {
   role!: string;
   UserId: any;
   cancheckG9!: boolean;
-  ngOnInit(): void {
+  async ngOnInit() {
     this.getGeneric9Data;
     this.role = this.authService.checkRole();
     this.UserId = this.authService.getUID();
@@ -183,26 +184,34 @@ export class FtrOj1PageComponent implements OnInit {
       this.getFindTrainingByApproveId(this.UserId);
       this.sectionG9.enable();
     } else if (this.role === 'ROLE_Admin') {
-      this.getSectorID(UID);
+      await this.getSectorID(UID);
       this.sectionG9.disable();
-    } else if (this.role == 'ROLE_VicePresident') {
-      this.getFindTrainingByApproveId(this.UserId);
-      this.sectionG9.enable();
     } else if (this.role == 'ROLE_Personnel') {
       // this.getFindTrainingByPersonnel(this.UserId);
-      this.getSectorID(UID);
+      await this.getSectorID(UID);
       this.sectionG9.enable();
     }
     // console.log('USER ID : ', this.UserId);
     // console.log('Role of user : ', this.role);
   }
+
+  ngAfterViewInit(): void {
+      
+  }
+
+  loadingpage(){
+    this.pageLength = this.parentResult.length
+    console.log(this.pageLength);
+
+  }
+
   getAdminManageDept(UID: number) {
     this.ftroj1.getUserById(UID).subscribe((response) => {
       const res = response.responseData.result;
       this.alldeptManage = res.departments;
     });
   }
-  getSectorID(UID: number) {
+  async getSectorID(UID: number) {
     this.ftroj1
       .getUserInfo(UID)
       .subscribe((res) => this.getFindAll(res.responseData.result.departments));
@@ -291,7 +300,7 @@ export class FtrOj1PageComponent implements OnInit {
   getFindAll(dept: any) {
     // console.log('click');
     this.ftroj1.findAllTraining().subscribe({
-      next: (result) => {
+      next:(result) => {
         // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
         // เรียงข้อมูลตามคอลัมน์ 'propertyName' ในลำดับ 'asc'
         //this.parentResult = result;
@@ -313,6 +322,7 @@ export class FtrOj1PageComponent implements OnInit {
         } else {
           this.showdataErrorMessage = false; // Hide the error message
         }
+        this.loadingpage()
       },
       error: console.log,
     });
