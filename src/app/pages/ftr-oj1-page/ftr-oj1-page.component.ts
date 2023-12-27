@@ -162,9 +162,8 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   role!: string;
   UserId: any;
   cancheckG9!: boolean;
-  isloading!: boolean;
   async ngOnInit() {
-    this.isloading = true;
+    this.showLoading()
     this.getGeneric9Data;
     this.role = this.authService.checkRole();
     this.UserId = this.authService.getUID();
@@ -216,6 +215,21 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
     } else {
       this.parentResult = this.allParentsResult.slice(startIndex, endIndex);
     }
+  }
+
+  private showLoading() {
+    Swal.fire({
+      title: 'Now loading',
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      timer: 2000,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      willClose: () => {
+        Swal.hideLoading();
+      }
+    });
   }
 
   getAdminManageDept(UID: number) {
@@ -290,7 +304,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
           }
 
           this.pageLength = this.parentResult.length;
-          this.isloading = false;
+          Swal.close()
         }
         // console.log('byid', this.parentResult);
       },
@@ -341,7 +355,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
           this.showdataErrorMessage = false; // Hide the error message
         }
         this.pageLength = this.allParentsResult.length;
-        this.isloading = false;
+        Swal.close()
       },
       error: console.log,
     });

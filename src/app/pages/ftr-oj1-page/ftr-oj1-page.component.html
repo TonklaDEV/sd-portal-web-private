@@ -160,9 +160,6 @@
     </div> -->
 
     <div class="w-full overflow-x-auto shadow rounded-b-md">
-      <div class="flex items-center justify-center" *ngIf="isloading">
-        <mat-spinner></mat-spinner>
-      </div>
       <table class="text-sm border-b-2 dark:border-[#3a3b3c]">
         <colgroup>
           <col style="width: 8%" />
@@ -442,8 +439,7 @@
           </tr>
         </tbody>
       </table>
-      <mat-paginator class="dark:bg-[#6d6d6d] dark:text-white" [length]="pageLength" [pageSize]="3" [pageSizeOptions]="[3,5,10]" aria-label="Select page">
-      </mat-paginator>
+
       <div
         class="px-4 py-8 text-gray-900 bg-gray-100 border-t-4 border-gray-300 dark:border-[#3a3b3c] dark:bg-[#3a3b3c]  rounded-b shadow-md"
         role="alert" *ngIf="showdataErrorMessage">
@@ -478,6 +474,9 @@
           </div>
         </div>
       </div>
+      <mat-paginator class="dark:bg-[#6d6d6d] dark:text-white" [length]="pageLength" [pageSize]="3"
+        [pageSizeOptions]="[3,5,10]" aria-label="Select page">
+      </mat-paginator>
 
     </div>
   </div>
