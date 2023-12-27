@@ -163,7 +163,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   UserId: any;
   cancheckG9!: boolean;
   async ngOnInit() {
-    this.showLoading()
+    this.showLoading();
     this.getGeneric9Data;
     this.role = this.authService.checkRole();
     this.UserId = this.authService.getUID();
@@ -211,7 +211,10 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
     const startIndex = pageIndex * pageSize;
     const endIndex = startIndex + pageSize;
     if (this.filterMode) {
-      this.parentResult = this.allFilterParentsResult.slice(startIndex, endIndex)
+      this.parentResult = this.allFilterParentsResult.slice(
+        startIndex,
+        endIndex
+      );
     } else {
       this.parentResult = this.allParentsResult.slice(startIndex, endIndex);
     }
@@ -228,7 +231,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
       },
       willClose: () => {
         Swal.hideLoading();
-      }
+      },
     });
   }
 
@@ -277,8 +280,8 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
           this.role == 'ROLE_Manager' ||
           this.role == 'ROLE_President'
         ) {
-          this.parentResult = result;
-          this.allParentsResult = this.parentResult;
+          this.allParentsResult = result;
+          this.parentResult = this.allParentsResult.slice(0, 3);
           this.notiStatus();
         } else if (this.role === 'ROLE_VicePresident') {
           let firstFilter = result?.filter(
@@ -291,22 +294,15 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
           this.allParentsResult = firstFilter;
           this.parentResult = this.allParentsResult.slice(0, 3);
           this.notiStatus();
-
-          console.log('result', result);
-          console.log('parentResult', this.parentResult);
-          // console.log('filteredDept',filteredDept);
-          console.log('allParentsResult', this.allParentsResult);
-
-          if (this.parentResult.length === 0) {
+          if (this.allParentsResult.length === 0) {
             this.showdataErrorMessage = true; // Show the error message
           } else {
             this.showdataErrorMessage = false; // Hide the error message
           }
-
-          this.pageLength = this.parentResult.length;
-          Swal.close()
         }
         // console.log('byid', this.parentResult);
+        this.pageLength = this.allParentsResult.length;
+        Swal.close();
       },
       error: console.log,
     });
@@ -318,11 +314,8 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   getFindByCount(count: number) {
     this.ftroj1.getTrainApproveByCount(count).subscribe({
       next: (result) => {
-        // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
-        this.parentResult = result; // เรียงข้อมูลตามคอลัมน์ 'propertyName' ในลำดับ 'asc'
-        //this.parentResult = result;
-        // console.log('testtt', this.parentResult);
-        this.allParentsResult = this.parentResult;
+        this.allParentsResult = result;
+        this.parentResult = this.allParentsResult; // เรียงข้อมูลตามคอลัมน์ 'propertyName' ในลำดับ 'asc'
       },
       error: console.log,
     });
@@ -355,7 +348,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
           this.showdataErrorMessage = false; // Hide the error message
         }
         this.pageLength = this.allParentsResult.length;
-        Swal.close()
+        Swal.close();
       },
       error: console.log,
     });
@@ -613,20 +606,24 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
             );
           }
         );
-        this.parentResult = filteredData;
+        this.filterMode = true
+        this.allFilterParentsResult = filteredData
+        this.parentResult = filteredData.slice(0,3);
+        this.pageLength = filteredData.length
+        this.paginator.pageIndex = 0
         this.showErrorMessage = false; // Hide the error message
       }
 
-      console.log('search data: ', data);
+      // console.log('search data: ', data);
 
-      //ข้อมูล
-      console.log(
-        'Before check:',
-        this.searchForm.value.startDate,
-        this.searchForm.value.endDate,
-        this.searchForm.value.dept,
-        this.searchForm.value.courseName
-      );
+      // //ข้อมูล
+      // console.log(
+      //   'Before check:',
+      //   this.searchForm.value.startDate,
+      //   this.searchForm.value.endDate,
+      //   this.searchForm.value.dept,
+      //   this.searchForm.value.courseName
+      // );
 
       // เคลียร์ค่าในฟอร์ม
       // this.searchForm.reset();
@@ -1837,10 +1834,9 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
       if (data.length > 0) {
         hasData = true;
       }
-    }
-    else if (this.selectedStatus == 'All'){
-      this.allFilterParentsResult = this.allParentsResult
-      this.parentResult = this.allFilterParentsResult.slice(0,3)
+    } else if (this.selectedStatus == 'All') {
+      this.allFilterParentsResult = this.allParentsResult;
+      this.parentResult = this.allFilterParentsResult.slice(0, 3);
       hasData = false;
       if (this.parentResult.length > 0) {
         hasData = true;
