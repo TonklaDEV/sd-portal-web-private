@@ -65,6 +65,7 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     //filter sector dept and company
+    this.showLoading();
     const UID = this.authService.getUID();
     this.filterByAdmin(UID);
     this.getAllEmpWithAdmin(UID);
@@ -80,22 +81,19 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
     this.paginator.page.pipe(tap(() => this.loadingpage())).subscribe();
   }
 
-  filterMode : boolean = false
+  filterMode: boolean = false;
+  filterEmpData: any;
   loadingpage() {
     const pageIndex = this.paginator?.pageIndex ?? 0;
     const pageSize = this.paginator?.pageSize ?? 0;
     const startIndex = pageIndex * pageSize;
     const endIndex = startIndex + pageSize;
-    if(this.filterMode){
-      
-    }else{
-      this.userResult = this.centerEmp.slice(startIndex,endIndex)
+    if (this.filterMode) {
+      this.pageLength = this.filterEmpData.length;
+      this.userResult = this.filterEmpData.slice(startIndex, endIndex);
+    } else {
+      this.userResult = this.centerEmp.slice(startIndex, endIndex);
     }
-    // if (this.filterMode) {
-    //   this.parentResult = this.allFilterParentsResult.slice(startIndex, endIndex)
-    // } else {
-    //   this.parentResult = this.allParentsResult.slice(startIndex, endIndex);
-    // }
   }
   onSubmit() {
     if (this.UserForm.valid) {
@@ -210,10 +208,10 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
             item.departments.some((dept: any) => dept.id == filterDept.id)
           )
         );
-        console.log('all emp', result);
+        // console.log('all emp', result);
 
-        console.log('filter dept', this.filterEmpByDept);
-        console.log('filter emp by dept', filteredData);
+        // console.log('filter dept', this.filterEmpByDept);
+        // console.log('filter emp by dept', filteredData);
 
         // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
         this.centerEmp = this.serviceuser.sortData(
@@ -221,10 +219,11 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
           'user_id',
           'asc'
         );
-         // เรียงข้อมูลตามคอลัมน์ 'user_id' ในลำดับ 'asc' และไม่รวม index แรก
-        this.pageLength = this.centerEmp.length
-        this.userResult  = this.centerEmp.slice(0,5);
+        // เรียงข้อมูลตามคอลัมน์ 'user_id' ในลำดับ 'asc' และไม่รวม index แรก
+        this.pageLength = this.centerEmp.length;
+        this.userResult = this.centerEmp.slice(0, 5);
         // console.log('testtt', this.userResult);
+        Swal.close();
       },
       error: console.log,
     });
@@ -576,9 +575,27 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
   }
 
   showErrorMessage!: boolean;
+
+  private showLoading() {
+    Swal.fire({
+      title: 'Now loading',
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      timer: 2000,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      willClose: () => {
+        Swal.hideLoading();
+      }
+    });
+  }
+  
+  
+
   getSearch() {
     if (this.searchForm !== null) {
-      const searchParams: any = {}
+      const searchParams: any = {};
 
       if (this.searchForm.get('name') !== null) {
         this.searchForm.get('name')?.patchValue(this.selectedOption);
@@ -614,11 +631,13 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
       }
 
       if (searchValue) {
+        this.showLoading()
         this.serviceuser.getSearchUser(searchParams).subscribe((data) => {
+          this.filterMode = true
           if (data === 'ไม่พบรายการที่ต้องการค้นหา') {
             this.userResult = [];
             this.showErrorMessage = true; // Show the error message
-            this.pageLength = 0
+            this.pageLength = 0;
           } else {
             // กรองผลลัพธ์ที่ได้จากการค้นหาเท่านั้น
             let filtered = data.filter((item: { id: any }) =>
@@ -629,10 +648,13 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
               'user_id',
               'asc'
             );
-            this.pageLength = sortdata.length
-            this.userResult = sortdata.slice(0,5)
+            this.filterEmpData = sortdata
+            this.paginator.pageIndex = 0
+            this.paginator.pageSize = 5
+            this.loadingpage()
             this.showErrorMessage = false; // Hide the error message
           }
+          Swal.close();
           // console.log('data', data);
           // console.log('search data: ', this.userResult);
         });
