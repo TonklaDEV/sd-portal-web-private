@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   MatSnackBar,
@@ -14,13 +14,15 @@ import {
 } from 'src/environments/interfaces/environment-options.interface';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
+import { MatPaginator } from '@angular/material/paginator';
+import { tap } from 'rxjs';
 
 @Component({
   selector: 'app-manage-user-page',
   templateUrl: './manage-user-page.component.html',
   styleUrls: ['./manage-user-page.component.scss'],
 })
-export class ManageUserPageComponent implements OnInit {
+export class ManageUserPageComponent implements OnInit, AfterViewInit {
   test: any;
   UserForm: any;
   invalidNoInput: boolean = false;
@@ -31,7 +33,9 @@ export class ManageUserPageComponent implements OnInit {
   isEmailDuplicate: boolean = false;
   isEditMode: boolean = false;
   allposition: any;
-
+  pageLength: number = 10;
+  @ViewChild(MatPaginator)
+  paginator!: MatPaginator;
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
@@ -72,6 +76,27 @@ export class ManageUserPageComponent implements OnInit {
     }
   }
 
+  ngAfterViewInit(): void {
+    this.paginator.page.pipe(tap(() => this.loadingpage())).subscribe();
+  }
+
+  filterMode : boolean = false
+  loadingpage() {
+    const pageIndex = this.paginator?.pageIndex ?? 0;
+    const pageSize = this.paginator?.pageSize ?? 0;
+    const startIndex = pageIndex * pageSize;
+    const endIndex = startIndex + pageSize;
+    if(this.filterMode){
+      
+    }else{
+      this.userResult = this.centerEmp.slice(startIndex,endIndex)
+    }
+    // if (this.filterMode) {
+    //   this.parentResult = this.allFilterParentsResult.slice(startIndex, endIndex)
+    // } else {
+    //   this.parentResult = this.allParentsResult.slice(startIndex, endIndex);
+    // }
+  }
   onSubmit() {
     if (this.UserForm.valid) {
       // console.log(this.UserForm.value);
@@ -126,7 +151,7 @@ export class ManageUserPageComponent implements OnInit {
         });
         console.log(response);
         setTimeout(() => {
-          location.reload()
+          location.reload();
         }, 1500);
         // location.reload(); // หลังจากบันทึกข้อมูลเรียบร้อยแล้ว รีโหลดหน้าเพื่อแสดงข้อมูลใหม่
       },
@@ -174,9 +199,9 @@ export class ManageUserPageComponent implements OnInit {
 
   centerEmp!: any;
   allEmps!: any;
-  getAllEmployeeAndStatus(id : number) {
+  getAllEmployeeAndStatus(id: number) {
     // console.log('click');
-    console.log(id)
+    console.log(id);
     this.serviceuser.getActiveEmp(id).subscribe({
       next: (result) => {
         this.allEmps = result;
@@ -191,12 +216,14 @@ export class ManageUserPageComponent implements OnInit {
         console.log('filter emp by dept', filteredData);
 
         // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
-        this.userResult = this.serviceuser.sortData(
+        this.centerEmp = this.serviceuser.sortData(
           filteredData,
           'user_id',
           'asc'
-        ); // เรียงข้อมูลตามคอลัมน์ 'user_id' ในลำดับ 'asc' และไม่รวม index แรก
-        this.centerEmp = this.userResult;
+        );
+         // เรียงข้อมูลตามคอลัมน์ 'user_id' ในลำดับ 'asc' และไม่รวม index แรก
+        this.pageLength = this.centerEmp.length
+        this.userResult  = this.centerEmp.slice(0,5);
         // console.log('testtt', this.userResult);
       },
       error: console.log,
@@ -456,11 +483,11 @@ export class ManageUserPageComponent implements OnInit {
         // ทำสิ่งที่คุณต้องการหลังจากแก้ไขสำเร็จ
         // console.log(response);
         Swal.fire({
-          icon: "success",
-          title: "แก้ไขข้อมูลสำเร็จ",
+          icon: 'success',
+          title: 'แก้ไขข้อมูลสำเร็จ',
           showConfirmButton: true,
-          confirmButtonText: "OK",
-          position: "center"
+          confirmButtonText: 'OK',
+          position: 'center',
         });
         // this._snackBar.open('แก้ไขข้อมูลสำเร็จ', 'ปิด', {
         //   horizontalPosition: this.horizontalPosition,
@@ -475,13 +502,13 @@ export class ManageUserPageComponent implements OnInit {
           // console.log('error.error.message', error.error.responseMessage);
           // console.log('error?.message', error.responseMessage);
           Swal.fire({
-            icon: "error",
-            title: "เกิดข้อผิดพลาด",
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
             // text: "เกิดข้อผิดพลาด",
-            confirmButtonColor: "#3085d6",
-            confirmButtonAriaLabel: "OK",
+            confirmButtonColor: '#3085d6',
+            confirmButtonAriaLabel: 'OK',
             showConfirmButton: true,
-            position: "center"
+            position: 'center',
           });
           let errorMessage =
             typeof error.error === 'string'
@@ -520,11 +547,11 @@ export class ManageUserPageComponent implements OnInit {
   deleteById(id: number) {
     // console.log('delete in Post', id);
     // if (confirm('Do you want to delete?')) {
-    this.serviceuser.deleteById(id).subscribe((res:any) => {
+    this.serviceuser.deleteById(id).subscribe((res: any) => {
       setTimeout(() => {
-        location.reload()
+        location.reload();
       }, 1000);
-    })
+    });
     // }
     // location.reload();
   }
@@ -551,18 +578,7 @@ export class ManageUserPageComponent implements OnInit {
   showErrorMessage!: boolean;
   getSearch() {
     if (this.searchForm !== null) {
-      const searchParams: any = {
-        company: '',
-        deptName: '',
-        deptCode: '',
-        email: '',
-        empCode: '',
-        // firstname: '',
-        // lastname: '',
-        name: '',
-        position: '',
-        sectorName: '',
-      };
+      const searchParams: any = {}
 
       if (this.searchForm.get('name') !== null) {
         this.searchForm.get('name')?.patchValue(this.selectedOption);
@@ -602,16 +618,19 @@ export class ManageUserPageComponent implements OnInit {
           if (data === 'ไม่พบรายการที่ต้องการค้นหา') {
             this.userResult = [];
             this.showErrorMessage = true; // Show the error message
+            this.pageLength = 0
           } else {
             // กรองผลลัพธ์ที่ได้จากการค้นหาเท่านั้น
             let filtered = data.filter((item: { id: any }) =>
               this.centerEmp.some((filter: any) => filter.id == item.id)
             );
-            this.userResult = this.serviceuser.sortData(
+            let sortdata = this.serviceuser.sortData(
               filtered,
               'user_id',
               'asc'
             );
+            this.pageLength = sortdata.length
+            this.userResult = sortdata.slice(0,5)
             this.showErrorMessage = false; // Hide the error message
           }
           // console.log('data', data);
@@ -638,15 +657,15 @@ export class ManageUserPageComponent implements OnInit {
     // this.showModal = true;
     let title = '';
     let text = '';
-    let btnText = ''
+    let btnText = '';
     if (type == 'delete') {
       title = 'ต้องการลบข้อมูลหรือไม่?';
       text = 'คุณไม่สามารถกลับมาเปลี่ยนสถานะได้อีก';
-      btnText = 'ลบข้อมูล'
+      btnText = 'ลบข้อมูล';
     } else if (type == 'leave') {
       title = 'ต้องการเปลี่ยนสถานะข้อมูลหรือไม่';
       text = 'คุณสามารถกลับมาเปลี่ยนสถานะได้อีกครั้ง';
-      btnText = 'เปลี่ยนสถานะ'
+      btnText = 'เปลี่ยนสถานะ';
     }
     Swal.fire({
       title: title,
@@ -664,14 +683,14 @@ export class ManageUserPageComponent implements OnInit {
           text: 'ข้อมูลถูกเปลี่ยนสถานะแล้ว',
           icon: 'success',
         });
-        this.processUserStatus(userId,'ลาออก')
-      }else if(result.isConfirmed && type == 'delete'){
+        this.processUserStatus(userId, 'ลาออก');
+      } else if (result.isConfirmed && type == 'delete') {
         Swal.fire({
           title: 'ลบข้อมูล!',
           text: 'ข้อมูลถูกลบแล้ว',
           icon: 'success',
         });
-        this.deleteById(userId)
+        this.deleteById(userId);
       }
     });
   }
@@ -698,31 +717,32 @@ export class ManageUserPageComponent implements OnInit {
           this.startRow = 2;
         } else if (sheet == 'WS') {
           this.startRow = 3;
-        }    
+        }
 
         const range = {
           s: {
             r: this.startRow - 1,
-            c: 0
+            c: 0,
           },
-          e: { 
-            r: 1000, 
-            c: 11
-          }
+          e: {
+            r: 1000,
+            c: 11,
+          },
         };
-        const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet], { range });
+        const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet], {
+          range,
+        });
         let renameData = this.renamekey(data);
         if (sheet == 'PCC') {
           this.PCC_EMP = renameData;
-          console.log("PCC_EMP",this.PCC_EMP)
+          console.log('PCC_EMP', this.PCC_EMP);
         } else if (sheet == 'WS') {
           this.WS_EMP = renameData;
-          console.log("WS_EMP",this.WS_EMP)
-        }    
+          console.log('WS_EMP', this.WS_EMP);
+        }
       });
     };
   }
-  
 
   private MappingDATA_secID_deptID(data: any) {
     return data.map((item: any) => {
@@ -745,9 +765,9 @@ export class ManageUserPageComponent implements OnInit {
   private addIDsToData(refdata: any, data: any) {
     const newData = data.map((item: any) => {
       const deptToUse = item?.dept || item?.sector;
-      console.log('item',item)
-      console.log("dept",item?.dept)
-      console.log("sector",item?.sector)
+      console.log('item', item);
+      console.log('dept', item?.dept);
+      console.log('sector', item?.sector);
       // เพิ่มเงื่อนไขในการใช้ค่า dept หรือ sector
       const matchedsector = refdata.find(
         (sector: any) => sector?.sectorname == item?.sector
@@ -773,12 +793,12 @@ export class ManageUserPageComponent implements OnInit {
     let alldata: any[] = [];
     if (this.PCC_EMP) {
       const pccdata = this.addIDsToData(this.PCC_SECTOR_DEPT, this.PCC_EMP);
-      console.log("pccdata",pccdata)
+      console.log('pccdata', pccdata);
       finalDataPCC = this.renameKeyForJsonCreateEmp(pccdata, 'PCC');
     }
     if (this.WS_EMP) {
       const wsdata = this.addIDsToData(this.WS_SECTOR_DEPT, this.WS_EMP);
-      console.log("wsdata",wsdata)
+      console.log('wsdata', wsdata);
       finalDataWS = this.renameKeyForJsonCreateEmp(wsdata, 'WS');
     }
 
@@ -852,15 +872,14 @@ export class ManageUserPageComponent implements OnInit {
     }, 1000);
   }
 
-  renamekey(data : any) {
-    return data.map((item : any) => {
-      let renamedData : any = {};
+  renamekey(data: any) {
+    return data.map((item: any) => {
+      let renamedData: any = {};
       Object.entries(item).forEach(([key, value]) => {
-  
         switch (key) {
           case 'ชื่อพนักงาน':
-            if(value === 'น.ส.'){
-              value = value.replace("น.ส.",'นางสาว');
+            if (value === 'น.ส.') {
+              value = value.replace('น.ส.', 'นางสาว');
             }
             renamedData['title'] = value;
             break;
@@ -875,23 +894,24 @@ export class ManageUserPageComponent implements OnInit {
             renamedData['empcode'] = value;
             break;
           case 'ตำแหน่ง':
-          case 'ตำแหน่งงาน' :
+          case 'ตำแหน่งงาน':
             renamedData['position'] = value;
             break;
           case 'ระดับ':
           case '__EMPTY_2':
             renamedData['level'] = value;
             break;
-          case 'อีเมล' :
-          case 'Email' :
+          case 'อีเมล':
+          case 'Email':
             renamedData['email'] = value;
             break;
           case 'แผนก':
-          case '__EMPTY_3' :
-            renamedData['dept'] = value === null ? item['__EMPTY_4' || 'sector'] : value;
+          case '__EMPTY_3':
+            renamedData['dept'] =
+              value === null ? item['__EMPTY_4' || 'sector'] : value;
             break;
-          case 'ฝ่าย' :
-          case '__EMPTY_4' :
+          case 'ฝ่าย':
+          case '__EMPTY_4':
             renamedData['sector'] = value;
             break;
           default:
