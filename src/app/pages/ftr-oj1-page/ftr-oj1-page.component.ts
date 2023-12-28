@@ -269,6 +269,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
       error: console.log,
     });
   }
+  resultForSearch: any;
   getFindTrainingByApproveId(id: number) {
     // console.log(id);
     // let deptIds = dept.map((item: any) => item.id);
@@ -281,6 +282,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
           this.role == 'ROLE_President'
         ) {
           this.allParentsResult = result;
+          this.resultForSearch = result;
           this.parentResult = this.allParentsResult.slice(0, 3);
           this.notiStatus();
         } else if (this.role === 'ROLE_VicePresident') {
@@ -292,6 +294,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
           //   item.training.user.departments?.some((dept: any) => deptIds.includes(dept.id))
           // );
           this.allParentsResult = firstFilter;
+          this.resultForSearch = firstFilter;
           this.parentResult = this.allParentsResult.slice(0, 3);
           this.notiStatus();
           if (this.allParentsResult.length === 0) {
@@ -347,6 +350,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
         } else {
           this.showdataErrorMessage = false; // Hide the error message
         }
+        this.resultForSearch = this.allParentsResult
         this.pageLength = this.allParentsResult.length;
         Swal.close();
       },
@@ -540,6 +544,8 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
 
   getSearch() {
     const searchParams: any = {};
+    this.selectedStatus = '';
+    this.filterMode = false;
 
     if (this.searchForm.value.company) {
       searchParams.company = this.searchForm.value.company;
@@ -597,8 +603,10 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
       if (data === 'ไม่พบรายการที่ต้องการค้นหา' || data.length === 0) {
         this.showErrorMessage = true; // Show the error message
         this.parentResult = [];
+        this.allParentsResult = [];
+        this.pageLength = 0;
       } else {
-        filteredData = this.allParentsResult.filter(
+        filteredData = this.resultForSearch.filter(
           (dataItem: { training: { id: any } }) => {
             return data.some(
               (parentResultItem: { training: { id: any } }) =>
@@ -606,13 +614,13 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
             );
           }
         );
-        this.filterMode = true
-        this.allFilterParentsResult = filteredData
-        this.parentResult = filteredData.slice(0,3);
-        this.pageLength = filteredData.length
-        this.paginator.pageIndex = 0
+        this.allParentsResult = filteredData;
+        // this.allFilterParentsResult = filteredData
+        this.parentResult = filteredData.slice(0, 3);
+        this.pageLength = filteredData.length;
         this.showErrorMessage = false; // Hide the error message
       }
+      this.paginator.pageIndex = 0;
 
       // console.log('search data: ', data);
 
