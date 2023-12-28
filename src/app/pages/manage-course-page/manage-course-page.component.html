@@ -299,20 +299,25 @@
         </div>
       </div>
 
-      <div class="bg-gray-100 border-t-4 border-gray-300 rounded-b text-gray-900 px-4 py-8 shadow-md" role="alert" *ngIf="showErrorMessage">
+      <div class="bg-gray-100 border-t-4 border-gray-300 rounded-b text-gray-900 px-4 py-8 shadow-md" role="alert"
+        *ngIf="showErrorMessage">
         <div class="flex justify-center text-center">
-            <div class="py-1">
-                <svg class="fill-current h-10 w-10 text-gray-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
-                </svg>
-            </div>
-            <div>
-                <p class="font-bold text-gray-500">ขออภัย!</p>
-                <p class="text-gray-500 text-sm">ไม่พบข้อมูลที่คุณต้องการ</p>
-            </div>
+          <div class="py-1">
+            <svg class="fill-current h-10 w-10 text-gray-500 mr-4" xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20">
+              <path
+                d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
+            </svg>
+          </div>
+          <div>
+            <p class="font-bold text-gray-500">ขออภัย!</p>
+            <p class="text-gray-500 text-sm">ไม่พบข้อมูลที่คุณต้องการ</p>
+          </div>
         </div>
-    </div>
-
+      </div>
+      <mat-paginator class="dark:bg-[#6d6d6d] dark:text-white" [length]="pageLength" [pageSize]="5"
+        [pageSizeOptions]="[5,10]" aria-label="Select page">
+      </mat-paginator>
     </div>
   </div>
 </div>
@@ -324,10 +329,14 @@
       <p class="my-4 text-sm text-gray-300 leading-relaxed">
         <i class="fa-solid fa-trash-can mr-1"></i> ยืนยันว่าต้องการจะลบหัวข้อการอบรมนี้?
       </p>
-      <button class="text-emerald-500  text-sm px-3 py-2 rounded focus:outline-none ease-linear transition-all duration-150" type="button" (click)="deleteSv1Btn(selectedUserId)">
-       ยืนยัน
-        </button>
-      <button class="text-red-500 px-2 py-2 text-sm outline-none focus:outline-none ease-linear transition-all duration-150" type="button" (click)="toggleModal()">
+      <button
+        class="text-emerald-500  text-sm px-3 py-2 rounded focus:outline-none ease-linear transition-all duration-150"
+        type="button" (click)="deleteSv1Btn(selectedUserId)">
+        ยืนยัน
+      </button>
+      <button
+        class="text-red-500 px-2 py-2 text-sm outline-none focus:outline-none ease-linear transition-all duration-150"
+        type="button" (click)="toggleModal()">
         ยกเลิก
       </button>
     </div>

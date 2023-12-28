@@ -1,30 +1,38 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { MatPaginator } from '@angular/material/paginator';
+import {
+  MatSnackBar,
+  MatSnackBarHorizontalPosition,
+  MatSnackBarVerticalPosition,
+} from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { tap } from 'rxjs';
 import { AuthService } from 'src/app/api-services/auth.service';
 import { CourseService } from 'src/app/api-services/course.service';
 import Swal from 'sweetalert2';
 
-
 @Component({
   selector: 'app-manage-course-page',
   templateUrl: './manage-course-page.component.html',
-  styleUrls: ['./manage-course-page.component.scss']
+  styleUrls: ['./manage-course-page.component.scss'],
 })
-export class ManageCoursePageComponent implements OnInit {
-
+export class ManageCoursePageComponent implements OnInit, AfterViewInit {
   constructor(
     private fb: FormBuilder,
     private _service: CourseService,
     private authService: AuthService,
     private router: Router,
-    private _snackBar: MatSnackBar) { }
+    private _snackBar: MatSnackBar
+  ) {}
 
   CourseForm: any;
   //rows: Array<any> = [];
   selectedRow: any;
   courseResult: any;
+  pageLength: number = 0;
+  @ViewChild(MatPaginator)
+  paginator!: MatPaginator;
 
   selectedTime!: string; // เวลาจะเป็น string
 
@@ -45,23 +53,30 @@ export class ManageCoursePageComponent implements OnInit {
       type: ['', Validators.required],
     });
 
-    this.getFindAll()
-
-
+    this.getFindAll();
 
     // console.log('in manage-course')
     const role = this.authService.checkRole();
     if (role !== 'ROLE_Admin') {
       this.router.navigate(['/pccth/detail']);
     }
-
   }
 
+  ngAfterViewInit(): void {
+    this.paginator.page.pipe(tap(() => this.loadingpage())).subscribe();
+  }
+
+  loadingpage() {
+    const pageIndex = this.paginator?.pageIndex ?? 0;
+    const pageSize = this.paginator?.pageSize ?? 0;
+    const startIndex = pageIndex * pageSize;
+    const endIndex = startIndex + pageSize;
+    this.courseResult = this.allCourse.slice(startIndex, endIndex);
+  }
 
   startDate!: Date;
   endDate!: Date;
   showdataErrorMessage!: any;
-
 
   formatDateToYYYYMMDD(date: Date): string {
     const year = date.getFullYear();
@@ -70,11 +85,14 @@ export class ManageCoursePageComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
+  allCourse: any;
   getFindAll() {
     this._service.getFindAll().subscribe({
       next: (result) => {
         // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
-        this.courseResult = this._service.sortData(result, 'id', 'asc'); // เรียงข้อมูลตามคอลัมน์ 'propertyName' ในลำดับ 'asc'
+        this.allCourse = this._service.sortData(result, 'id', 'asc');
+        this.pageLength = this.allCourse.length
+        this.courseResult = this.allCourse.slice(0, 5);
         //this.parentResult = result;
         // console.log('courseResult:', this.courseResult);
         if (this.courseResult.length === 0) {
@@ -89,7 +107,6 @@ export class ManageCoursePageComponent implements OnInit {
     console.log(this.typeStatus());
     console.log(this.selectedType);
     // this.typeStatus();
-
   }
 
   addSv1Btn() {
@@ -146,8 +163,6 @@ export class ManageCoursePageComponent implements OnInit {
     location.reload();
   }
 
-
-
   isEditMode = false;
 
   cancelEdit() {
@@ -198,8 +213,6 @@ export class ManageCoursePageComponent implements OnInit {
     });
   }
 
-
-
   // Function to update data in edit mode
   updateSv1Btn(id: number) {
     this.CourseForm.patchValue({
@@ -214,7 +227,9 @@ export class ManageCoursePageComponent implements OnInit {
         courseName: this.CourseForm.get('courseName').value,
         startDate: this.CourseForm.get('startDate').value,
         endDate: this.CourseForm.get('endDate').value,
-        time: `${this.CourseForm.get('timestart').value}-${this.CourseForm.get('timeend').value}`,
+        time: `${this.CourseForm.get('timestart').value}-${
+          this.CourseForm.get('timeend').value
+        }`,
         hours: this.CourseForm.get('hours').value,
         note: this.CourseForm.get('note').value,
         price: this.CourseForm.get('price').value,
@@ -265,7 +280,6 @@ export class ManageCoursePageComponent implements OnInit {
   horizontalPosition: MatSnackBarHorizontalPosition = 'end';
   verticalPosition: MatSnackBarVerticalPosition = 'top';
 
-
   deleteSv1Btn(id: number) {
     // console.log('delete ID:', id);
     this._service.deleteId(id).subscribe({
@@ -276,20 +290,19 @@ export class ManageCoursePageComponent implements OnInit {
       error: (err) => {
         console.error(err);
         // alert('ไม่สามารถลบพนักงานรายนี้ได้');
-        this._snackBar.open('ไม่สามารถลบหัวข้อการอบรมนี้ได้เนื่องจากถูกผูกกับการส่งฝึกอบรม', 'ปิด', {
-          horizontalPosition: this.horizontalPosition,
-          verticalPosition: this.verticalPosition,
-        });
+        this._snackBar.open(
+          'ไม่สามารถลบหัวข้อการอบรมนี้ได้เนื่องจากถูกผูกกับการส่งฝึกอบรม',
+          'ปิด',
+          {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+          }
+        );
       },
     });
 
     // location.reload();
   }
-
-
-
-
-
 
   onBlurPrice(event: Event) {
     const inputElement = event.target as HTMLInputElement;
@@ -355,7 +368,6 @@ export class ManageCoursePageComponent implements OnInit {
     }
   }
 
-
   onInputKeyPresspriceProject(event: KeyboardEvent) {
     const inputChar = event.key;
     const inputValue = (event.target as HTMLInputElement).value;
@@ -375,8 +387,7 @@ export class ManageCoursePageComponent implements OnInit {
   }
 
   onInputKeyPresshours(event: KeyboardEvent) {
-    const inputChar = event.key
-
+    const inputChar = event.key;
 
     // ตรวจสอบว่าถ้าไม่ใช่ตัวเลขหรือจุด
     if (!/^\d$/.test(inputChar)) {
@@ -403,7 +414,10 @@ export class ManageCoursePageComponent implements OnInit {
     this._service.getFindAllCourse().subscribe({
       next: (result) => {
         // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
-        this.courseResult = this._service.sortData(result, 'id', 'asc'); // เรียงข้อมูลตามคอลัมน์ 'propertyName' ในลำดับ 'asc'
+        const courseResult = this._service.sortData(result, 'id', 'asc'); // เรียงข้อมูลตามคอลัมน์ 'propertyName' ในลำดับ 'asc'
+        this.allCourse = courseResult
+        this.pageLength = this.allCourse.length
+        this.courseResult = this.allCourse.slice(0,5)
         //this.parentResult = result;
         // console.log('courseResult:', this.courseResult);
         // ตรวจสอบถ้าข้อมูลเป็น []
@@ -421,8 +435,10 @@ export class ManageCoursePageComponent implements OnInit {
     this._service.getFindAllTest().subscribe({
       next: (result) => {
         // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
-        this.courseResult = this._service.sortData(result, 'id', 'asc'); // เรียงข้อมูลตามคอลัมน์ 'propertyName' ในลำดับ 'asc'
-
+        const courseResult = this._service.sortData(result, 'id', 'asc'); // เรียงข้อมูลตามคอลัมน์ 'propertyName' ในลำดับ 'asc'
+        this.allCourse = courseResult
+        this.pageLength = this.allCourse.length
+        this.courseResult = this.allCourse.slice(0,5)
         // ตรวจสอบถ้าข้อมูลเป็น []
         if (result.length === 0) {
           this.showErrorMessage = true;
@@ -434,12 +450,10 @@ export class ManageCoursePageComponent implements OnInit {
     });
   }
 
-
   showModal = false;
 
   toggleModal() {
     this.showModal = !this.showModal;
-
   }
 
   selectedUserId: any;
@@ -463,10 +477,8 @@ export class ManageCoursePageComponent implements OnInit {
           text: 'หัวข้อการอบรมถูกลบแล้ว',
           icon: 'success',
         });
-        this.deleteSv1Btn(userId)
+        this.deleteSv1Btn(userId);
       }
     });
   }
-
 }
-
