@@ -310,7 +310,7 @@
                 </option>
               </select>
             </div>
-            <div class="mt-2 ml-2 inline-flex items-center h-12 col-start-2 rounded-lg">
+            <div class="inline-flex items-center h-12 col-start-2 mt-2 ml-2 rounded-lg">
               <div class="h-12 rounded-lg">
                 <button type="button" (click)="refreshBtn()"
                   class="inline-flex text-[#696cf8] p-2  rounded shadow-md border-2 border-[#696cf8] hover:bg-[#7376fa] hover:text-white">
@@ -451,7 +451,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let data of listEmp; let i = index"
+          <tr *ngFor="let data of allTrainning; let i = index"
             class="odd:bg-white dark:odd:bg-[#3a3b3c] dark:even:bg-black even:bg-slate-100 text-center h-20 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700">
             <td>{{ data.company }}</td>
             <td>{{ data.empCode }}</td>
@@ -469,6 +469,9 @@
           </tr>
         </tbody>
       </table>
+      <mat-paginator class="dark:bg-[#6d6d6d] dark:text-white" [hidden]="pageLength < 3" [length]="pageLength" [pageSize]="3"
+        [pageSizeOptions]="[3,5,10]" aria-label="Select page">
+      </mat-paginator>
     </div>
     <br />
     <div [hidden]="listEmp.length < 1 || Editmode" class="flex justify-center">

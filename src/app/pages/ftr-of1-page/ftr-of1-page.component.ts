@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -13,6 +14,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { MatPaginator } from '@angular/material/paginator';
 import {
   MatSnackBar,
   MatSnackBarHorizontalPosition,
@@ -30,13 +32,13 @@ import {
   Employee,
   listEmp,
 } from 'src/environments/interfaces/environment-options.interface';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-ftr-of1-page',
   templateUrl: './ftr-of1-page.component.html',
   styleUrls: ['./ftr-of1-page.component.scss'],
 })
-export class FtrOf1PageComponent implements OnInit {
+export class FtrOf1PageComponent implements OnInit, AfterViewInit {
   @Input() trainID: number = 0;
 
   @ViewChild('picker') picker!: ElementRef;
@@ -107,6 +109,11 @@ export class FtrOf1PageComponent implements OnInit {
   //topic dataset
 
   course!: any;
+
+  //paginator variable
+  pageLength = 0;
+  @ViewChild(MatPaginator)
+  paginator!: MatPaginator;
 
   initCourse(type: string) {
     this.service.getCourse(type).subscribe(
@@ -251,8 +258,15 @@ export class FtrOf1PageComponent implements OnInit {
         const hasValidMangaer =
           emp.roles && emp.roles.length > 0 && emp.roles[0].role === 'Manager';
         const hasValidPresident =
-          emp.roles && emp.roles.length > 0 && emp.roles[0].role === 'President';
-        return hasValidRole || hasValidPosition || hasValidMangaer || hasValidPresident;
+          emp.roles &&
+          emp.roles.length > 0 &&
+          emp.roles[0].role === 'President';
+        return (
+          hasValidRole ||
+          hasValidPosition ||
+          hasValidMangaer ||
+          hasValidPresident
+        );
       });
     } catch (err) {
       console.error('Error while getting Approvers: ', err);
@@ -430,14 +444,31 @@ export class FtrOf1PageComponent implements OnInit {
       // console.log('admin Mode');
     }
   }
+
+  ngAfterViewInit(): void {
+    this.paginator.page.pipe(tap(() => this.loadingpage())).subscribe();
+  }
+
+  allTrainning: any = [];
+  loadingpage() {
+    const pageIndex = this.paginator?.pageIndex ?? 0;
+    const pageSize = this.paginator?.pageSize ?? 0;
+    const startIndex = pageIndex * pageSize;
+    const endIndex = startIndex + pageSize;
+    this.allTrainning = this.listEmp.slice(startIndex, endIndex);
+  }
   @Output() nonInbuget = new EventEmitter<boolean>();
 
   deptRes: any;
   sectorAdminDevPCC = '';
   sectorAdminDevWs = '';
   async initDeptWithSector(id: number) {
-    await this.initEmp()
-    if (this.check == 'ROLE_Personnel' || this.check == 'ROLE_VicePresident' || this.check == 'ROLE_President') {
+    await this.initEmp();
+    if (
+      this.check == 'ROLE_Personnel' ||
+      this.check == 'ROLE_VicePresident' ||
+      this.check == 'ROLE_President'
+    ) {
       this.service.getAllDeptWithCompany().subscribe((res) => {
         const PCC_DATA = res.filter((item) => item.company == 'PCCTH');
         const WS_DATA = res.filter((item) => item.company == 'WiseSoft');
@@ -953,22 +984,21 @@ export class FtrOf1PageComponent implements OnInit {
         return (
           item.companys.some(
             (company: any) => company.companyName == this.company
-          ) &&
-          item.roles[0].role == 'President'
-        )
-      })
+          ) && item.roles[0].role == 'President'
+        );
+      });
     } else {
       this.Managers = this.AllApproves.filter((item: any) => {
-        return item.roles[0].role == 'Manager'
+        return item.roles[0].role == 'Manager';
       });
       this.Approvers = this.AllApproves.filter((item: any) => {
-        return item.roles[0].role == 'Approver'
+        return item.roles[0].role == 'Approver';
       });
       this.vicePresidents = this.AllApproves.filter((item: any) => {
-        return item.roles[0].role == 'VicePresident'
+        return item.roles[0].role == 'VicePresident';
       });
       this.Presidents = this.AllApproves.filter((item: any) => {
-        return item.roles[0].role == 'President'
+        return item.roles[0].role == 'President';
       });
     }
   }
@@ -1048,7 +1078,7 @@ export class FtrOf1PageComponent implements OnInit {
   async initSectionOne(id: number) {
     // console.log('-----------------------------' +id);
     this.isLoading = false;
-    await this.initEmp()
+    await this.initEmp();
     this.service.getSectionOneByID(id).subscribe(async (res) => {
       console.log(res);
       this.DisableCheck(
@@ -1250,6 +1280,8 @@ export class FtrOf1PageComponent implements OnInit {
         this.listEmp.push(tableData);
         this.listSaveEmp.push(DataSave);
         this.remainingBudget -= tableData.cost || 0;
+        this.loadingpage()
+        this.pageLength++;
       } else {
         // มีข้อมูลซ้ำ แจ้งเตือน
         Swal.fire({
@@ -1277,6 +1309,8 @@ export class FtrOf1PageComponent implements OnInit {
       this.remainingBudget + (this.listEmp[data].cost || 0);
     this.listEmp.splice(data, 1);
     this.listSaveEmp.splice(data, 1);
+    this.allTrainning.splice(data, 1)
+    this.pageLength--;
     this.genDataTopic();
   }
   ////////////// File Manage zone
