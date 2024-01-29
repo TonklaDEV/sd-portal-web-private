@@ -42,6 +42,9 @@ export class SignatureService {
     return this.http.get<any>(`${this.apiurl}/findActiveEmployees`)
   }
 
+  getEmpByAdmin(id:number): Observable<any>{
+    return this.http.get<any>(`${this.apiurl}/findActiveEmployeesByAdminId?adminId=${id}`)
+  }
   // ฟังก์ชันสำหรับดึงข้อมูลผู้ใช้จาก http://localhost:8080/findAllPersonnel
   findAllPersonnel(): Observable<any> {
     return this.http.get<any>(`${this.apiurl}/findAllPersonnel`);

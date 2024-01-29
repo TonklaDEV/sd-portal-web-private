@@ -38,7 +38,8 @@ export class SignaturePageComponent implements OnInit {
   }
 
   uploadImage() {
-    console.log('userid:', this.userId, 'img:', this.selectedImage);
+    // console.log('userid:', this.userId, 'img:', this.selectedImage);
+    this.showLoading()
     if (this.selectedImage && this.userId) {
       // คำขอ HTTP สำหรับการอัปโหลดรูปภาพ
       this.signatureService
@@ -63,10 +64,10 @@ export class SignaturePageComponent implements OnInit {
             // console.error('ข้อผิดพลาดในการอัปโหลดรูปภาพ', error);
             // แจ้งว่าบันทึกไม่สำเร็จ
             Swal.fire({
-              title: "อัปโหลดไม่สำเร็จ",
-              text: "อัปโหลดลายเซ็นไม่สำเร็จ",
-              icon: "error"
-            })
+              title: 'อัปโหลดไม่สำเร็จ',
+              text: 'อัปโหลดลายเซ็นไม่สำเร็จ',
+              icon: 'error',
+            });
           }
         );
     }
@@ -115,8 +116,9 @@ export class SignaturePageComponent implements OnInit {
   verticalPosition: MatSnackBarVerticalPosition = 'top';
 
   ngOnInit(): void {
+    this.showLoading();
     const UID = this.authService.getUID();
-    this.loadApprover(UID);
+    this.getEmpByAdmin(UID);
     // this.loadSignatureImage(3)
     // console.log(this.userId);
 
@@ -126,27 +128,59 @@ export class SignaturePageComponent implements OnInit {
     }
   }
 
-  loadApprover(id: number) {
-    this.signatureService.getUserById(id).subscribe((response) => {
-      let res = response.responseData.result;
-      let departments = res.departments.map((item: any) => item.id);
-      this.loadAllUsers(departments);
+  private showLoading() {
+    Swal.fire({
+      title: 'Now loading',
+      text: 'กำลังดำเนินการโปรดรอซักครู่',
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      timer: 2000,
+      didOpen: () => {
+        Swal.showLoading();
+      },
     });
   }
 
-  loadAllUsers(deptIds: any) {
-    this.signatureService.findActiveEmp().subscribe((res) => {
-      let allDeptUser = res.filter((item: any) =>
-        item.departments.some((dept: any) => deptIds.includes(dept.id))
-      );
-      this.users = allDeptUser.filter((item: any) => {
-        const hasROLE =
+  getEmpByAdmin(id: number) {
+    this.signatureService.getEmpByAdmin(id).subscribe((res) => {
+      this.users = res.filter((item: any) => {
+        const hasRole =
           item.roles[0].role == 'Approver' ||
           item.roles[0].role == 'VicePresident' ||
           item.roles[0].role == 'Manager' ||
           item.roles[0].role == 'President';
-        return hasROLE;
+        return hasRole;
       });
+      setTimeout(() => {
+        Swal.close();
+      }, 2000);
     });
   }
+
+  // loadApprover(id: number) {
+  //   this.signatureService.getUserById(id).subscribe((response) => {
+  //     let res = response.responseData.result;
+  //     let departments = res.departments.map((item: any) => item.id);
+  //     this.loadAllUsers(departments);
+  //   });
+  // }
+
+  // loadAllUsers(deptIds: any) {
+  //   this.signatureService.findActiveEmp().subscribe((res) => {
+  //     let allDeptUser = res.filter((item: any) =>
+  //       item.departments.some((dept: any) => deptIds.includes(dept.id))
+  //     );
+  //     this.users = allDeptUser.filter((item: any) => {
+  //       const hasROLE =
+  //         item.roles[0].role == 'Approver' ||
+  //         item.roles[0].role == 'VicePresident' ||
+  //         item.roles[0].role == 'Manager' ||
+  //         item.roles[0].role == 'President';
+  //       return hasROLE;
+  //     });
+  //     setTimeout(() => {
+  //       Swal.close();
+  //     }, 2000);
+  //   });
+  // }
 }

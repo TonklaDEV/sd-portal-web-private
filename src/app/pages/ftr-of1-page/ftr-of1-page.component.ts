@@ -115,250 +115,6 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator)
   paginator!: MatPaginator;
 
-  initCourse(type: string) {
-    this.service.getCourse(type).subscribe(
-      (res) => {
-        this.course = res;
-        // console.log('init couse');
-
-        // console.log(res);
-      },
-      (error) => {
-        console.error('Error while get data: ', error);
-      }
-    );
-  }
-
-  course_id!: number;
-
-  formatDateToYYYYMMDD(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // เพิ่ม 0 ถ้าเป็นเลขเดียว
-    const day = String(date.getDate()).padStart(2, '0'); // เพิ่ม 0 ถ้าเป็นเลขเดียว
-    return `${year}-${month}-${day}`;
-  }
-
-  //employee data set
-  employees!: string[];
-
-  empobject!: any;
-
-  async onclickEmp() {
-    this.filteredOptions = this.empNameCtrl.valueChanges.pipe(
-      startWith(''),
-      map((value) => this._filter(value || ''))
-    );
-  }
-  wsEmployee!: Employee[];
-  pccEmployee!: Employee[];
-  centerEmployee!: Employee[];
-  Allemps!: any;
-  async initEmp() {
-    try {
-      let res = await this.service.getActiveEmp().toPromise();
-      this.Allemps = res;
-      let EmpOnly = res;
-      // .filter((item: any) => {
-      //   return item.roles.some((item: any) => item.role == 'User');
-      // });
-      let wsEmp: Employee[] = EmpOnly.filter((item: any) => {
-        return item.companys.some(
-          (companys: any) => companys.companyName == 'WiseSoft'
-        );
-      });
-      let pccEmp: Employee[] = EmpOnly.filter((item: any) => {
-        return item.companys.some(
-          (companys: any) => companys.companyName == 'PCCTH'
-        );
-      });
-      this.wsEmployee = wsEmp;
-      this.pccEmployee = pccEmp;
-
-      this.AllApproves = res.filter((emp: any) => {
-        return emp.roles.some(
-          (item: any) =>
-            item.role == 'Approver' ||
-            item.role == 'VicePresident' ||
-            item.role == 'Manager' ||
-            item.role == 'President'
-        );
-      });
-    } catch (error) {
-      console.error('Error while fetching employees', error);
-    }
-  }
-
-  filterNamesByDeptCode(deptCode: string, userDataArray: Employee[]): string[] {
-    // กรองข้อมูลโดยใช้ deptCode ที่รับเข้ามา
-    let filteredData = userDataArray.filter((emp) => {
-      // console.log(emp);
-      if (emp.departments[0] != null) {
-        const hasValidRole =
-          emp.roles && emp.roles.length > 0 && emp.roles[0].role === 'User';
-        const hasValidDept = emp.departments[0].deptCode === deptCode;
-        return hasValidDept && hasValidRole;
-      }
-      return;
-    });
-
-    // สร้าง array ใหม่ที่มีแต่ชื่อ นามสกุล
-    const namesArray: string[] = filteredData.map(
-      (user) => `${user.firstname} ${user.lastname}`
-    );
-
-    return namesArray;
-  }
-
-  empCode: string = '';
-  empPosition: string = '';
-  empName: string = '';
-  empId_Table!: number;
-  genEmpdata() {
-    // console.log('gen emp ');
-    // console.log(this.pccEmployee)
-    const selectEmpName = this.empNameCtrl.value;
-    if (this.company == 'PCCTH') {
-      if (this.pccEmployee) {
-        var empNameObj = this.pccEmployee.find(
-          (emp) => emp.firstname + ' ' + emp.lastname == selectEmpName
-        );
-      }
-    } else if (this.company == 'WiseSoft') {
-      if (this.wsEmployee) {
-        empNameObj = this.wsEmployee.find(
-          (emp) => emp.firstname + ' ' + emp.lastname == selectEmpName
-        );
-      }
-    }
-
-    // console.log(this.pccEmployee);
-    // console.log(this.wsEmployee);
-    this.empCode = empNameObj?.empCode || '';
-    this.empPosition = empNameObj?.position.positionName || '';
-    this.empId_Table = empNameObj?.id || 0;
-    this.sectionOne.get('empName')?.setValue(selectEmpName);
-    // console.log('this empobject');
-    // console.log(this.sectionOne.value);
-
-    // console.log(empNameObj);
-    this.EditSectionOneForm.userId = empNameObj?.id || 0;
-    this.EmitEditSectionOne(this.EditSectionOneForm);
-  }
-
-  Approvers!: any;
-  AllApproves!: any;
-  async initApprover() {
-    try {
-      const res = await this.service.getActiveEmp().toPromise();
-      this.AllApproves = res.filter((emp: any) => {
-        const hasValidRole =
-          emp.roles && emp.roles.length > 0 && emp.roles[0].role === 'Approver';
-        const hasValidPosition =
-          emp.position && emp.position.positionName === 'VICE PRESIDENT';
-        const hasValidMangaer =
-          emp.roles && emp.roles.length > 0 && emp.roles[0].role === 'Manager';
-        const hasValidPresident =
-          emp.roles &&
-          emp.roles.length > 0 &&
-          emp.roles[0].role === 'President';
-        return (
-          hasValidRole ||
-          hasValidPosition ||
-          hasValidMangaer ||
-          hasValidPresident
-        );
-      });
-    } catch (err) {
-      console.error('Error while getting Approvers: ', err);
-    }
-  }
-
-  filteredOptions: Observable<string[]> | undefined;
-
-  async onDateClick(typeRadio: string) {
-    this.initCourse(typeRadio);
-
-    const option: object = {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    };
-    if (!this.sectionOne.get('deptCode')?.invalid) {
-      this.listEmp.splice(0, this.listEmp.length);
-      this.listSaveEmp.splice(0, this.listSaveEmp.length);
-      if (typeRadio === 'training') {
-        this.trainingRadio.nativeElement.checked = true;
-        this.remainingBudget = this.budgetTrain + this.returnBudgetTrain;
-        this.sectionOne.get('topic')?.setValue('');
-
-        if (this.sectionOne.get('actionDate')?.value != '') {
-          this.trainingDate.nativeElement.value = new Date(
-            this.sectionOne.get('actionDate')?.value
-          ).toLocaleDateString('th-TH', option);
-          this.EditSectionOneForm.actionDate = new Date(
-            this.sectionOne.get('actionDate')?.value
-          ).toLocaleDateString('en-CA');
-        } else {
-          this.trainingDate.nativeElement.value = new Date().toLocaleDateString(
-            'th-TH',
-            { year: 'numeric', month: '2-digit', day: '2-digit' }
-          );
-        }
-      } else if (typeRadio === 'getCertificate') {
-        this.getCertificateRadio.nativeElement.checked = true;
-        this.remainingBudget = this.budgetCer + this.returnBudgetCer;
-        this.sectionOne.get('topic')?.setValue('');
-
-        if (this.sectionOne.get('actionDate')?.value != '') {
-          this.getCertificateDate.nativeElement.value = new Date(
-            this.sectionOne.get('actionDate')?.value
-          ).toLocaleDateString('th-TH', option);
-          this.EditSectionOneForm.actionDate = new Date(
-            this.sectionOne.get('actionDate')?.value
-          ).toLocaleDateString('en-CA');
-        } else {
-          this.getCertificateDate.nativeElement.value =
-            new Date().toLocaleDateString('th-TH', option);
-        }
-      }
-      // console.log(this.remainingBudget);
-    }
-    this.dateSelected(typeRadio);
-    this.genDataTopic();
-    this.CreateFormSectionOne.actionDate = new Date().toLocaleDateString(
-      'en-CA'
-    );
-    this.EditSectionOneForm.actionDate;
-    this.EmitEditSectionOne(this.EditSectionOneForm);
-  }
-
-  dateSelected(action: String) {
-    this.sectionOne.get('action')?.setValue(action);
-    switch (action) {
-      case 'training':
-        this.getCertificateDate.nativeElement.value = '';
-        // this.getResultDate.nativeElement.value = '';
-        // this.testDate.nativeElement.value = '';
-        break;
-      case 'getCertificate':
-        // this.getResultDate.nativeElement.value = '';
-        this.trainingDate.nativeElement.value = '';
-        // this.testDate.nativeElement.value = '';
-        break;
-    }
-    this.EditSectionOneForm.action = this.sectionOne.get('action')?.value;
-    // console.log(this.sectionOne.value);
-  }
-
-  empNameCtrl = new FormControl('');
-  trainDateCtrl = new FormControl('');
-  topicNoteCtrl = new FormControl('');
-  projectPriceCtrl = new FormControl('');
-  approver1Ctrl = new FormControl('');
-  approver2Ctrl = new FormControl('');
-  approver3Ctrl = new FormControl('');
-  approver4Ctrl = new FormControl('');
-
   constructor(
     private fb: FormBuilder,
     private service: FtrOf1Service,
@@ -410,39 +166,218 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
     });
   }
 
+  async ngOnInit(): Promise<void> {
+    this.showLoading();
+    // await this.initEmp();
+    const role = this.authService.checkRole();
+    this.check = role;
+    const UID = this.authService.getUID();
+    this.initDeptWithSector(UID); //<-- query role in funtion
+    //admin login on this page
+    if (role == 'ROLE_Admin' && this.trainID == 0) {
+      this.initEmpByAdminId(UID); //<-- init emp when admin login
+      this.adminId = UID;
+      // this.selectCompany('PCCTH') //<-- default company select
+      Swal.close(); //<--- close loading modal
+    }
+
+    //Open on Training manage page
+    if (this.trainID != 0) {
+      this.initSectionOne(this.trainID);
+    }
+  }
+
+  initCourse(type: string) {
+    this.service.getCourse(type).subscribe(
+      (res) => {
+        this.course = res;
+      },
+      (error) => {
+        Swal.fire({
+          title: 'เกิดข้อผิดพลาด',
+          text: 'เกิดข้อผิดพลาดในการดึงหัวข้อการอบรม',
+          icon: 'error',
+        });
+      }
+    );
+  }
+
+  course_id!: number;
+
+  formatDateToYYYYMMDD(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // เพิ่ม 0 ถ้าเป็นเลขเดียว
+    const day = String(date.getDate()).padStart(2, '0'); // เพิ่ม 0 ถ้าเป็นเลขเดียว
+    return `${year}-${month}-${day}`;
+  }
+
+  //employee data set
+  employees!: string[];
+
+  empobject!: any;
+
+  async onclickEmp() {
+    this.filteredOptions = this.empNameCtrl.valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filter(value || ''))
+    );
+  }
+  wsEmployee!: Employee[];
+  pccEmployee!: Employee[];
+  centerEmployee!: Employee[];
+  Allemps!: any;
+
+  filterNamesByDeptCode(deptCode: string, userDataArray: Employee[]): string[] {
+    // กรองข้อมูลโดยใช้ deptCode ที่รับเข้ามา
+    let filteredData = userDataArray.filter((emp) => {
+      if (emp.departments[0] != null) {
+        const hasValidRole =
+          emp.roles && emp.roles.length > 0 && emp.roles[0].role === 'User';
+        const hasValidDept = emp.departments[0].deptCode === deptCode;
+        return hasValidDept && hasValidRole;
+      }
+      return;
+    });
+
+    // สร้าง array ใหม่ที่มีแต่ชื่อ นามสกุล
+    const namesArray: string[] = filteredData.map(
+      (user) => `${user.firstname} ${user.lastname}`
+    );
+
+    return namesArray;
+  }
+
+  empCode: string = '';
+  empPosition: string = '';
+  empName: string = '';
+  empId_Table!: number;
+  genEmpdata() {
+    const selectEmpName = this.empNameCtrl.value;
+    if (this.company == 'PCCTH') {
+      if (this.pccEmployee) {
+        var empNameObj = this.pccEmployee.find(
+          (emp) => emp.firstname + ' ' + emp.lastname == selectEmpName
+        );
+      }
+    } else if (this.company == 'WiseSoft') {
+      if (this.wsEmployee) {
+        empNameObj = this.wsEmployee.find(
+          (emp) => emp.firstname + ' ' + emp.lastname == selectEmpName
+        );
+      }
+    }
+    this.empCode = empNameObj?.empCode || '';
+    this.empPosition = empNameObj?.position.positionName || '';
+    this.empId_Table = empNameObj?.id || 0;
+    this.sectionOne.get('empName')?.setValue(selectEmpName);
+    this.EditSectionOneForm.userId = empNameObj?.id || 0;
+    this.EmitEditSectionOne(this.EditSectionOneForm);
+  }
+
+  Approvers!: any;
+  AllApproves!: any;
+
+  filteredOptions: Observable<string[]> | undefined;
+
+  async onDateClick(typeRadio: string) {
+    this.initCourse(typeRadio);
+
+    const option: object = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    };
+    if (!this.sectionOne.get('deptCode')?.invalid) {
+      this.listEmp.splice(0, this.listEmp.length);
+      this.listSaveEmp.splice(0, this.listSaveEmp.length);
+      if (typeRadio === 'training') {
+        this.trainingRadio.nativeElement.checked = true;
+        this.remainingBudget = this.budgetTrain + this.returnBudgetTrain;
+        this.sectionOne.get('topic')?.setValue('');
+
+        if (this.sectionOne.get('actionDate')?.value != '') {
+          //edit mode
+          this.trainingDate.nativeElement.value = new Date(
+            this.sectionOne.get('actionDate')?.value
+          ).toLocaleDateString('th-TH', option);
+          this.EditSectionOneForm.actionDate = new Date(
+            this.sectionOne.get('actionDate')?.value
+          ).toLocaleDateString('en-CA');
+        } else {
+          this.trainingDate.nativeElement.value = new Date().toLocaleDateString(
+            'th-TH',
+            { year: 'numeric', month: '2-digit', day: '2-digit' }
+          );
+        }
+      } else if (typeRadio === 'getCertificate') {
+        this.getCertificateRadio.nativeElement.checked = true;
+        this.remainingBudget = this.budgetCer + this.returnBudgetCer;
+        this.sectionOne.get('topic')?.setValue('');
+
+        if (this.sectionOne.get('actionDate')?.value != '') {
+          //edit mode
+          this.getCertificateDate.nativeElement.value = new Date(
+            this.sectionOne.get('actionDate')?.value
+          ).toLocaleDateString('th-TH', option);
+          this.EditSectionOneForm.actionDate = new Date(
+            this.sectionOne.get('actionDate')?.value
+          ).toLocaleDateString('en-CA');
+        } else {
+          this.getCertificateDate.nativeElement.value =
+            new Date().toLocaleDateString('th-TH', option);
+        }
+      }
+    }
+    this.dateSelected(typeRadio);
+    this.genDataTopic();
+    this.CreateFormSectionOne.actionDate = new Date().toLocaleDateString(
+      'en-CA'
+    );
+    this.EditSectionOneForm.actionDate;
+    this.EmitEditSectionOne(this.EditSectionOneForm);
+  }
+
+  dateSelected(action: String) {
+    this.sectionOne.get('action')?.setValue(action);
+    switch (action) {
+      case 'training':
+        this.getCertificateDate.nativeElement.value = '';
+        break;
+      case 'getCertificate':
+        this.trainingDate.nativeElement.value = '';
+        break;
+    }
+    this.EditSectionOneForm.action = this.sectionOne.get('action')?.value;
+  }
+
+  empNameCtrl = new FormControl('');
+  trainDateCtrl = new FormControl('');
+  topicNoteCtrl = new FormControl('');
+  projectPriceCtrl = new FormControl('');
+  approver1Ctrl = new FormControl('');
+  approver2Ctrl = new FormControl('');
+  approver3Ctrl = new FormControl('');
+  approver4Ctrl = new FormControl('');
+
   private formatDDMMYYYYtoYYYYMMDD(date: string): string {
     let dfm = date.split('/');
     return `${dfm[2]}-${dfm[1]}-${dfm[0]}`;
   }
 
   check: any;
+  adminId: number = 0;
 
-  async ngOnInit(): Promise<void> {
-    // this.initApprover();
-    // console.log('in ftr-of1');
-    //preparering approver data in  AllApproves
-    const role = this.authService.checkRole();
-    this.check = role;
-    const UID = this.authService.getUID();
-    this.initDeptWithSector(UID);
-    // this.initApproveWithSector(UID)
-
-    if (this.trainID == 0) {
-      if (role !== 'ROLE_Admin') {
-        this.router.navigate(['/pccth/ftr-oj1']);
-      }
-    }
-
-    if (this.trainID != 0) {
-      this.initSectionOne(this.trainID);
-      if (role === 'ROLE_User') {
-        this.sectionOne.disable();
-      } else if (role === 'ROLE_Approver') {
-        // this.sectionOne.enable();
-      }
-    } else {
-      // console.log('admin Mode');
-    }
+  private showLoading() {
+    Swal.fire({
+      title: 'Now loading',
+      text: 'กำลังดำเนินการโปรดรอซักครู่',
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      timer: 2000,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
   }
 
   ngAfterViewInit(): void {
@@ -460,10 +395,8 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
   @Output() nonInbuget = new EventEmitter<boolean>();
 
   deptRes: any;
-  sectorAdminDevPCC = '';
-  sectorAdminDevWs = '';
+  sectorCodes: any = [];
   async initDeptWithSector(id: number) {
-    await this.initEmp();
     if (
       this.check == 'ROLE_Personnel' ||
       this.check == 'ROLE_VicePresident' ||
@@ -482,12 +415,10 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
         )
           .flat()
           .flat();
-        this.selectCompany('PCCTH');
       });
     } else {
       this.service.findDepartmentsByUser(id).subscribe((response) => {
         let res = response[0];
-        // console.log('con 1');
 
         let pccdata = res.filter((item: any) => item.company == 'PCCTH');
         let pccDept = pccdata[0]?.sectors;
@@ -501,17 +432,17 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
 
         this.pccDept = pccDept?.flat() || null;
         this.wsDept = wsDept?.flat() || null;
-        this.sectorAdminDevPCC = pccdata[0]?.sectors[0].sectorcode;
-        this.sectorAdminDevWs = wsdata[0]?.sectors[0].sectorcode;
+        if (pccdata[0]?.sectors[0]?.sectorcode) {
+          this.sectorCodes.push(pccdata[0].sectors[0].sectorcode);
+        }
+        if (wsdata[0]?.sectors[0]?.sectorcode) {
+          this.sectorCodes.push(wsdata[0].sectors[0].sectorcode);
+        }
         this.deptRes = pccDept;
-        this.selectCompany('PCCTH'); // default company
-        // this.initDept(res.responseData.result.sector.sectorCode);
       });
     }
   }
   genDataTopic() {
-    // console.log('in gentopic');
-
     const selectedDept = this.sectionOne.get('dept')?.value;
     const selectedTopic = this.sectionOne.get('topic')?.value;
 
@@ -638,7 +569,11 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
           }
         },
         (error) => {
-          console.error('Error while get data: ', error);
+          Swal.fire({
+            title: 'เกิดข้อผิดพลาด',
+            text: 'เกิดข้อพิดพลาดในการดึงข้อมูล',
+            icon: 'error',
+          });
         }
       );
     }
@@ -649,12 +584,10 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
   sectorCodeDev = '';
   selectCompany(company: string) {
     this.company = company;
-    // console.log('Selected company', this.company);
     this.EditSectionOneForm.userId = 0;
     // Initialize sectorId based on company
     if (company == 'PCCTH') {
       this.depts = this.pccDept;
-      this.sectorCodeDev = this.sectorAdminDevPCC;
       this.centerEmployee = this.pccEmployee;
       // First dept pcc select
       this.sectionOne.get('dept')?.setValue('');
@@ -662,7 +595,6 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
       // this.sectorId = 1; // Set sectorId to 1 for PCCTH
     } else if (company == 'WiseSoft') {
       this.depts = this.wsDept;
-      this.sectorCodeDev = this.sectorAdminDevWs;
       this.centerEmployee = this.wsEmployee;
       // First dept ws select
       this.sectionOne.get('dept')?.setValue('');
@@ -670,17 +602,10 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
       // this.sectorId = 2; // Set sectorId to 2 for WiseSoft
     }
 
-    // Log the updated sectorId for debugging
-    // console.log('Updated sectorId', this.sectorId);
-
-    // Fetch the total budget using the selected sectorId
-    // this.Approvers = this.AllApproves.filter((item:any) => item.company.companyName == company)
-
     this.EmitEditSectionOne(this.EditSectionOneForm);
   }
 
   totalBudget!: number;
-  // sectorId: number = 1; // หรือค่าเริ่มต้นที่คุณต้องการ
   remainingBudget!: number;
 
   private _filter(value: string): string[] {
@@ -732,8 +657,6 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
   async save() {
     //save
     try {
-      // console.log('Saving...');
-      // console.log('RAW DATA POST : ', this.listSaveEmp);
       await this.upload();
       if (this.filesID.length == 0) {
         this.filesID = [0];
@@ -741,20 +664,19 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
       for (const iterator of this.listSaveEmp) {
         iterator.actionDate = new Date().toLocaleDateString('en-CA');
         iterator.fileID = this.filesID;
-        // console.log('save Data',JSON.stringify(iterator));
         this.service.createSectionOne(iterator);
       }
       Swal.fire({
         title: 'สำเร็จ!',
         text: 'บันทึกการอบรมสำเร็จ!',
         icon: 'success',
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        confirmButtonText: 'ตกลง',
+      }).then((t) => {
+        t.isConfirmed ? window.location.reload() : '';
       });
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
     } catch (error) {
-      // เมื่อเจอ error
-      console.error('เกิดข้อผิดพลาดในการบันทึกข้อมูล:', error);
       Swal.fire({
         title: 'บันทึกข้อมูลไม่สำเร็จ!',
         text: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล!',
@@ -773,7 +695,6 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
       (topic: Course) => topic.courseName === selectedTopic
     );
     const Budget = selectedTopicObject.price - this.remainingBudget;
-    // console.log(Budget); // แสดงค่า Budget ในคอนโซล
     this.sectionOne.get('budget')?.setValue('เกินงบประมาณ ' + Budget + ' บาท'); // กำหนดค่า Budget ใน sectionOne
   }
 
@@ -925,7 +846,6 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
       if (selectedDeptObject) {
         this.deptCodeModel = selectedDeptObject.deptcode;
         this.sectionOne.get('deptCode')?.setValue(this.deptCodeModel);
-        // console.log(selectedDeptObject.deptcode);
 
         //preparing before selected type of action
         this.trainingRadio.nativeElement.checked = false;
@@ -943,8 +863,6 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
     this.sectionOne.get('empRole')?.setValue('');
     this.EmitEditSectionOne(this.EditSectionOneForm);
     //prepare approver of dept
-    // console.log(this.AllApproves);
-    // console.log(this.centerEmployee);
 
     let filterEmpDept = this.centerEmployee.filter((item: any) => {
       return item.departments.some(
@@ -973,19 +891,12 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
       );
       this.vicePresidents = this.AllApproves.filter((item: any) => {
         return (
-          item.companys.some(
-            (company: any) => company.companyName == this.company
-          ) &&
           item.roles[0].role == 'VicePresident' &&
-          item.sector.sectorCode == this.sectorCodeDev
+          this.sectorCodes.includes(item.sector.sectorCode)
         );
       });
       this.Presidents = this.AllApproves.filter((item: any) => {
-        return (
-          item.companys.some(
-            (company: any) => company.companyName == this.company
-          ) && item.roles[0].role == 'President'
-        );
+        return item.roles[0].role == 'President';
       });
     } else {
       this.Managers = this.AllApproves.filter((item: any) => {
@@ -1004,7 +915,6 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
   }
 
   private getbudget(deptCode: number) {
-    // console.log('deptCode', deptCode);
     this.service
       .getRemainingBudget(new Date().getFullYear(), deptCode)
       .pipe(
@@ -1016,7 +926,11 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
           this.etcRadio.nativeElement.checked = false;
         }),
         catchError((error) => {
-          console.error('Error fetching budget:', error);
+          Swal.fire({
+            title: 'เกิดข้อผิดพลาด',
+            text: 'แผนกนี้ยังไม่มีงบประมาณ',
+            icon: 'error',
+          });
           this.findBudget = false;
           this.sectionOne.get('budget')?.setValue('ไม่มีงบประมาณ');
           this.etcRadio.nativeElement.checked = true;
@@ -1076,11 +990,8 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
   isLoading: boolean = true;
   editModeTrainingfile: any = [];
   async initSectionOne(id: number) {
-    // console.log('-----------------------------' +id);
-    this.isLoading = false;
-    await this.initEmp();
     this.service.getSectionOneByID(id).subscribe(async (res) => {
-      console.log(res);
+      await this.initEmpByAdminId(res.training.createBy);
       this.DisableCheck(
         this.check,
         res.result_status,
@@ -1088,7 +999,7 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
         res.training.status[0].status
       );
       this.Editmode = true;
-      if (res.training.courses[0].type == 'อบรม') {
+      if (res.training.courses[0].type == 0) {
         this.returnBudgetTrain += res.training.courses[0].price;
       } else {
         this.returnBudgetCer += res.training.courses[0].price;
@@ -1145,8 +1056,7 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
       let filesID: number[] = this.editModeTrainingfile?.map(
         (item: any) => item?.id
       ) || [0];
-      this.isLoading = true;
-
+      // this.isLoading = true;
       this.EditSectionOneForm.action = res.training.action;
       this.EditSectionOneForm.actionDate = res.training.actionDate;
       this.EditSectionOneForm.courseId = res.training.courses[0].id;
@@ -1157,6 +1067,9 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
       this.EditSectionOneForm.userId = res.training.user.id;
       this.EditSectionOneForm.budget = res.training.budget;
       this.EditSectionOneForm.fileID = filesID;
+      setTimeout(() => {
+        Swal.close();
+      }, 2500);
     });
   }
 
@@ -1166,13 +1079,8 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
     result: any,
     first_approve: any
   ) {
-    // console.log(role);
-    // console.log(status);
-    // console.log(result);
-
     if (role == 'ROLE_Admin') {
       if (status == 'ยกเลิก' || status == 'ไม่อนุมัติ' || result != null) {
-        // console.log('เข้าเงื่อนไข : 1');
         this.sectionOne.disable();
         this.empNameCtrl.disable();
         this.isCancel = true;
@@ -1183,7 +1091,6 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
         this.sectionOne.disable();
         this.empNameCtrl.enable();
         this.isCancel = true;
-        // console.log('เข้าเงื่อนไข : 2');
       } else if (result == null && status == 'รอประเมิน') {
         this.sectionOne.enable();
         this.empNameCtrl.enable();
@@ -1193,7 +1100,6 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
       this.sectionOne.disable();
       this.empNameCtrl.disable();
       this.isCancel = true;
-      // console.log('เข้าเงื่อนไข : 3');
     }
   }
   @Output() sectionOneOutput = new EventEmitter<EditSectionOne>();
@@ -1202,7 +1108,7 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
   }
 
   listEmp: listEmp[] = [];
-  listSaveEmp: CreateSectionOne[] = [];
+  listSaveEmp: any = [];
 
   private duplicateCheck(data: listEmp): boolean {
     const isDuplicate = this.listEmp.some((dataset) => {
@@ -1260,7 +1166,7 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
       approver: this.approver1Ctrl?.value,
     };
 
-    let DataSave: CreateSectionOne = {
+    let DataSave: any = {
       action: this.CreateFormSectionOne.action,
       actionDate: this.CreateFormSectionOne.actionDate,
       approve1_id: this.CreateFormSectionOne.approve1_id,
@@ -1273,14 +1179,18 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
       day: this.CreateFormSectionOne.day,
       userId: this.CreateFormSectionOne.userId,
       fileID: [0],
+      createBy: this.adminId,
     };
-    if (!this.sectionOne.invalid) {
+
+    let ViceValid = this.approver3Ctrl.value ? true : false; //this.approver3Ctrl.valid = Vice_president
+
+    if (!this.sectionOne.invalid && ViceValid == true) {
       if (!this.duplicateCheck(tableData)) {
         // ไม่มีข้อมูลซ้ำ จึงเพิ่มข้อมูล
         this.listEmp.push(tableData);
         this.listSaveEmp.push(DataSave);
         this.remainingBudget -= tableData.cost || 0;
-        this.loadingpage()
+        this.loadingpage();
         this.pageLength++;
       } else {
         // มีข้อมูลซ้ำ แจ้งเตือน
@@ -1291,11 +1201,19 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
         });
       }
     } else {
-      Swal.fire({
-        title: 'บันทึกไม่สำเร็จ!',
-        text: 'โปรดกรอกข้อมูล หรือ ตรวจสอบงบประมาณ!',
-        icon: 'warning',
-      });
+      if (ViceValid == false) {
+        Swal.fire({
+          title: 'เพิ่มไม่สำเร็จ',
+          text: 'โปรดเลือกผู้บริหารก่อนเพิ่มข้อมูล',
+          icon: 'warning',
+        });
+      } else {
+        Swal.fire({
+          title: 'บันทึกไม่สำเร็จ!',
+          text: 'โปรดกรอกข้อมูล หรือ ตรวจสอบงบประมาณ!',
+          icon: 'warning',
+        });
+      }
     }
 
     this.empName = '';
@@ -1309,7 +1227,7 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
       this.remainingBudget + (this.listEmp[data].cost || 0);
     this.listEmp.splice(data, 1);
     this.listSaveEmp.splice(data, 1);
-    this.allTrainning.splice(data, 1)
+    this.allTrainning.splice(data, 1);
     this.pageLength--;
     this.genDataTopic();
   }
@@ -1334,15 +1252,22 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
       for (const file of this.files) {
         try {
           const response: any = await this.service.uploadFile(file).toPromise();
-          console.log('File uploaded successfully!', response);
           this.filesID.push(response.ID);
         } catch (error) {
-          console.error('Error uploading file:', error);
+          Swal.fire({
+            title: 'เกิดข้อผิดพลาด',
+            text: 'เกิดข้อพิดพลาดในการ upload file',
+            icon: 'error',
+          });
         }
       }
       this.selectedFile = [];
     } else {
-      console.error('No files selected.');
+      Swal.fire({
+        title: 'เกิดข้อผิดพลาด',
+        text: 'เกิดข้อพิดพลาดในการเข้าถึงข้อมูล',
+        icon: 'error',
+      });
     }
   }
 
@@ -1424,7 +1349,11 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
         document.body.removeChild(downloadLink);
       },
       (error) => {
-        console.error('Error downloading file:', error);
+        Swal.fire({
+          title: 'เกิดข้อผิดพลาด',
+          text: 'เกิดข้อพิดพลาดในการดึงข้อมูล',
+          icon: 'error',
+        });
         // Handle errors as needed
       }
     );
@@ -1457,14 +1386,80 @@ export class FtrOf1PageComponent implements OnInit, AfterViewInit {
       !!this.approver3Ctrl.value ||
       !!this.approver4Ctrl.value;
     // เงื่อนไขสำหรับปุ่ม
-    // console.log('sectionOneValid', sectionOneValid);
-    // console.log('budgetValid', budgetValid);
-    // console.log('projectPriceValid', projectPriceValid);
-    // console.log('anyApproverValid', anyApproverValid);
     const isButtonDisabled =
       (!sectionOneValid || !(budgetValid && !projectPriceValid)) &&
       anyApproverValid;
-    // console.log('รวม', isButtonDisabled);
     return isButtonDisabled;
+  }
+
+  async initEmp() {
+    try {
+      let res = await this.service.getActiveEmp().toPromise();
+      this.Allemps = res;
+      let EmpOnly = res;
+      // .filter((item: any) => {
+      //   return item.roles.some((item: any) => item.role == 'User');
+      // });
+      let wsEmp: Employee[] = EmpOnly.filter((item: any) => {
+        return item.companys.some(
+          (companys: any) => companys.companyName == 'WiseSoft'
+        );
+      });
+      let pccEmp: Employee[] = EmpOnly.filter((item: any) => {
+        return item.companys.some(
+          (companys: any) => companys.companyName == 'PCCTH'
+        );
+      });
+      this.wsEmployee = wsEmp;
+      this.pccEmployee = pccEmp;
+
+      this.AllApproves = res.filter((emp: any) => {
+        return emp.roles.some(
+          (item: any) =>
+            item.role == 'Approver' ||
+            item.role == 'VicePresident' ||
+            item.role == 'Manager' ||
+            item.role == 'President'
+        );
+      });
+    } catch (error) {
+      Swal.fire({
+        title: 'เกิดข้อผิดพลาด',
+        text: 'เกิดข้อพิดพลาดในการดึงข้อมูล',
+        icon: 'error',
+      });
+    }
+  }
+
+  async initEmpByAdminId(id: number) {
+    try {
+      const res = await this.service.getActiveEmpByAdminId(id).toPromise();
+      const ALL_USER = res;
+      this.Allemps = res;
+      //declare emp zone
+      //PCCTH And WiseSofte Emp
+      this.pccEmployee = ALL_USER.filter((item: any) => {
+        return item.companys.some(
+          (companys: any) => companys.companyName == 'PCCTH'
+        );
+      });
+      this.wsEmployee = ALL_USER.filter((item: any) => {
+        return item.companys.some(
+          (companys: any) => companys.companyName == 'WiseSoft'
+        );
+      });
+      //-------------------------------------------------------
+      //Get All Emp who can action in this training
+      this.AllApproves = res.filter((emp: any) => {
+        return emp.roles.some(
+          (item: any) =>
+            item.role == 'Approver' ||
+            item.role == 'VicePresident' ||
+            item.role == 'Manager' ||
+            item.role == 'President'
+        );
+      });
+      this.selectCompany('PCCTH'); //<-- default company select
+    } catch (error) {}
   }
 }

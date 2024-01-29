@@ -99,28 +99,31 @@
             </button>
           </div>
 
-
           <div *ngIf="role === 'ROLE_Admin' || role == 'ROLE_Personnel'">
-            <button type="submit" (click)="generic()" class="flex items-center justify-center text-white p-2  rounded shadow-md
+            <button matTooltip="หากต้องการพิมพ์ สามารถกดดูคำแนะนำด้านล่างได้ค่ะ" matTooltipHideDelay="100"
+              matTooltipClass="tooltip" [disabled]="!trainingHistoryValid()" type="submit" (click)="generic()" class="flex items-center justify-center text-white p-2  rounded shadow-md
                 {{
-                  isSearchDisabled2()
+                  trainingHistoryValid()
                   ? 'cursor-pointer bg-[#696cf8] hover:bg-[#696cf8] hover:text-white border-2 border-[#696cf8]'
                   : 'cursor-not-allowed bg-gray-400 border-2 border-gray-400'
                 }}">
               <i class="mr-1 text-2xl fa-regular fa-file-pdf fa-lg"></i> พิมพ์ประวัติการฝึกอบรม</button>
           </div>
           <div *ngIf="role === 'ROLE_Personnel' " class="mx-2">
-            <button type="submit" (click)="generic9EVO()" class="flex items-center justify-center text-white p-2  rounded shadow-md
+            <button matTooltip="หากต้องการพิมพ์ สามารถกดดูคำแนะนำด้านล่างได้ค่ะ" matTooltipHideDelay="100" matTooltipClass="tooltip"
+              [disabled]="!generic9ButtonValid()" type="submit" (click)="generic9EVO()" class="flex items-center justify-center text-white p-2  rounded shadow-md
                 {{
-                  isSearchDisabled2()
+                  generic9ButtonValid()
                   ? 'cursor-pointer bg-[#696cf8] hover:bg-[#696cf8] hover:text-white border-2 border-[#696cf8]'
                   : 'cursor-not-allowed bg-gray-400 border-2 border-gray-400'
                 }}">
               <i class="mr-1 text-2xl fa-regular fa-file-pdf fa-lg"></i>พิมพ์ใบ Generic 9</button>
           </div>
-
-
         </div>
+        <br>
+        
+        <p *ngIf="role === 'ROLE_Admin'">คำแนะนำการพิมพ์รายงานสำหรับผู้ดูแลระบบ <i class="cursor-pointer fa fa-info-circle" aria-hidden="true" matTooltipClass="tooltip" matTooltip="กดเพื่อดูคำแนะนำ" (click)="infoReportAdmin()"></i></p>
+        <p *ngIf="role === 'ROLE_Personnel' ">คำแนะนำการพิมพ์รายงานสำหรับฝ่ายบุคคล <i class="cursor-pointer fa fa-info-circle" aria-hidden="true" matTooltipClass="tooltip" matTooltip="กดเพื่อดูคำแนะนำ" (click)="infoReportPersonnel()"></i></p>
       </div>
     </form>
     <div *ngIf="role != 'ROLE_Admin' && role != 'ROLE_User' && role != 'ROLE_Personnel'" class="text-right">
@@ -196,7 +199,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let user of parentResult"
-            class="odd:bg-white dark:odd:bg-[#3a3b3c] dark:even:bg-black even:bg-slate-100 text-center h-20 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700">
+            class="odd:bg-white dark:odd:bg-[#3a3b3c] overflow-auto max-w-[10rem] dark:even:bg-black even:bg-slate-100 text-center h-20 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700">
             <td>{{user.training.user.companys[0]?.companyName}}</td>
             <!-- <td>
               {{ user.training.courses[0]?.startDate | date : 'dd/MM/yyyy' }} -
@@ -210,7 +213,7 @@
             <td class="overflow-auto max-w-[10rem] m-2 whitespace-pre-line">{{
               user.training.user.departments[0]?.deptName }}
             </td>
-            <td class="text-left overflow-auto max-w-[10rem] m-2 whitespace-pre-line">{{
+            <td class="text-left overflow-auto min-w-[10rem] m-2 whitespace-pre-line">{{
               user.training.courses[0]?.courseName }}
             </td>
             <!-- <td class="overflow-auto max-w-[10rem] m-2 whitespace-pre-line">{{ user.evaluatorName }}</td> -->
@@ -319,7 +322,7 @@
 
             </td>
 
-            <td *ngIf="role == 'ROLE_Approver'||  role == 'ROLE_Manager' ||  role == 'ROLE_President'">
+            <td class="text-center overflow-auto min-w-[10rem] p-3 whitespace-pre-line" *ngIf="role == 'ROLE_Approver'||  role == 'ROLE_Manager' ||  role == 'ROLE_President'">
               <button
                 *ngIf="user.result_status == 'รอประเมิน' && user.isDo != 'อนุมัติ' && user.result_status != 'ไม่อนุมัติ'"
                 type="submit" (click)="ApproveView(user.training.id)"
@@ -957,11 +960,9 @@
         <div class="flex items-center justify-end p-6 border-t border-solid rounded-b border-slate-200">
           <button
             class="px-6 py-2 mb-1 mr-1 font-bold text-red-500 uppercase transition-all duration-150 ease-linear outline-none text-md background-transparent focus:outline-none"
-            type="button" (click)="toggleModal()">
+            type="button" (click)="clearAndCloseModal()">
             ยกเลิก
           </button>
-
-
           <div class="flex ml-auto"> <!-- สร้าง flex container ทางขวาเพื่อให้ปุ่มยกเลิกอยู่ด้านซ้าย -->
             <button *ngIf="role == 'ROLE_Admin' && approveStatus !='ยกเลิก' && isEval == null && !g9modal" type="submit"
               [disabled]="nonInbuget" (click)="edit()" class="flex items-center justify-center text-white p-2  rounded shadow-md {{
@@ -969,7 +970,6 @@
                   ? 'cursor-not-allowed bg-gray-400'
                   : 'cursor-pointer bg-green-700 hover:bg-green-600'
               }}">
-
               <i class="mr-2 text-2xl bx bxs-edit"></i>แก้ไขข้อมูล
             </button>
             <button

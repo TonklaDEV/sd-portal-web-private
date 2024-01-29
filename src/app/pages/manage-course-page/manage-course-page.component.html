@@ -1,24 +1,24 @@
 <!-- เนื้อหาของคอมโพเนนต์ของคุณจะแสดงเฉพาะถ้า showComponent เป็น true -->
 <div class="bg-transparent">
   <div
-    class="text-font-header rounded-md shadow p-6 pb-6 w-full bg-white dark:text-font-header-dark dark:bg-content-dark">
+    class="w-full p-6 pb-6 bg-white rounded-md shadow text-font-header dark:text-font-header-dark dark:bg-content-dark">
     <p class="text-2xl" id="course-form">ข้อมูลหัวข้อการอบรม</p>
     <br>
     <div class="text-[#566a7f] rounded-md shadow p-6 w-full bg-gray-100 dark:text-[#e4e6eb] dark:bg-[#242526]">
       <form [formGroup]="CourseForm">
 
         <div class="grid grid-cols-3 gap-5">
-          <div class="col-span-2 rounded-lg h-12 p-2">
-            <div class="form-group flex items-center mb-8">
+          <div class="h-12 col-span-2 p-2 rounded-lg">
+            <div class="flex items-center mb-8 form-group">
               <label for="type" class="w-32">สำหรับ:</label>
               <div class="flex items-stretch">
                 <input formControlName="type" type="radio" class="w-4 h-4 self-center peer accent-[#696cff]"
-                  name="courseType" id="อบรม" value="อบรม" checked />
+                  name="courseType" id="อบรม" value="train"/>
                 <label for="train" class="ml-1 mr-2 peer-checked:text-[#696cff] align-middle">ฝึกอบรม/สัมมนา</label>
               </div>
               <div class="flex items-stretch ml-4">
                 <input formControlName="type" type="radio" class="w-4 h-4 self-center peer accent-[#696cff]"
-                  name="courseType" id="สอบ" value="สอบ" />
+                  name="courseType" id="สอบ" value="test"/>
                 <label for="test" class="ml-1 mr-2 peer-checked:text-[#696cff] align-middle">สอบ Certificate</label>
               </div>
             </div>
@@ -26,19 +26,19 @@
         </div>
 
         <div class="grid grid-cols-3 gap-5">
-          <div class="col-span-2 rounded-lg h-12 p-2">
-            <div class="form-group flex items-center mb-8">
+          <div class="h-12 col-span-2 p-2 rounded-lg">
+            <div class="flex items-center mb-8 form-group">
               <label for="courseName" class="w-32">หัวข้อในการอบรม:</label>
               <div class="relative flex-grow">
                 <input type="text" id="courseName" formControlName="courseName"
                   class="form-control appearance-none rounded-md border outline-none my-5 py-2 px-3 w-full dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
                 <span *ngIf="CourseForm.get('courseName').invalid"
-                  class="absolute text-red-700 -right-2 top-1 dark:text-red-500 my-2">*</span>
+                  class="absolute my-2 text-red-700 -right-2 top-1 dark:text-red-500">*</span>
               </div>
             </div>
           </div>
-          <div class="rounded-lg h-12">
-            <div class="form-group flex items-center mb-8 p-2">
+          <div class="h-12 rounded-lg">
+            <div class="flex items-center p-2 mb-8 form-group">
               <label for="date" class="w-32">วันที่อบรม:</label>
               <div
                 class="relative appearance-none mx-3 rounded-md border bg-white outline-none my-5 py-2.5 px-2 xl:px-3 w-full xl:w-11/12 xl:mx-1 dark:border-[#3a3b3c] dark:bg-[#3a3b3c] focus:ring-1 focus:border-[#696cff]  dark:placeholder:text-[#b4b4b4] focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear">
@@ -58,7 +58,7 @@
 
         <div class="grid grid-cols-3 gap-5 pt-6 mt-8">
           <div class="rounded-lg">
-            <div class="form-group flex items-center p-2">
+            <div class="flex items-center p-2 form-group">
               <label for="time" class="w-32">เวลาที่อบรม:</label>
               <div class="relative pr-2">
                 <input type="time" id="timestart" formControlName="timestart"
@@ -75,14 +75,14 @@
             </div>
           </div>
           <div class="rounded-lg">
-            <div class="form-group flex items-center p-2">
+            <div class="flex items-center p-2 form-group">
               <label for="hours" class="w-32 pl-8">รวม:</label>
               <div class="relative flex-grow">
                 <input type="text" id="hours" formControlName="hours" name="hours"
                   (keypress)="onInputKeyPresshours($event)"
                   class="py-2 px-3 pr-16 block w-full border-gray-200 shadow-sm rounded-md focus:border-blue-500 focus:ring-blue-500 dark:placeholder:text-[#b4b4b4] dark:border-border-dark dark:bg-[#3a3b3c]"
                   placeholder="">
-                <div class="absolute inset-y-0 right-0 flex items-center pointer-events-none z-20 pr-4">
+                <div class="absolute inset-y-0 right-0 z-20 flex items-center pr-4 pointer-events-none">
                   <span class="text-gray-500 dark:text-[#b4b4b4]">ชั่วโมง</span>
                 </div>
                 <span *ngIf="CourseForm.get('hours').invalid"
@@ -91,7 +91,7 @@
             </div>
           </div>
           <div class="rounded-lg">
-            <div class="form-group flex items-center p-2 relative">
+            <div class="relative flex items-center p-2 form-group">
               <label for="note" class="w-32">เพิ่มเติม:</label>
               <textarea id="note" formControlName="note" placeholder="เช่น (20-30/5)(13,27/6)"
                 class="form-control appearance-none rounded-md border outline-none h-11 py-2 px-3 w-full xl:w-11/12 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]"></textarea>
@@ -101,19 +101,19 @@
 
 
 
-        <div class="grid grid-cols-2 gap-5 pt-3 mb-4 mt-3">
-          <div class="rounded-lg h-12">
-            <div class="form-group flex items-center p-2">
+        <div class="grid grid-cols-2 gap-5 pt-3 mt-3 mb-4">
+          <div class="h-12 rounded-lg">
+            <div class="flex items-center p-2 form-group">
               <label for="price" class="w-32">ค่าใช้จ่าย/คน:</label>
               <div class="relative flex-grow">
                 <input type="text" id="price" formControlName="price" name="price" formControlName="price"
                   (blur)="onBlurPrice($event)" (keypress)="onInputKeyPressPrice($event)"
                   class="py-2 px-3 pl-9 pr-16 block w-full border-gray-200 shadow-sm rounded-md focus:border-blue-500 focus:ring-blue-500 dark:placeholder:text-[#b4b4b4] dark:border-border-dark dark:bg-[#3a3b3c]"
                   placeholder="0.00">
-                <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none z-20 pl-4">
+                <div class="absolute inset-y-0 left-0 z-20 flex items-center pl-4 pointer-events-none">
                   <span class="text-gray-500  dark:placeholder:text-[#b4b4b4]">฿</span>
                 </div>
-                <div class="absolute inset-y-0 right-0 flex items-center pointer-events-none z-20 pr-4">
+                <div class="absolute inset-y-0 right-0 z-20 flex items-center pr-4 pointer-events-none">
                   <span class="text-gray-500  dark:text-[#b4b4b4]">บาท/คน (ก่อน Vat7%)</span>
                 </div>
                 <span *ngIf="CourseForm.get('price').invalid"
@@ -121,8 +121,8 @@
               </div>
             </div>
           </div>
-          <div class="rounded-lg h-12">
-            <div class="form-group flex items-center p-2 ">
+          <div class="h-12 rounded-lg">
+            <div class="flex items-center p-2 form-group ">
               <label for="priceProject" class="w-32">โครงการ:</label>
               <input type="text" id="priceProject" formControlName="priceProject"
                 class="form-control appearance-none rounded-md border outline-none py-2 px-3 w-full xl:w-11/12 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]">
@@ -133,7 +133,7 @@
 
         <div class="grid grid-flow-col-dense gap-5 mt-8 mb-4">
           <div class="rounded-lg">
-            <div class="form-group flex items-center p-2">
+            <div class="flex items-center p-2 form-group">
               <label for="institute" class="w-32">สถาบันที่จัดอบรม:</label>
               <div class="relative flex-grow">
                 <input type="text" id="institute" formControlName="institute"
@@ -144,12 +144,12 @@
             </div>
           </div>
           <div class="rounded-lg">
-            <div class="form-group flex items-center p-2 relative">
+            <div class="relative flex items-center p-2 form-group">
               <label for="place" class="w-32">สถานที่ฝึกอบรม:</label>
               <textarea id="place" formControlName="place"
                 class="form-control appearance-none rounded-md border outline-none h-11 py-2 px-3 w-full xl:w-11/12 dark:border-border-dark dark:bg-[#3a3b3c] focus:ring-1 focus:ring-font-link focus:placeholder:pl-2 placeholder:transition-all placeholder:duration-200 placeholder:ease-linear placeholder:text-[#b4b4b4] dark:placeholder:text-[#b4b4b4]"></textarea>
               <span *ngIf="CourseForm.get('place').invalid"
-                class="absolute text-red-700 right-0 -top-1 dark:text-red-500">*</span>
+                class="absolute right-0 text-red-700 -top-1 dark:text-red-500">*</span>
             </div>
           </div>
         </div>
@@ -163,14 +163,14 @@
         <button type="submit" (click)="isEditMode ? updateSv1Btn(CourseForm.value.id) : addSv1Btn()"
           [disabled]="CourseForm.invalid"
           class="text-white p-2 w-36  mr-1 rounded shadow-md {{ (CourseForm.invalid) ? 'cursor-not-allowed bg-gray-400 border-2 border-gray-400' : 'cursor-pointer bg-[#696cf8] hover:bg-[#696cf8] hover:text-white border-2 border-[#696cf8]' }}">
-          <i class="fa-solid fa-plus mr-1"></i> {{ isEditMode ? 'ปรับปรุงข้อมูล' : 'บันทึกข้อมูล' }}
+          <i class="mr-1 fa-solid fa-plus"></i> {{ isEditMode ? 'ปรับปรุงข้อมูล' : 'บันทึกข้อมูล' }}
         </button>
       </div>
 
       <div>
         <button type="button" (click)="cancelEdit()" *ngIf="isEditMode"
-          class="text-white p-2 w-36 rounded shadow-md bg-red-400 border-2 border-red-400 cursor-pointer hover:bg-red-500">
-          <i class="fa-solid fa-times mr-1"></i> ยกเลิก
+          class="p-2 text-white bg-red-400 border-2 border-red-400 rounded shadow-md cursor-pointer w-36 hover:bg-red-500">
+          <i class="mr-1 fa-solid fa-times"></i> ยกเลิก
         </button>
       </div>
     </div>
@@ -222,8 +222,8 @@
         <tbody>
           <tr *ngFor="let row of courseResult"
             class="odd:bg-white dark:odd:bg-[#3a3b3c] dark:even:bg-black even:bg-slate-100 text-center h-20 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700">
-            <td class="text-left overflow-auto max-w-[10rem] p-3 whitespace-pre-line">
-              {{ row.type === 'อบรม' ? 'อบรม' : row.type === 'สอบ' ? 'สอบ' : '' }}
+            <td class="text-center overflow-auto max-w-[10rem] p-3 whitespace-pre-line">
+              {{ row.type == 0 ? 'อบรม' : row.type == 1 ? 'สอบ' : '' }}
             </td>
             <td class="text-left overflow-auto max-w-[10rem] p-3 whitespace-pre-line">{{ row.courseName }}</td>
             <td class="text-center overflow-auto max-w-[10rem] p-3 whitespace-pre-line">{{ row.startDate | date:
@@ -254,7 +254,7 @@
                 </button>
 
                 <button type="submit" (click)="openConfirmationModal(row.id)"
-                  class="flex items-center justify-center w-24 py-2 mr-1 text-red-700 dark:text-red-500 border-2 border-gray-400 rounded hover:bg-red-700 hover:text-white hover:border-red-700 dark:hover:text-white">
+                  class="flex items-center justify-center w-24 py-2 mr-1 text-red-700 border-2 border-gray-400 rounded dark:text-red-500 hover:bg-red-700 hover:text-white hover:border-red-700 dark:hover:text-white">
                   <i class="mt-1 mb-1 mr-1 bx bx-trash"></i>ลบข้อมูล
                 </button>
               </div>
@@ -299,11 +299,11 @@
         </div>
       </div>
 
-      <div class="bg-gray-100 border-t-4 border-gray-300 rounded-b text-gray-900 px-4 py-8 shadow-md" role="alert"
+      <div class="px-4 py-8 text-gray-900 bg-gray-100 border-t-4 border-gray-300 rounded-b shadow-md" role="alert"
         *ngIf="showErrorMessage">
         <div class="flex justify-center text-center">
           <div class="py-1">
-            <svg class="fill-current h-10 w-10 text-gray-500 mr-4" xmlns="http://www.w3.org/2000/svg"
+            <svg class="w-10 h-10 mr-4 text-gray-500 fill-current" xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20">
               <path
                 d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
@@ -311,7 +311,7 @@
           </div>
           <div>
             <p class="font-bold text-gray-500">ขออภัย!</p>
-            <p class="text-gray-500 text-sm">ไม่พบข้อมูลที่คุณต้องการ</p>
+            <p class="text-sm text-gray-500">ไม่พบข้อมูลที่คุณต้องการ</p>
           </div>
         </div>
       </div>
@@ -322,24 +322,24 @@
   </div>
 </div>
 
-<div *ngIf="showModal" class="fixed inset-0 z-50 flex justify-end items-start p-6">
+<div *ngIf="showModal" class="fixed inset-0 z-50 flex items-start justify-end p-6">
   <div class="relative w-full max-w-md bg-[#323232] text-white shadow-lg rounded-lg">
     <!--body-->
-    <div class="relative px-3 flex-auto flex justify-between">
-      <p class="my-4 text-sm text-gray-300 leading-relaxed">
-        <i class="fa-solid fa-trash-can mr-1"></i> ยืนยันว่าต้องการจะลบหัวข้อการอบรมนี้?
+    <div class="relative flex justify-between flex-auto px-3">
+      <p class="my-4 text-sm leading-relaxed text-gray-300">
+        <i class="mr-1 fa-solid fa-trash-can"></i> ยืนยันว่าต้องการจะลบหัวข้อการอบรมนี้?
       </p>
       <button
-        class="text-emerald-500  text-sm px-3 py-2 rounded focus:outline-none ease-linear transition-all duration-150"
+        class="px-3 py-2 text-sm transition-all duration-150 ease-linear rounded text-emerald-500 focus:outline-none"
         type="button" (click)="deleteSv1Btn(selectedUserId)">
         ยืนยัน
       </button>
       <button
-        class="text-red-500 px-2 py-2 text-sm outline-none focus:outline-none ease-linear transition-all duration-150"
+        class="px-2 py-2 text-sm text-red-500 transition-all duration-150 ease-linear outline-none focus:outline-none"
         type="button" (click)="toggleModal()">
         ยกเลิก
       </button>
     </div>
   </div>
 </div>
-<div *ngIf="showModal" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
+<div *ngIf="showModal" class="fixed inset-0 z-40 bg-black opacity-25"></div>

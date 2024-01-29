@@ -77,13 +77,13 @@ export class FtrOf1Service {
     return this.http.get<any>(this.api + '/findActiveEmployees');
   }
 
-  createSectionOne(data: CreateSectionOne) {
+  createSectionOne(data: any) {
     // console.log('create');
 
     // console.log(data);
 
     return this.http
-      .post<CreateSectionOne>(
+      .post<any>(
         this.api + '/createTraining',
         JSON.stringify(data),
         { headers: this.headers }
@@ -145,5 +145,9 @@ export class FtrOf1Service {
   getFile(fileID: number): Observable<any> {
     const url = `${this.api}/getFile?fileID=${fileID}`;
     return this.http.get<any>(url);
+  }
+
+  getActiveEmpByAdminId(id:number) : Observable<any> {
+    return this.http.get<any>(`${this.api}/findActiveEmployeesByAdminId?adminId=${id}`)
   }
 }

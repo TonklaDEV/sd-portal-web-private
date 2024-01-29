@@ -54,7 +54,6 @@ export class HeaderSystemComponent {
       const decodedToken= this.jwtService.decodeToken(accessToken);
       // this.user = JSON.stringify(decodedToken);
       this.user = decodedToken;
-      console.log(this.user);
     } 
   }
   signout(){

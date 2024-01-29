@@ -65,16 +65,19 @@ export class UserService {
   }
 
   getActiveEmp(adminId: number): Observable<any> {
-    console.log(adminId)
     return this.http.get<any>(
       `${this.apiurl}/findActiveEmployeesByAdminId?adminId=${adminId}`
-    )
+    );
   }
 
   getAllDeptWithCompany(): Observable<allDeptCompany[]> {
     return this.http.get<allDeptCompany[]>(
       this.apiurl + '/findAllJoinDepartments'
     );
+  }
+
+  getAllDeptAndSector(): Observable<any> {
+    return this.http.get<any>(`${this.apiurl}/findAllJoinDepartmentssector`);
   }
 
   deleteById(id: number) {

@@ -43,6 +43,8 @@ import { NewsPageComponent } from './news-page/news-page.component';
 import { SignInPageComponent } from './sign-in-page/sign-in-page.component';
 import { SignaturePageComponent } from './signature-page/signature-page.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 @NgModule({
   declarations: [
     HomePageComponent,
@@ -50,18 +52,13 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     ListCardSystemComponent,
     ListDescriptionComponent,
     ListCardPeopleComponent,
-
     NewsPageComponent,
-
     CalenderPageComponent,
     CalendarTableComponent,
-
     DashboardPageComponent,
     InformationUserComponent,
     InformationProjectUserComponent,
-
     JobDayViewPageComponent,
-
     ManagementNewsPageComponent,
     ManagementDashboardPageComponent,
     ManagementRolePageComponent,
@@ -82,6 +79,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     MatSelectModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
     SharedModule,
     MatDatepickerModule,
     MatAutocompleteModule,

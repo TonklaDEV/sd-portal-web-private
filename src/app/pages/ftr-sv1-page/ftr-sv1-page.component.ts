@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
-  FormBuilder,
-  FormGroup,
-  Validators
-} from '@angular/forms';
-import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+  MatSnackBar,
+  MatSnackBarHorizontalPosition,
+  MatSnackBarVerticalPosition,
+} from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/api-services/auth.service';
 import { FtrSv1ServicesService } from 'src/app/api-services/ftr-sv1-services.service';
@@ -29,16 +29,13 @@ export class FtrSv1PageComponent implements OnInit {
   showErrorMessage!: boolean;
   showdataErrorMessage!: boolean;
 
-
   constructor(
     private fb: FormBuilder,
     private _service: FtrSv1ServicesService,
     private authService: AuthService,
     private router: Router,
     private _snackBar: MatSnackBar
-  ) {
-
-  }
+  ) {}
   ngOnInit(): void {
     this.initDept();
     this.getUserList();
@@ -47,7 +44,6 @@ export class FtrSv1PageComponent implements OnInit {
     this.shouldDisplayYear = true;
     this.shouldDisplayCompany = true;
     this.shouldDisplayDept = true;
-
 
     this.trainingForm = this.fb.group({
       companyName: ['', Validators.required],
@@ -58,7 +54,7 @@ export class FtrSv1PageComponent implements OnInit {
       total_exp: ['', [Validators.required]],
     });
 
-    this.searchAndLockSelection()
+    this.searchAndLockSelection();
     // console.log('in ftr-sv1')
     const role = this.authService.checkRole();
     if (role !== 'ROLE_Personnel') {
@@ -74,38 +70,46 @@ export class FtrSv1PageComponent implements OnInit {
         } else {
           this.showdataErrorMessage = false; // มีข้อมูล
           // กระทำอื่น ๆ กับข้อมูลเช่นการเรียงลำดับ
-          this.rows = res.sort((a: { year: string; company: string; departmentCode: string; }, b: { year: any; company: any; departmentCode: any; }) => {
-            // ให้เรียงตาม "year" ก่อน
-            if (a.year === b.year) {
-              // ถ้า "year" เท่ากันให้เรียงตาม "company"
-              if (a.company === b.company) {
-                // ถ้า "company" เท่ากันให้เรียงตาม "departmentCode"
-                return a.departmentCode.localeCompare(b.departmentCode);
+          this.rows = res.sort(
+            (
+              a: { year: string; company: string; departmentCode: string },
+              b: { year: any; company: any; departmentCode: any }
+            ) => {
+              // ให้เรียงตาม "year" ก่อน
+              if (a.year === b.year) {
+                // ถ้า "year" เท่ากันให้เรียงตาม "company"
+                if (a.company === b.company) {
+                  // ถ้า "company" เท่ากันให้เรียงตาม "departmentCode"
+                  return a.departmentCode.localeCompare(b.departmentCode);
+                }
+                return a.company.localeCompare(b.company);
               }
-              return a.company.localeCompare(b.company);
+              return a.year.localeCompare(b.year);
             }
-            return a.year.localeCompare(b.year);
-          });
+          );
         }
       },
       error: console.log,
     });
   }
 
-
-
   findBudgetParams(searchParams: any) {
-    this._service.findBudgetParams(searchParams).subscribe(data => {
+    this._service.findBudgetParams(searchParams).subscribe((data) => {
       // เรียงลำดับข้อมูลตามลำดับปี >> บริษัท >> แผนก
-      this.rows = data.sort((a: { year: string; company: string; departmentCode: string; }, b: { year: string; company: string; departmentCode: string; }) => {
-        if (a.year === b.year) {
-          if (a.company === b.company) {
-            return a.departmentCode.localeCompare(b.departmentCode);
+      this.rows = data.sort(
+        (
+          a: { year: string; company: string; departmentCode: string },
+          b: { year: string; company: string; departmentCode: string }
+        ) => {
+          if (a.year === b.year) {
+            if (a.company === b.company) {
+              return a.departmentCode.localeCompare(b.departmentCode);
+            }
+            return a.company.localeCompare(b.company);
           }
-          return a.company.localeCompare(b.company);
+          return a.year.localeCompare(b.year);
         }
-        return a.year.localeCompare(b.year);
-      });
+      );
 
       // ตรวจสอบว่าข้อมูลเป็น []
       if (Array.isArray(data) && data.length === 0) {
@@ -116,26 +120,25 @@ export class FtrSv1PageComponent implements OnInit {
         this.shouldDisplayDept = false;
       } else {
         this.showErrorMessage = false; // มีข้อมูล
-        this.showdataErrorMessage = false
+        this.showdataErrorMessage = false;
         this.shouldDisplayYear = true;
         this.shouldDisplayCompany = true;
         this.shouldDisplayDept = true;
-        
 
         // ทำอะไรกับข้อมูลที่ได้รับ เช่นการกำหนดค่าให้คอมโพเนนต์เพื่อแสดงในหน้าเว็บ
       }
     });
   }
 
-
-
-
   fetchTotalBudget(year: string, departmentCode: string) {
     this._service.getTotalBudget(year, departmentCode).subscribe(
       (totalBudget) => {
         // console.log(totalBudget);
 
-        if (typeof totalBudget === 'object' && 'responseMessage' in totalBudget) {
+        if (
+          typeof totalBudget === 'object' &&
+          'responseMessage' in totalBudget
+        ) {
           // Check if 'responseMessage' exists in the response
           this.showErrorMessage = true; // Show the error message
         } else {
@@ -147,7 +150,10 @@ export class FtrSv1PageComponent implements OnInit {
         if (error.status === 400 || error.status === 500) {
           this.showErrorMessage = true; // Show the error message
         } else {
-          console.error('An error occurred while fetching the total budget:', error);
+          console.error(
+            'An error occurred while fetching the total budget:',
+            error
+          );
         }
       }
     );
@@ -161,7 +167,8 @@ export class FtrSv1PageComponent implements OnInit {
 
         if (Array.isArray(RemainBudget) && RemainBudget.length === 0) {
           this.showErrorMessage = true; // Show the error message
-        } else if (RemainBudget) { // ตรวจสอบว่า RemainBudget ไม่เป็น null หรือ undefined
+        } else if (RemainBudget) {
+          // ตรวจสอบว่า RemainBudget ไม่เป็น null หรือ undefined
           this.showErrorMessage = false; // Hide the error message
           this.RemainBudget = RemainBudget;
         } else {
@@ -173,19 +180,23 @@ export class FtrSv1PageComponent implements OnInit {
         if (error.status === 400 || error.status === 500) {
           this.showErrorMessage = true; // Show the error message
         } else {
-          console.error('An error occurred while fetching the total budget:', error);
+          console.error(
+            'An error occurred while fetching the total budget:',
+            error
+          );
         }
       }
     );
   }
 
-
-
-
   searchAndLockSelection() {
     this.trainingForm.valueChanges.subscribe((formValue) => {
-      const companyNameValue = formValue.companyName === 'PCCTH' ? 1 : formValue.companyName === 'WiseSoft' ? 2 : '';
-
+      const companyNameValue =
+        formValue.companyName === 'PCCTH'
+          ? 1
+          : formValue.companyName === 'WiseSoft'
+          ? 2
+          : '';
 
       // สร้าง searchParams จากค่าในฟอร์ม
       const searchParams: any = {};
@@ -203,24 +214,20 @@ export class FtrSv1PageComponent implements OnInit {
       }
 
       this.findBudgetParams(searchParams);
-      console.log('searchParams', searchParams);
 
       if (formValue.year && formValue.department.deptCode) {
         this.fetchTotalBudget(formValue.year, formValue.department.deptCode);
-        this.fetchTotalRemain(formValue.year, formValue.department.deptCode)
+        this.fetchTotalRemain(formValue.year, formValue.department.deptCode);
       }
 
       this.isFooterVisible = true;
     });
   }
 
-
-
-
   private temporaryValues = {
     budgetCer: null,
     budgetTraining: null,
-    total_exp: null
+    total_exp: null,
   };
 
   //สร้างฟังก์ชันสำหรับเพิ่มข้อมูล
@@ -248,8 +255,8 @@ export class FtrSv1PageComponent implements OnInit {
 
       // ในกรณีนี้คุณสามารถสร้าง JSON จากค่าตัวแปรชั่วคราวและเพิ่มข้อมูลใน this.rows
       const company_Id = companyName === 'PCCTH' ? 1 : 2;
-      const _year = year
-      const _department = department.deptCode
+      const _year = year;
+      const _department = department.deptCode;
 
       const rowData = {
         year: year,
@@ -257,33 +264,32 @@ export class FtrSv1PageComponent implements OnInit {
         company_Id: company_Id,
         budgetTraining: this.temporaryValues.budgetTraining,
         budgetCer: this.temporaryValues.budgetCer,
-        total_exp: this.temporaryValues.total_exp
+        total_exp: this.temporaryValues.total_exp,
       };
 
-      console.log('rowData', rowData);
       // console.log(inputdata);
 
       this._service.addSv1(rowData).subscribe({
         next: (result) => {
           Swal.fire({
-            title: "สำเร็จ",
-            text: "เพิ่มหรือแก้ไขงบประมาณสำเร็จ",
-            icon: "success"
+            title: 'สำเร็จ',
+            text: 'เพิ่มหรือแก้ไขงบประมาณสำเร็จ',
+            icon: 'success',
           });
           // เรียกใช้ findBudgetParams เพื่อค้นหาข้อมูล
           this.findBudgetParams(searchParams);
           // console.log('searchParams', searchParams);
-          this.fetchTotalBudget(_year, _department)
-          this.fetchTotalRemain(_year, _department)
+          this.fetchTotalBudget(_year, _department);
+          this.fetchTotalRemain(_year, _department);
         },
         // error: console.log, // หรือจัดการข้อผิดพลาดตามที่คุณต้องการ
         error: (error) => {
           console.error('Error during addSv1:', error);
           // แสดงข้อความผลลัพธ์จาก API ที่ส่งกลับมา
           Swal.fire({
-            title: "ไม่สามารถแก้ไขได้",
-            text: "งบที่ต้องการอัพเดต มีค่าต่ำกว่างบที่ใช้ไป",
-            icon: "warning"
+            title: 'ไม่สามารถแก้ไขได้',
+            text: 'งบที่ต้องการอัพเดต มีค่าต่ำกว่างบที่ใช้ไป',
+            icon: 'warning',
           });
           // this._snackBar.open('งบที่ต้องการอัพเดต มีค่าต่ำกว่างบที่ใช้ไป', 'ปิด', {
           //   horizontalPosition: this.horizontalPosition,
@@ -318,19 +324,17 @@ export class FtrSv1PageComponent implements OnInit {
       if (this.temporaryValues.total_exp !== null) {
         searchParams.total_exp = this.temporaryValues.total_exp;
       }
-
     }
-
-
   }
 
-  showedit = true
+  showedit = true;
 
   editSv1Btn() {
-    console.log('totalBudget', this.totalBudget);
-    this.trainingForm.get('budgetTraining')?.setValue(this.totalBudget.budgetTrain)
-    this.trainingForm.get('budgetCer')?.setValue(this.totalBudget.budgetCer)
-    this.trainingForm.get('total_exp')?.setValue(this.totalBudget.budgetTotal)
+    this.trainingForm
+      .get('budgetTraining')
+      ?.setValue(this.totalBudget.budgetTrain);
+    this.trainingForm.get('budgetCer')?.setValue(this.totalBudget.budgetCer);
+    this.trainingForm.get('total_exp')?.setValue(this.totalBudget.budgetTotal);
   }
 
   //snacknbar postion
@@ -338,14 +342,14 @@ export class FtrSv1PageComponent implements OnInit {
   verticalPosition: MatSnackBarVerticalPosition = 'top';
 
   onDepartmentClick() {
-    this.showedit = false
+    this.showedit = false;
     const selectedCompany = this.trainingForm.get('companyName')?.value;
 
     if (!selectedCompany) {
       Swal.fire({
         // title: "The Internet?",
-        text: "โปรดเลือกบริษัทก่อน",
-        icon: "warning"
+        text: 'โปรดเลือกบริษัทก่อน',
+        icon: 'warning',
       });
       // this._snackBar.open('โปรดเลือกบริษัทก่อน', 'ปิด', {
       //   horizontalPosition: this.horizontalPosition,
@@ -359,14 +363,11 @@ export class FtrSv1PageComponent implements OnInit {
     this.trainingForm.get('total_exp')?.setValue('');
   }
 
-
-
   // สร้างฟังก์ชันสำหรับรีเฟรชฟอร์ม
   refreshBtn() {
     // Use location.reload() to refresh the window
     location.reload();
   }
-
 
   invalidtotal_expInput: boolean = false;
   invalidYearInput: boolean = false;
@@ -419,7 +420,7 @@ export class FtrSv1PageComponent implements OnInit {
 
       this.onBlurTotal();
     } else {
-      this.trainingForm.get('total_exp')?.setValue(null)
+      this.trainingForm.get('total_exp')?.setValue(null);
       this.invalidtotal_expInput = true;
     }
   }
@@ -572,19 +573,15 @@ export class FtrSv1PageComponent implements OnInit {
   exportexcel(): void {
     // // สร้าง WorkSheet
     // const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([[]]); // สร้าง WorkSheet ที่ไม่มีข้อมูล
-
     // // เริ่มที่แถว A3
     // ws['!ref'] = 'A4';
-
     // // เรียกใช้ฟังก์ชัน calculateTotal() เพื่อคำนวณค่า Total
     // // const total = this.calculateTotal();
-
     // // ตรวจสอบว่า ws['!ref'] มีค่าหรือไม่
     // if (ws['!ref']) {
     //   // เพิ่มค่า Total ลงในชีท ws
     //   ws[`G${ws['!ref'].split(':').pop()}`] = { v: total, t: 'n' };
     // }
-
     // // สร้างข้อมูลสำหรับแถวแรก (A1 ถึง G1)
     // ws['!merges'] = [
     //   { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } }, // Merge A1 to G1
@@ -601,18 +598,15 @@ export class FtrSv1PageComponent implements OnInit {
     //   },
     // };
     // ws['A2'] = { v: 'Department ' + this.readonlyDepartment, t: 's' };
-
     // // รับข้อมูลจากตาราง 'data-table' และเพิ่มลงใน WorkSheet ที่เริ่มที่แถว A3
     // let tableElement = document.getElementById('data-table');
     // const tableWs: XLSX.WorkSheet = XLSX.utils.table_to_sheet(tableElement);
     // XLSX.utils.sheet_add_json(ws, XLSX.utils.sheet_to_json(tableWs), {
     //   origin: 'A4',
     // });
-
     // /* generate workbook and add the worksheet */
     // const wb: XLSX.WorkBook = XLSX.utils.book_new();
     // XLSX.utils.book_append_sheet(wb, ws, 'FTR-SV1');
-
     // /* save to file */
     // XLSX.writeFile(wb, 'FTR-SV1.xlsx');
   }
@@ -651,7 +645,7 @@ export class FtrSv1PageComponent implements OnInit {
         this.pccDept = this.pccDept.map((item: any) => item.department);
         this.wsDept = this.wsDept.map((item: any) => item.department);
         this.pccDept = this.filterAndMapDepartments(this.pccDept);
-        this.wsDept  = this.filterAndMapDepartments(this.wsDept);
+        this.wsDept = this.filterAndMapDepartments(this.wsDept);
       },
       (err) => {
         console.error(err);
@@ -665,14 +659,15 @@ export class FtrSv1PageComponent implements OnInit {
 
     deptList1.forEach((dept: any) => {
       if (!uniqueDeptsMap.has(dept.deptCode)) {
-        uniqueDeptsMap.set(dept.deptCode, { deptCode: dept.deptCode, deptName: dept.deptName });
+        uniqueDeptsMap.set(dept.deptCode, {
+          deptCode: dept.deptCode,
+          deptName: dept.deptName,
+        });
       }
     });
 
-
     return Array.from(uniqueDeptsMap.values());
   }
-
 
   companyModel: string = 'PCCTH';
   selectCompany(company: string) {
@@ -685,23 +680,20 @@ export class FtrSv1PageComponent implements OnInit {
     }
   }
 
-
   shouldDisplayYear = false;
   shouldDisplayCompany = false;
   shouldDisplayDept = false;
 
-
   panelOpenState = false;
 
-
-  yearsData: { year: number, data: any[] }[] = [];
+  yearsData: { year: number; data: any[] }[] = [];
 
   private organizeDataByYear() {
     // นำข้อมูลใน rows มาจัดหมวดหมู่ตามปี
-    const years = [...new Set(this.rows.map(row => row.year))];
+    const years = [...new Set(this.rows.map((row) => row.year))];
 
-    years.forEach(year => {
-      const dataForYear = this.rows.filter(row => row.year === year);
+    years.forEach((year) => {
+      const dataForYear = this.rows.filter((row) => row.year === year);
       this.yearsData.push({ year, data: dataForYear });
     });
   }
@@ -709,8 +701,4 @@ export class FtrSv1PageComponent implements OnInit {
   isFooterVisible: boolean = false;
 
   lastDisplayedCompany: string = '';
-
-
-
-
 }

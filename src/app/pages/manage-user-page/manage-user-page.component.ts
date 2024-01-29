@@ -15,7 +15,7 @@ import {
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import { MatPaginator } from '@angular/material/paginator';
-import { tap } from 'rxjs';
+import { retry, tap } from 'rxjs';
 
 @Component({
   selector: 'app-manage-user-page',
@@ -36,6 +36,7 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
   pageLength: number = 10;
   @ViewChild(MatPaginator)
   paginator!: MatPaginator;
+  adminID: number = 0;
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
@@ -67,9 +68,12 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
     //filter sector dept and company
     this.showLoading();
     const UID = this.authService.getUID();
+    this.adminID = UID;
     this.filterByAdmin(UID);
     this.getAllEmpWithAdmin(UID);
     this.getAllposition();
+    // this.initSectorAndDeptForExcel();
+    this.initSectorAndDeptForExcelNEO();
     //ROLE USER CHECK!!
     const role = this.authService.checkRole();
     if (role !== 'ROLE_Admin') {
@@ -147,7 +151,7 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
           text: 'บันทึกข้อมูลสำเร็จ',
           icon: 'success',
         });
-        console.log(response);
+
         setTimeout(() => {
           location.reload();
         }, 1500);
@@ -392,15 +396,63 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
         this.PCCTH_Sector = sectors[0]; // <--- เอาไปใช้เจน dept,postion ของ PCC
         this.WS_Sector = sectors[1]; // <--- เอาไปใช้เจ dept,postion ของ WS
         this.selectCompany('PCCTH'); //set Default company
-        this.PCC_SECTOR_DEPT = this.MappingDATA_secID_deptID(this.PCCTH_Sector);
-        this.WS_SECTOR_DEPT = this.MappingDATA_secID_deptID(this.WS_Sector);
-        console.log('new map pcc', this.PCC_SECTOR_DEPT);
-        console.log('new map ws', this.WS_SECTOR_DEPT);
+        // this.PCC_SECTOR_DEPT = this.MappingDATA_secID_deptID(this.PCCTH_Sector);
+        // this.WS_SECTOR_DEPT = this.MappingDATA_secID_deptID(this.WS_Sector);
+        // console.log('new map pcc', this.PCC_SECTOR_DEPT);
+        // console.log('new map ws', this.WS_SECTOR_DEPT);
       },
       (err) => {
         console.error(err);
       }
     );
+  }
+
+  initSectorAndDeptForExcel() {
+    this.serviceuser.getAllDeptAndSector().subscribe((res) => {
+      const pcc_data = this.prepareSectorAndDept(res, 'PCCTH');
+      const ws_data = this.prepareSectorAndDept(res, 'WiseSoft');
+      this.PCC_SECTOR_DEPT = pcc_data;
+      this.WS_SECTOR_DEPT = ws_data;
+      // console.log('PCCTH DATA : ', this.PCC_SECTOR_DEPT);
+      // console.log('WiseSoft DATA : ', this.WS_SECTOR_DEPT);
+    });
+  }
+
+  initSectorAndDeptForExcelNEO() {
+    this.serviceuser.getAllDeptWithCompany().subscribe((res) => {
+      const pcc_data = res.filter((item: any) => item.company == 'PCCTH');
+      const pcc_sector = pcc_data.map((item: any) => item.sectors).flat();
+      const ws_data = res.filter((item: any) => item.company == 'WiseSoft');
+      const ws_sector = ws_data.map((item: any) => item.sectors).flat();
+      this.PCC_SECTOR_DEPT = pcc_sector;
+      this.WS_SECTOR_DEPT = ws_sector;
+      // console.log('PCCTH DATA NEO: ', pcc_sector);
+      // console.log('WiseSoft DATA NEO: ', ws_sector);
+    });
+  }
+
+  private prepareSectorAndDept(data: any[], company: string): any[] {
+    const companyData = data.filter((item: any) => item.company === company);
+
+    const uniqueSectors = [
+      ...new Set(companyData.map((item: any) => item.sectorId)),
+    ];
+
+    const preparedData = uniqueSectors.map((sectorId: any) => {
+      const departments = companyData
+        .filter((item: any) => item.sectorId === sectorId)
+        .map((item: any) => item.department);
+
+      return {
+        company,
+        sectorId,
+        sectorName: companyData.find((item: any) => item.sectorId === sectorId)
+          ?.sectorName,
+        departments,
+      };
+    });
+
+    return preparedData;
   }
 
   // ฟังก์ชันสำหรับโหลดข้อมูลพนักงานและนำมาเติมในฟอร์ม
@@ -474,7 +526,7 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
       sector_actual: this.sectorID,
     };
 
-    console.log('updatedData', updatedData);
+    console.log('updatedData', JSON.stringify(updatedData));
 
     this.serviceuser.putEditEmployee(id, updatedData).subscribe(
       (response) => {
@@ -485,14 +537,18 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
           icon: 'success',
           title: 'แก้ไขข้อมูลสำเร็จ',
           showConfirmButton: true,
-          confirmButtonText: 'OK',
+          confirmButtonText: 'ตกลง',
           position: 'center',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            location.reload();
+          }
         });
         // this._snackBar.open('แก้ไขข้อมูลสำเร็จ', 'ปิด', {
         //   horizontalPosition: this.horizontalPosition,
         //   verticalPosition: this.verticalPosition,
         // });
-        location.reload();
+        // location.reload();
       },
       (error) => {
         console.error('Error while saving data:', error);
@@ -505,7 +561,7 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
             title: 'เกิดข้อผิดพลาด',
             // text: "เกิดข้อผิดพลาด",
             confirmButtonColor: '#3085d6',
-            confirmButtonAriaLabel: 'OK',
+            confirmButtonAriaLabel: 'ตก',
             showConfirmButton: true,
             position: 'center',
           });
@@ -579,19 +635,14 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
   private showLoading() {
     Swal.fire({
       title: 'Now loading',
+      text: 'กำลังดำเนินการโปรดรอซักครู่',
       allowEscapeKey: false,
       allowOutsideClick: false,
-      timer: 2000,
       didOpen: () => {
         Swal.showLoading();
       },
-      willClose: () => {
-        Swal.hideLoading();
-      }
     });
   }
-  
-  
 
   getSearch() {
     if (this.searchForm !== null) {
@@ -631,9 +682,9 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
       }
 
       if (searchValue) {
-        this.showLoading()
+        this.showLoading();
         this.serviceuser.getSearchUser(searchParams).subscribe((data) => {
-          this.filterMode = true
+          this.filterMode = true;
           if (data === 'ไม่พบรายการที่ต้องการค้นหา') {
             this.userResult = [];
             this.showErrorMessage = true; // Show the error message
@@ -648,10 +699,10 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
               'user_id',
               'asc'
             );
-            this.filterEmpData = sortdata
-            this.paginator.pageIndex = 0
-            this.paginator.pageSize = 5
-            this.loadingpage()
+            this.filterEmpData = sortdata;
+            this.paginator.pageIndex = 0;
+            this.paginator.pageSize = 5;
+            this.loadingpage();
             this.showErrorMessage = false; // Hide the error message
           }
           Swal.close();
@@ -731,7 +782,6 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
     const fileReader = new FileReader();
     fileReader.readAsBinaryString(selectedFile);
     fileReader.onload = (event) => {
-      console.log(event);
       let binaryData = event.target?.result;
       let workbook = XLSX.read(binaryData, { type: 'binary' });
       workbook.SheetNames.forEach((sheet) => {
@@ -757,46 +807,40 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
         let renameData = this.renamekey(data);
         if (sheet == 'PCC') {
           this.PCC_EMP = renameData;
-          console.log('PCC_EMP', this.PCC_EMP);
         } else if (sheet == 'WS') {
           this.WS_EMP = renameData;
-          console.log('WS_EMP', this.WS_EMP);
         }
       });
     };
   }
 
-  private MappingDATA_secID_deptID(data: any) {
-    return data.map((item: any) => {
-      let sec_name = item.sectorname.split(' ');
-      let formatted = sec_name.join('');
-      return {
-        sectorid: item.sectorid,
-        sectorname: formatted,
-        departments: item.departments.map((dept: any) => {
-          return {
-            deptid: dept.deptid,
-            deptname: dept.deptname,
-            deptcode: dept.deptcode,
-          };
-        }),
-      };
-    });
-  }
-
   private addIDsToData(refdata: any, data: any) {
     const newData = data.map((item: any) => {
       const deptToUse = item?.dept || item?.sector;
-      console.log('item', item);
-      console.log('dept', item?.dept);
-      console.log('sector', item?.sector);
+      // console.log('item', item);
+      // console.log('dept', item?.dept);
+      // console.log('sector', item?.sector);
       // เพิ่มเงื่อนไขในการใช้ค่า dept หรือ sector
       const matchedsector = refdata.find(
         (sector: any) => sector?.sectorname == item?.sector
       );
-      const matchedDept = matchedsector?.departments.find(
-        (dept: any) => dept?.deptname == deptToUse
-      ); // ใช้ deptToUse แทน item?.dept
+
+      let matchedDept = matchedsector?.departments.find((dept: any) => {
+        const spl = deptToUse?.split(' ');
+        const formatted = spl.join('');
+        const hasvalidName = dept?.deptname == formatted;
+        return hasvalidName;
+      }); // ใช้ deptToUse แทน item?.dept
+      // console.log('matchedDept',matchedDept);
+      if (matchedDept == undefined && item.dept != undefined) {
+        matchedDept = matchedsector?.departments.find((dept: any) => {
+          const spl = item?.sector.split(' ');
+          const formatted = spl.join('');
+          const hasvalidName = dept?.deptname == formatted;
+          return hasvalidName;
+        });
+      }
+
       return {
         ...item,
         deptid: matchedDept ? matchedDept.deptid : null,
@@ -808,19 +852,21 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
   isLoading = true;
   statetext = '';
   async uploadData() {
-    this.statetext = 'กำลังบันทึกข้อมูล ...';
-    this.isLoading = false;
+    // this.statetext = 'กำลังบันทึกข้อมูล ...';
+    // this.isLoading = false;
+    this.showLoading();
     let finalDataPCC: any = {};
     let finalDataWS: any = {};
     let alldata: any[] = [];
+
     if (this.PCC_EMP) {
       const pccdata = this.addIDsToData(this.PCC_SECTOR_DEPT, this.PCC_EMP);
-      console.log('pccdata', pccdata);
+
       finalDataPCC = this.renameKeyForJsonCreateEmp(pccdata, 'PCC');
     }
     if (this.WS_EMP) {
       const wsdata = this.addIDsToData(this.WS_SECTOR_DEPT, this.WS_EMP);
-      console.log('wsdata', wsdata);
+
       finalDataWS = this.renameKeyForJsonCreateEmp(wsdata, 'WS');
     }
 
@@ -831,35 +877,15 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
     } else if (!finalDataPCC && finalDataWS) {
       alldata = finalDataWS;
     }
-    let failData: any[] = alldata.filter((item: any) => {
-      return item.dept_actual == null;
-    });
-    let passData: any[] = alldata.filter((item: any) => {
-      return item.dept_actual != null;
-    });
 
-    console.log('can action data: ', passData);
-    console.log("can't action data: ", failData);
-
-    // console.log('null dept',alldata.filter((item:any) => {
-    //   return item.dept_actual == null
-    // }));
-    console.log('before query :', passData, length);
-
-    passData = passData.filter((passItem: any) => {
+    let passData = alldata.filter((passItem: any) => {
       return !this.allEmps.some((allEmpsItem: any) => {
         return (
-          allEmpsItem.empCode == passItem.empCode &&
           allEmpsItem.firstname == passItem.firstname &&
-          allEmpsItem.lastname == passItem.lastname &&
-          allEmpsItem.email == passItem.email
+          allEmpsItem.lastname == passItem.lastname
         );
       });
     });
-
-    console.log(this.allEmps);
-
-    console.log('after query :', passData);
 
     await this.compareAndinsertPosition(passData);
     // console.log(JSON.stringify(alldata[0]));
@@ -883,15 +909,28 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
       }
     }
 
-    this.statetext = 'บันทึกข้อมูลสำเร็จ';
-    // alert('บันทึกข้อมูลทั้งหมดแล้ว');
-    console.log('Success: ', succes);
-    console.log('Fail: ', fail);
-    console.log('Fail Data: ', faildata);
+    // this.statetext = 'บันทึกข้อมูลสำเร็จ';
+    // // alert('บันทึกข้อมูลทั้งหมดแล้ว');
+    // console.log('Success: ', succes);
+    // console.log('Fail: ', fail);
+    // console.log('Fail Data: ', faildata);
 
-    setTimeout(() => {
-      this.isLoading = true;
-    }, 1000);
+    // setTimeout(() => {
+    //   this.isLoading = true;
+    //   // location.reload()
+    // }, 1000);
+    Swal.fire({
+      title: 'สำเร็จ',
+      text: 'อัปโหลดข้อมูลเสร็จสิ้น',
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      confirmButtonText: 'ตกลง',
+      showConfirmButton: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.getAllEmpWithAdmin(this.adminID);
+      }
+    });
   }
 
   renamekey(data: any) {
@@ -994,9 +1033,11 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
     let addposition = data.map((item: any) => {
       return {
         positionName: item.positionName,
-        departmentId: item.dept_actual,
+        departmentId:
+          item.dept_actual !== null ? item.dept_actual : item.sector_actual,
       };
     });
+
     console.log('before add new position: ', addposition);
     addposition = addposition.filter((newPos: any) => {
       return !currentPositions.some(
@@ -1015,7 +1056,6 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
       return false;
     });
     // console.log('current position: ', currentPositions);
-    console.log('add new position: ', addposition);
 
     let fail_count = 0;
     let pass_count = 0;
@@ -1033,8 +1073,5 @@ export class ManageUserPageComponent implements OnInit, AfterViewInit {
         });
       }
     }
-    console.log('failDATA: ', failData);
-    console.log('pass count', pass_count);
-    console.log('fail count', fail_count);
   }
 }

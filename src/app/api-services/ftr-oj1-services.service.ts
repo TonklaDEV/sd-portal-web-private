@@ -7,7 +7,7 @@ import {
   GetTrainingById,
   Training,
   allDeptCompany,
-  findUserById
+  findUserById,
 } from 'src/environments/interfaces/environment-options.interface';
 
 @Injectable({
@@ -38,11 +38,6 @@ export class FtrOj1ServicesService {
     });
   }
 
-  // getSearch(dept: String, tRole: String, tName: String){
-  //   console.log('search')
-  //   return this.http.get(this.apiurl + "search?Dept=" + dept +"&tName=" + tRole + "&tRole=" + tName)
-  // }
-
   deleteId(id: number) {
     return this.http.delete(this.apiurl + '/deleteById?id=' + id);
   }
@@ -51,9 +46,7 @@ export class FtrOj1ServicesService {
     return this.http
       .get(this.apiurl + 'findTrainingById?trainingId=' + id)
       .pipe(
-        tap((data) => {
-          // console.log('Response:', data); // บันทึกค่าที่ได้รับ
-        }),
+        tap((data) => {}),
         catchError((error) => {
           console.error('Error:', error); // บันทึกค่าข้อผิดพลาด
           return throwError(error); // ส่งค่าข้อผิดพลาดต่อไปเพื่อการจัดการเพิ่มเติม
@@ -70,7 +63,6 @@ export class FtrOj1ServicesService {
       .subscribe(
         (response) => {
           if (response === 'SUCCESS') {
-            // console.log('Data saved successfully:', response);
           } else {
             console.error('Unexpected response:', response);
           }
@@ -107,7 +99,6 @@ export class FtrOj1ServicesService {
     return this.http.get<Course>(this.apiurl + '/findAllCourse');
   }
 
-
   getTest(): Observable<Course> {
     // ใช้ Observable ในการรับข้อมูล
     return this.http.get<Course>(this.apiurl + '/findAllTest');
@@ -120,9 +111,7 @@ export class FtrOj1ServicesService {
         responseType: 'text',
       })
       .subscribe(
-        (response) => {
-          // console.log('Data saved successfully:', response);
-        },
+        (response) => {},
         (error) => {
           console.error('Error while saving data:', error);
         }
@@ -145,12 +134,14 @@ export class FtrOj1ServicesService {
     );
   }
 
-  getAlldeptWithAdmin(id:number) :Observable<any>{
-    return this.http.get<any>(`${this.apiurl}/findDepartmentsByUser?userId=${id}`)
+  getAlldeptWithAdmin(id: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.apiurl}/findDepartmentsByUser?userId=${id}`
+    );
   }
 
-  getAlldeptWithCompanyV2() : Observable<any> {
-    return this.http.get<any>(`${this.apiurl}/findAllJoinDepartmentssector`)
+  getAlldeptWithCompanyV2(): Observable<any> {
+    return this.http.get<any>(`${this.apiurl}/findAllJoinDepartmentssector`);
   }
 
   findTrainingByTrainID(id: number): Observable<GetTrainingById> {
@@ -169,14 +160,18 @@ export class FtrOj1ServicesService {
       `${this.apiurl}/findAllApprove?count=${count}`
     );
   }
-  findTrainingByPersonnelId(id: number) : Observable<Training[]>{
+  findTrainingByPersonnelId(id: number): Observable<Training[]> {
     return this.http.get<Training[]>(
-      this.apiurl+'/findTrainingByPersonnelId?PersonnelId=' + id
+      this.apiurl + '/findTrainingByPersonnelId?PersonnelId=' + id
     );
   }
 
-  cancelTraining(id:number){
-    return this.http.put(`${this.apiurl}/setCancelToTraining?trainingId=${id}`, null, { headers: { 'Accept': '*/*' } });
+  cancelTraining(id: number) {
+    return this.http.put(
+      `${this.apiurl}/setCancelToTraining?trainingId=${id}`,
+      null,
+      { headers: { Accept: '*/*' } }
+    );
   }
 
   approveTraining(
@@ -185,58 +180,44 @@ export class FtrOj1ServicesService {
     approved: string
   ): Observable<any> {
     const url = `${this.apiurl}/setStatusToTraining?trainingId=${TrainId}&approveId=${ApproveId}&statusApprove=${approved}`;
-    // console.log('APPROVE WORKING');
-    // console.log('train ID: ', TrainId);
-    // console.log('Approve ID: ', ApproveId);
-    // console.log('APPROVE? : ', approved);
-    // console.log('Url: ', url);
 
     return this.http.put(url, {});
   }
 
-  EditSectionOne(trainingId: number, trainingData:any) {
+  EditSectionOne(trainingId: number, trainingData: any) {
     const url = `${this.apiurl}/editTrainingSection1?trainingId=${trainingId}`;
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Accept: '*/*',
     });
-    window.location.reload();
-    console.log(JSON.stringify(trainingData));
-    console.log(trainingId);
-    
-    
+    // window.location.reload();
 
     return this.http.post(url, JSON.stringify(trainingData), { headers });
-}
-
-  EditSectionTwo(resultId: number, resultValue: EditSectionTwo) {
-    this.http
-      .post<EditSectionTwo>(
-        `${this.apiurl}/editTrainingSection2?resultId=${resultId}`,
-        JSON.stringify(resultValue),
-        {
-          headers: this.headers,
-        }
-      )
-      .subscribe(
-        (res) => {
-          // console.log(res);
-          window.location.reload();
-        },
-        (err) => {
-          console.error(err);
-        }
-      );
   }
 
-  getUserById(id: number): Observable<any> {
-    return this.http.get<any>(
-      `${this.apiurl}/findUserById?userId=${id}`
+  EditSectionTwo(
+    resultId: number,
+    resultValue: EditSectionTwo
+  ): Observable<EditSectionTwo> {
+    return this.http.post<EditSectionTwo>(
+      `${this.apiurl}/editTrainingSection2?resultId=${resultId}`,
+      JSON.stringify(resultValue),
+      {
+        headers: this.headers,
+      }
     );
   }
 
-  editTrainingSection1Person(trainingId: number, action: string, actionDate: string) {
+  getUserById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiurl}/findUserById?userId=${id}`);
+  }
+
+  editTrainingSection1Person(
+    trainingId: number,
+    action: string,
+    actionDate: string
+  ) {
     const url = `${this.apiurl}/editTrainingSection1Person?trainingId=${trainingId}`;
     const body = { action, actionDate };
 
@@ -245,16 +226,16 @@ export class FtrOj1ServicesService {
 
   getReport(param: any): Observable<any> {
     const url = `${this.apiurl}/Report`;
-    return this.http.get<any>(url,{ params: param });
+    return this.http.get<any>(url, { params: param });
   }
 
-  getUserInfo(id : number) : Observable<findUserById>{
+  getUserInfo(id: number): Observable<findUserById> {
     return this.http.get<findUserById>(
       `${this.apiurl}/findUserById?userId=${id}`
-    )
+    );
   }
 
-  generic9EVO(report : any): Observable<any> {
+  generic9EVO(report: any): Observable<any> {
     // สร้าง URL สำหรับการเรียก API ในรูปแบบที่คุณต้องการ
     const url = `${this.apiurl}/ReportGeneric9`;
 
@@ -262,34 +243,23 @@ export class FtrOj1ServicesService {
     return this.http.get<any>(url, { params: report });
   }
 
-  ReportHistoryTraining(params : any): Observable<any>{
-    const url = `${this.apiurl}/ReportHistoryTraining`
+  ReportHistoryTraining(params: any): Observable<any> {
+    const url = `${this.apiurl}/ReportHistoryTraining`;
     return this.http.get<any>(url, { params: params });
   }
 
-  getAllSector() : Observable<any>{
-    return this.http.get<any>(`${this.apiurl}/findAllSector`)
+  getAllSector(): Observable<any> {
+    return this.http.get<any>(`${this.apiurl}/findAllSector`);
   }
 
- 
-  editGeneric9(id: number, resultValue: any) {
-    this.http
-      .post<any>(
-        `${this.apiurl}/editGeneric9?Generic9id=${id}`,
-        JSON.stringify(resultValue),
-        {
-          headers: this.headers,
-        }
-      )
-      .subscribe(
-        (res) => {
-          // console.log(res);
-          window.location.reload();
-        },
-        (err) => {
-          console.error(err);
-        }
-      );
+  editGeneric9(id: number, resultValue: any): Observable<any> {
+    return this.http.post<any>(
+      `${this.apiurl}/editGeneric9?Generic9id=${id}`,
+      JSON.stringify(resultValue),
+      {
+        headers: this.headers,
+      }
+    );
   }
 
   uploadFile(file: File) {
@@ -297,9 +267,11 @@ export class FtrOj1ServicesService {
     formData.append('file', file, file.name);
 
     const headers = new HttpHeaders({
-      'Accept': 'application/json' // แก้ไขตามความต้องการของ API
+      Accept: 'application/json', // แก้ไขตามความต้องการของ API
     });
 
-    return this.http.post(`${this.apiurl}/uploadFile`, formData, { headers: headers });
+    return this.http.post(`${this.apiurl}/uploadFile`, formData, {
+      headers: headers,
+    });
   }
 }

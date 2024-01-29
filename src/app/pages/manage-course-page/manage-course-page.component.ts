@@ -24,19 +24,7 @@ export class ManageCoursePageComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
     private router: Router,
     private _snackBar: MatSnackBar
-  ) {}
-
-  CourseForm: any;
-  //rows: Array<any> = [];
-  selectedRow: any;
-  courseResult: any;
-  pageLength: number = 0;
-  @ViewChild(MatPaginator)
-  paginator!: MatPaginator;
-
-  selectedTime!: string; // เวลาจะเป็น string
-
-  ngOnInit(): void {
+  ) {
     this.CourseForm = this.fb.group({
       id: [''],
       courseName: ['', Validators.required],
@@ -50,12 +38,26 @@ export class ManageCoursePageComponent implements OnInit, AfterViewInit {
       priceProject: [''],
       institute: ['', Validators.required],
       place: ['', Validators.required],
-      type: ['', Validators.required],
+      type: ['train', Validators.required],
     });
+  }
+
+  CourseForm: any;
+  //rows: Array<any> = [];
+  selectedRow: any;
+  courseResult: any;
+  pageLength: number = 0;
+  @ViewChild(MatPaginator)
+  paginator!: MatPaginator;
+
+  selectedTime!: string; // เวลาจะเป็น string
+
+  ngOnInit(): void {
+    this.showLoading();
 
     this.getFindAll();
 
-    // console.log('in manage-course')
+    // console.log('in manage-course',this.getFindAll)
     const role = this.authService.checkRole();
     if (role !== 'ROLE_Admin') {
       this.router.navigate(['/pccth/detail']);
@@ -74,6 +76,19 @@ export class ManageCoursePageComponent implements OnInit, AfterViewInit {
     this.courseResult = this.allCourse.slice(startIndex, endIndex);
   }
 
+  private showLoading() {
+    Swal.fire({
+      title: 'Now loading',
+      text: 'กำลังดำเนินการโปรดรอซักครู่',
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      timer: 2000,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  }
+
   startDate!: Date;
   endDate!: Date;
   showdataErrorMessage!: any;
@@ -90,22 +105,30 @@ export class ManageCoursePageComponent implements OnInit, AfterViewInit {
     this._service.getFindAll().subscribe({
       next: (result) => {
         // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
-        this.allCourse = this._service.sortData(result, 'id', 'asc');
-        this.pageLength = this.allCourse.length
-        this.courseResult = this.allCourse.slice(0, 5);
-        //this.parentResult = result;
-        // console.log('courseResult:', this.courseResult);
+        this.allCourse = this._service.sortData(result, 'id', 'desc');
+        this.pageLength = this.allCourse.length;
+        const pageIndex = this.paginator?.pageIndex ?? 0;
+        if (pageIndex != 0) {
+          this.loadingpage();
+        } else {
+          this.courseResult = this.allCourse.slice(0, 5);
+        }
         if (this.courseResult.length === 0) {
           this.showdataErrorMessage = true; // Show the error message
         } else {
           this.showdataErrorMessage = false; // Hide the error message
         }
+        Swal.close();
       },
-      error: console.log,
+      error: () => {
+        Swal.fire({
+          title: 'ผิดพลาด',
+          text: 'เกิดข้อผิดพลาดในการดึงข้อมูล',
+          icon: 'error',
+        });
+      },
     });
 
-    console.log(this.typeStatus());
-    console.log(this.selectedType);
     // this.typeStatus();
   }
 
@@ -138,41 +161,44 @@ export class ManageCoursePageComponent implements OnInit, AfterViewInit {
         priceProject: this.CourseForm.get('priceProject').value,
         institute: this.CourseForm.get('institute').value,
         place: this.CourseForm.get('place').value,
-        type: this.CourseForm.get('type').value,
+        type: this.CourseForm.get('type').value == 'train' ? 0 : 1,
       };
-      console.log('Form Data:', formData);
 
-      // เรียกใช้งาน addCourse จาก service เพื่อส่งข้อมูลไปยังเซิร์ฟเวอร์
+      console.log('FormData:', formData);
       this._service.addCourse(formData).subscribe({
         next: (response) => {
-          // ตอบรับหลังจากการส่งข้อมูลสำเร็จ
-          // console.log('Response:', response);
-
-          // เพิ่มข้อมูลลงในตารางหรือหน้าเว็บตามที่คุณต้องการ
-          // this.courseResult.push(response);
-
-          // รีเซ็ตฟอร์ม
           this.CourseForm.reset();
+          Swal.fire({
+            title: 'สำเร็จ',
+            text: 'แก้ไขข้อมูลเสร็จสิ้น',
+            icon: 'success',
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            confirmButtonText: 'ตกลง',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              this.getFindAll();
+            }
+          });
         },
         error: (error) => {
-          // จัดการเมื่อเกิดข้อผิดพลาดในการส่งข้อมูล
           console.error('Error:', error);
         },
       });
     }
-    location.reload();
+    // location.reload();
   }
 
   isEditMode = false;
 
   cancelEdit() {
-    // Clear the form and exit edit mode
     this.CourseForm.reset();
     this.isEditMode = false;
     this.selectedRow = null;
   }
 
   startEdit(id: number) {
+    // console.log("edit",this.CourseForm);
     // Make an HTTP GET request to retrieve the data for the selected course
     // console.log('edit ID:', id);
     this._service.getCoursebyId(id).subscribe((data: any) => {
@@ -193,12 +219,8 @@ export class ManageCoursePageComponent implements OnInit, AfterViewInit {
           priceProject: result.priceProject, // Provide default value or check for existence
           institute: result.institute || '', // Check for institute existence
           place: result.place || '', // Check for place existence
-          type: result.type || '',
+          type: result.type == 0 ? 'train' : 'test',
         });
-
-        // console.log('edit data:', this.CourseForm.value);
-
-        // Enable edit mode
         this.isEditMode = true;
 
         // Scroll to the form element
@@ -236,44 +258,79 @@ export class ManageCoursePageComponent implements OnInit, AfterViewInit {
         priceProject: this.CourseForm.get('priceProject').value,
         institute: this.CourseForm.get('institute').value,
         place: this.CourseForm.get('place').value,
-        type: this.CourseForm.get('type').value,
+        type: this.CourseForm.get('type').value == 'train' ? 0 : 1,
       };
 
-      console.log('Update Data:', updatedData);
+      // console.log('Update Data:', updatedData);
 
       // เรียกใช้งาน editCourse เพื่อส่งข้อมูลการแก้ไขไปยังเซิร์ฟเวอร์
-      this._service.editCourse(id, updatedData).subscribe({
-        next: (result) => {
-          // ทำตามที่คุณต้องการหลังจากการอัปเดตข้อมูลเสร็จสิ้น
-          // console.log('Update Successful:', result);
+      // Swal.close()
+      Swal.fire({
+        title: 'ยืนยัน?',
+        text: 'คุณต้องการแก้ไขหรือไม่',
+        icon: 'warning',
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก',
+        cancelButtonColor: '#d33',
+        showCancelButton: true,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this._service.editCourse(id, updatedData).subscribe({
+            next: (result) => {
+              if (this.selectedRow) {
+                this.selectedRow.courseName = updatedData.courseName;
+                this.selectedRow.startDate = updatedData.startDate;
+                this.selectedRow.endDate = updatedData.endDate;
+                this.selectedRow.time = updatedData.time;
+                this.selectedRow.hours = updatedData.hours;
+                this.selectedRow.note = updatedData.note;
+                this.selectedRow.price = updatedData.price;
+                this.selectedRow.priceProject = updatedData.priceProject;
+                this.selectedRow.institute = updatedData.institute;
+                this.selectedRow.place = updatedData.place;
+                this.selectedRow.type = updatedData.type;
+              }
+              // console.log(updatedData);
 
-          // อัปเดตข้อมูลในตารางหรือหน้าเว็บตามที่คุณต้องการ
-          if (this.selectedRow) {
-            this.selectedRow.courseName = updatedData.courseName;
-            this.selectedRow.startDate = updatedData.startDate;
-            this.selectedRow.endDate = updatedData.endDate;
-            this.selectedRow.time = updatedData.time;
-            this.selectedRow.hours = updatedData.hours;
-            this.selectedRow.note = updatedData.note;
-            this.selectedRow.price = updatedData.price;
-            this.selectedRow.priceProject = updatedData.priceProject;
-            this.selectedRow.institute = updatedData.institute;
-            this.selectedRow.place = updatedData.place;
-            this.selectedRow.type = updatedData.type;
-          }
-
-          // Reset the form and exit edit mode
-          this.CourseForm.reset();
-          this.isEditMode = false;
-          this.selectedRow = null;
-        },
-        error: (error) => {
-          console.error('Update Failed:', error);
-          // ดำเนินการตามที่คุณต้องการเมื่อการอัปเดตล้มเหลว
-        },
+              // Reset the form and exit edit mode
+              this.CourseForm.reset();
+              this.isEditMode = false;
+              this.selectedRow = null;
+              Swal.fire({
+                title: 'สำเร็จ',
+                text: 'แก้ไขข้อมูลเสร็จสิ้น',
+                icon: 'success',
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                confirmButtonText: 'ตกลง',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  this.getFindAll();
+                }
+              });
+            },
+            error: (error) => {
+              Swal.fire({
+                title: 'ไม่สำเร็จ',
+                text: 'ไม่สามารถแก้ไขข้อมูลได้',
+                icon: 'error',
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                confirmButtonText: 'ตกลง',
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  this.getFindAll();
+                }
+              });
+              console.error('Update Failed:', error);
+              // ดำเนินการตามที่คุณต้องการเมื่อการอัปเดตล้มเหลว
+            },
+          });
+        }
       });
     }
-    location.reload();
   }
 
   //snacknbar postion
@@ -402,7 +459,6 @@ export class ManageCoursePageComponent implements OnInit, AfterViewInit {
   showErrorMessage!: boolean;
 
   typeStatus() {
-    console.log(this.selectedType);
     if (this.selectedType === 'อบรม') {
       this.getFindAllCourse();
     } else if (this.selectedType === 'สอบ') {
@@ -415,9 +471,9 @@ export class ManageCoursePageComponent implements OnInit, AfterViewInit {
       next: (result) => {
         // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
         const courseResult = this._service.sortData(result, 'id', 'asc'); // เรียงข้อมูลตามคอลัมน์ 'propertyName' ในลำดับ 'asc'
-        this.allCourse = courseResult
-        this.pageLength = this.allCourse.length
-        this.courseResult = this.allCourse.slice(0,5)
+        this.allCourse = courseResult;
+        this.pageLength = this.allCourse.length;
+        this.courseResult = this.allCourse.slice(0, 5);
         //this.parentResult = result;
         // console.log('courseResult:', this.courseResult);
         // ตรวจสอบถ้าข้อมูลเป็น []
@@ -436,9 +492,9 @@ export class ManageCoursePageComponent implements OnInit, AfterViewInit {
       next: (result) => {
         // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
         const courseResult = this._service.sortData(result, 'id', 'asc'); // เรียงข้อมูลตามคอลัมน์ 'propertyName' ในลำดับ 'asc'
-        this.allCourse = courseResult
-        this.pageLength = this.allCourse.length
-        this.courseResult = this.allCourse.slice(0,5)
+        this.allCourse = courseResult;
+        this.pageLength = this.allCourse.length;
+        this.courseResult = this.allCourse.slice(0, 5);
         // ตรวจสอบถ้าข้อมูลเป็น []
         if (result.length === 0) {
           this.showErrorMessage = true;

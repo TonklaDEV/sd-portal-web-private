@@ -17,7 +17,7 @@ import {
   MatSnackBarHorizontalPosition,
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { DomSanitizer, SafeUrl, Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { isThisHour } from 'date-fns';
 import { switchMap, tap } from 'rxjs';
@@ -87,7 +87,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   signatureForm!: FormGroup; // เพิ่มตัวแปรสำหรับ FormGroup
   allParentsResult: any;
   pageEvent!: PageEvent;
-
+  adminDeptsManage: any;
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -164,7 +164,6 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   cancheckG9!: boolean;
   async ngOnInit() {
     this.showLoading();
-    this.getGeneric9Data;
     this.role = this.authService.checkRole();
     this.UserId = this.authService.getUID();
     const UID = this.authService.getUID();
@@ -176,8 +175,6 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
     this.showTestData();
     this.showCourseData();
     this.initsector();
-    // console.log('this login role : ',this.role);
-    console.log('role', this.role);
 
     if (this.role === 'ROLE_User') {
       this.getFindTrainingByUserId(this.UserId);
@@ -185,7 +182,8 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
     } else if (
       this.role === 'ROLE_Approver' ||
       this.role === 'ROLE_Manager' ||
-      this.role === 'ROLE_President'
+      this.role === 'ROLE_President' ||
+      this.role === 'ROLE_VicePresident'
     ) {
       this.getFindTrainingByApproveId(this.UserId);
       this.sectionG9.enable();
@@ -193,12 +191,9 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
       this.getSectorID(UID);
       this.sectionG9.disable();
     } else if (this.role == 'ROLE_Personnel') {
-      // this.getFindTrainingByPersonnel(this.UserId);
       this.getSectorID(UID);
       this.sectionG9.enable();
     }
-    // console.log('USER ID : ', this.UserId);
-    // console.log('Role of user : ', this.role);
   }
 
   ngAfterViewInit(): void {
@@ -223,14 +218,12 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   private showLoading() {
     Swal.fire({
       title: 'Now loading',
+      text: 'กำลังดำเนินการโปรดรอซักครู่',
       allowEscapeKey: false,
       allowOutsideClick: false,
       timer: 2000,
       didOpen: () => {
         Swal.showLoading();
-      },
-      willClose: () => {
-        Swal.hideLoading();
       },
     });
   }
@@ -248,7 +241,6 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   }
 
   getFindTrainingByPersonnel(id: number) {
-    // console.log(id);
     this.ftroj1.findTrainingByPersonnelId(id).subscribe({
       next: (result) => {
         // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
@@ -256,8 +248,6 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
           (item) =>
             item.isDo !== 'รอประเมิน' || item.result_status !== 'ไม่อนุมัติ'
         ); // เรียงข้อมูลตามคอลัมน์ 'propertyName' ในลำดับ 'asc'
-        //this.parentResult = result;
-        // console.log('byid', this.parentResult);
         this.allParentsResult = this.parentResult;
 
         if (this.parentResult.length === 0) {
@@ -266,16 +256,21 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
           this.showdataErrorMessage = false; // Hide the error message
         }
       },
-      error: console.log,
+      error: () => {
+        Swal.fire({
+          title: 'เกิดข้อผิดพลาด',
+          text: 'เกิดข้อพิดพลาดในการดึงข้อมูล',
+          icon: 'error',
+        });
+      },
     });
   }
   resultForSearch: any;
   getFindTrainingByApproveId(id: number) {
-    // console.log(id);
-    // let deptIds = dept.map((item: any) => item.id);
     this.ftroj1.findTrainingByApproveId(id).subscribe({
       next: (result: any) => {
         // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
+        result.sort((a: any, b: any) => b.training.id - a.training.id);
         if (
           this.role === 'ROLE_Approver' ||
           this.role == 'ROLE_Manager' ||
@@ -283,7 +278,17 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
         ) {
           this.allParentsResult = result;
           this.resultForSearch = result;
-          this.parentResult = this.allParentsResult.slice(0, 3);
+          const pageIndex = this.paginator?.pageIndex ?? 0;
+
+          //paginator gendata in table
+          if (pageIndex != 0) {
+            //Another time
+            this.loadingpage();
+          } else {
+            //First time
+            this.parentResult = this.allParentsResult.slice(0, 3);
+          }
+
           this.notiStatus();
         } else if (this.role === 'ROLE_VicePresident') {
           let firstFilter = result?.filter(
@@ -295,7 +300,16 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
           // );
           this.allParentsResult = firstFilter;
           this.resultForSearch = firstFilter;
-          this.parentResult = this.allParentsResult.slice(0, 3);
+          const pageIndex = this.paginator?.pageIndex ?? 0;
+
+          //paginator gendata in table
+          if (pageIndex != 0) {
+            //Another time
+            this.loadingpage();
+          } else {
+            //First time
+            this.parentResult = this.allParentsResult.slice(0, 3);
+          }
           this.notiStatus();
           if (this.allParentsResult.length === 0) {
             this.showdataErrorMessage = true; // Show the error message
@@ -303,11 +317,16 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
             this.showdataErrorMessage = false; // Hide the error message
           }
         }
-        // console.log('byid', this.parentResult);
         this.pageLength = this.allParentsResult.length;
         Swal.close();
       },
-      error: console.log,
+      error: () => {
+        Swal.fire({
+          title: 'เกิดข้อผิดพลาด',
+          text: 'เกิดข้อพิดพลาดในการเข้าถึงข้อมูล',
+          icon: 'error',
+        });
+      },
     });
   }
 
@@ -320,17 +339,21 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
         this.allParentsResult = result;
         this.parentResult = this.allParentsResult; // เรียงข้อมูลตามคอลัมน์ 'propertyName' ในลำดับ 'asc'
       },
-      error: console.log,
+      error: () => {
+        Swal.fire({
+          title: 'เกิดข้อผิดพลาด',
+          text: 'เกิดข้อพิดพลาดในการเข้าถึงข้อมูล',
+          icon: 'error',
+        });
+      },
     });
   }
   getFindAll(dept: any) {
-    // console.log('click');
     this.ftroj1.findAllTraining().subscribe({
       next: (result) => {
         // ทำการเรียงลำดับข้อมูลโดยใช้ sortData()
         // เรียงข้อมูลตามคอลัมน์ 'propertyName' ในลำดับ 'asc'
-        //this.parentResult = result;
-        // console.log('testtt', this.parentResult);
+        result.sort((a: any, b: any) => b.training.id - a.training.id);
         if (this.role == 'ROLE_Admin') {
           let filtereddept = result?.filter((item: any) =>
             dept?.some(
@@ -339,10 +362,26 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
             )
           );
           this.allParentsResult = filtereddept;
-          this.parentResult = this.allParentsResult.slice(0, 3);
+          const pageIndex = this.paginator?.pageIndex ?? 0;
+
+          //paginator gendata in table
+          if (pageIndex != 0) {
+            //Another time
+            this.loadingpage();
+          } else {
+            //First time
+            this.parentResult = this.allParentsResult.slice(0, 3);
+          }
         } else {
           this.allParentsResult = result;
-          this.parentResult = this.allParentsResult.slice(0, 3);
+          const pageIndex = this.paginator?.pageIndex ?? 0;
+          if (pageIndex != 0) {
+            //Another time
+            this.loadingpage();
+          } else {
+            //First time
+            this.parentResult = this.allParentsResult.slice(0, 3);
+          }
         }
 
         if (this.parentResult.length === 0) {
@@ -350,16 +389,21 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
         } else {
           this.showdataErrorMessage = false; // Hide the error message
         }
-        this.resultForSearch = this.allParentsResult
+        this.resultForSearch = this.allParentsResult;
         this.pageLength = this.allParentsResult.length;
         Swal.close();
       },
-      error: console.log,
+      error: () => {
+        Swal.fire({
+          title: 'เกิดข้อผิดพลาด',
+          text: 'เกิดข้อพิดพลาดในการเข้าถึงข้อมูล',
+          icon: 'error',
+        });
+      },
     });
   }
 
   getFindTrainingByUserId(id: number) {
-    // console.log(id);
     this.ftroj1.findTrainingByUserId(id).subscribe({
       next: (results) => {
         // Filter the results to keep only those with result_status === 'อนุมัติ'
@@ -376,9 +420,14 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
         }
 
         // Now, 'approvedResults' contains only the results with 'อนุมัติ'
-        // console.log('byid', this.parentResult);
       },
-      error: console.log,
+      error: () => {
+        Swal.fire({
+          title: 'เกิดข้อผิดพลาด',
+          text: 'เกิดข้อพิดพลาดในการเข้าถึงข้อมูล',
+          icon: 'error',
+        });
+      },
     });
   }
 
@@ -392,7 +441,11 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
         this.courseData = res;
       },
       (error) => {
-        console.error('Error while getting courses: ', error);
+        Swal.fire({
+          title: 'เกิดข้อผิดพลาด',
+          text: 'เกิดข้อพิดพลาดในการเข้าถึงข้อมูล',
+          icon: 'error',
+        });
       }
     );
   }
@@ -404,7 +457,11 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
         this.testData = res;
       },
       (error) => {
-        console.error('Error while getting tests: ', error);
+        Swal.fire({
+          title: 'เกิดข้อผิดพลาด',
+          text: 'เกิดข้อพิดพลาดในการเข้าถึงข้อมูล',
+          icon: 'error',
+        });
       }
     );
   }
@@ -419,7 +476,11 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
           this.courseData = res;
         },
         (error) => {
-          console.error('Error while getting courses: ', error);
+          Swal.fire({
+            title: 'เกิดข้อผิดพลาด',
+            text: 'เกิดข้อพิดพลาดในการเข้าถึงข้อมูล',
+            icon: 'error',
+          });
         }
       );
     } else if (selectedOption === 'สอบ') {
@@ -429,70 +490,62 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
           this.testData = res;
         },
         (error) => {
-          console.error('Error while getting tests: ', error);
+          Swal.fire({
+            title: 'เกิดข้อผิดพลาด',
+            text: 'เกิดข้อพิดพลาดในการเข้าถึงข้อมูล',
+            icon: 'error',
+          });
         }
       );
     }
   }
 
   Approve(trainID: number, approve: string) {
-    if (this.role == 'ROLE_Personnel') {
-      // console.log(this.EditSectionOneForm);
-      if (
-        this.EditSectionOneForm.action != null &&
-        this.EditSectionOneForm.actionDate != null
-      ) {
-        this.ftroj1
-          .editTrainingSection1Person(
-            trainID,
-            this.EditSectionOneForm.action,
-            this.EditSectionOneForm.actionDate
-          )
-          .subscribe(
-            (res) => {
-              // console.log('การบันทึก personel', res);
-            },
-            (err) => {
-              console.error(err);
-            }
-          );
-
+    Swal.fire({
+      title: approve,
+      text: `คุณต้องการ "${approve}" หรือไม่`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก',
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
         this.ftroj1.approveTraining(trainID, this.UserId, approve).subscribe(
           (response) => {
-            window.location.reload();
-            // console.log('การอัปเดตสถานะสำเร็จ', response);
+            Swal.fire({
+              title: 'สำเร็จ',
+              text: 'ทำรายการเสร็จสิ้น',
+              icon: 'success',
+              allowEscapeKey: false,
+              allowOutsideClick: false,
+              confirmButtonText: 'ยืนยัน',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.getFindTrainingByApproveId(this.UserId);
+              }
+              this.clearAndCloseModal();
+            });
           },
           (error) => {
-            console.error('เกิดข้อผิดพลาดในการอัปเดตสถานะ', error);
+            Swal.fire({
+              title: 'ไม่สำเร็จ',
+              text: 'ทำรายการไม่าสำเร็จ',
+              icon: 'error',
+              allowEscapeKey: false,
+              allowOutsideClick: false,
+              confirmButtonText: 'ยืนยัน',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.getFindTrainingByApproveId(this.UserId);
+              }
+              this.clearAndCloseModal();
+            });
           }
         );
-        location.reload();
-      } else {
-        // alert('กรุณาเลือกข้อมูลที่หัวข้อ แผนกบุคคล');
-        Swal.fire({
-          // title: "The Internet?",
-          text: 'กรุณาเลือกข้อมูลที่หัวข้อ แผนกบุคคล',
-          icon: 'warning',
-        });
-        // this._snackBar.open('กรุณาเลือกข้อมูลที่หัวข้อ แผนกบุคคล', 'ปิด', {
-        //   horizontalPosition: this.horizontalPosition,
-        //   verticalPosition: this.verticalPosition,
-        // });
       }
-    } else {
-      this.ftroj1.approveTraining(trainID, this.UserId, approve).subscribe(
-        (response) => {
-          window.location.reload();
-          // console.log('การอัปเดตสถานะสำเร็จ', response);
-        },
-        (error) => {
-          console.error('เกิดข้อผิดพลาดในการอัปเดตสถานะ', error);
-        }
-      );
-      location.reload();
-    }
-
-    // location.reload();
+    });
   }
 
   refreshBtn() {
@@ -502,42 +555,22 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
 
   approve_id = 0;
   cancelTrain(id: number) {
-    this.ftroj1
-      .findTrainingByTrainID(id)
-      .pipe(
-        switchMap((res) => {
-          this.approve_id = res.training.approve1.id;
-          // console.log('id', this.approve_id);
-          // console.log(res);
-
-          if (this.approve_id !== 0) {
-            return this.ftroj1.cancelTraining(id);
-          } else {
-            return this.ftroj1.findTrainingByTrainID(id);
-          }
-        })
-      )
-      .subscribe(
-        (response) => {
-          if (this.approve_id !== 0) {
-            // console.log('การอัปเดตสถานะสำเร็จ', response);
-            // โหลดหน้าเว็บใหม่
-            window.location.reload();
-          } else {
-            // ทำงานหลังจากเรียกใช้ findTrainingByTrainID
-            console.log('ทำงานหลังจากเรียกใช้ findTrainingByTrainID', response);
-          }
-        },
-        (error) => {
-          console.error('เกิดข้อผิดพลาดในการอัปเดตสถานะ', error);
+    this.showLoading();
+    this.ftroj1.cancelTraining(id).subscribe((res) => {
+      Swal.fire({
+        title: 'สำเร็จ',
+        text: 'ยกเลิกการอบรมสำเร็จ',
+        icon: 'success',
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        confirmButtonText: 'ตกลง',
+      }).then((t) => {
+        if (t.isConfirmed) {
+          this.getSectorID(this.UserId);
         }
-      );
+      });
+    });
   }
-  //   else {
-  //     // ผู้ใช้ยกเลิกการยกเลิก
-  //     console.log('ผู้ใช้ยกเลิกการยกเลิก');
-  //   }
-  // }
 
   showPrintButton: boolean = false;
   showPrintButton1: boolean = false;
@@ -621,20 +654,6 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
         this.showErrorMessage = false; // Hide the error message
       }
       this.paginator.pageIndex = 0;
-
-      // console.log('search data: ', data);
-
-      // //ข้อมูล
-      // console.log(
-      //   'Before check:',
-      //   this.searchForm.value.startDate,
-      //   this.searchForm.value.endDate,
-      //   this.searchForm.value.dept,
-      //   this.searchForm.value.courseName
-      // );
-
-      // เคลียร์ค่าในฟอร์ม
-      // this.searchForm.reset();
     });
   }
 
@@ -652,46 +671,87 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
     });
   }
 
-  isSearchDisabled2(): boolean {
+  // isSearchDisabled2(): boolean {
+  //   if (this.role === 'ROLE_Admin') {
+  //     if (
+  //       this.searchForm.get('company').valid &&
+  //       this.searchForm.get('startDate').valid &&
+  //       this.searchForm.get('endDate').valid &&
+  //       this.searchForm.get('dept').valid
+  //     ) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   } else if (this.role === 'ROLE_Personnel') {
+  //     if (
+  //       this.searchForm.get('company').valid &&
+  //       this.searchForm.get('startDate').valid &&
+  //       this.searchForm.get('endDate').valid
+  //     ) {
+  //       return true;
+  //     } else if (
+  //       this.searchForm.get('company').valid &&
+  //       this.searchForm.get('courseName').valid
+  //     ) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   } else {
+  //     return true;
+  //   }
+  // }
+  generic9ButtonValid(): boolean {
+    const { company, startDate, endDate, dept, courseName } =
+      this.searchForm.controls;
+    const isCompanyValid = company.valid;
+    const isStartDateValid = startDate.valid;
+    const isEndDateValid = endDate.valid;
+    const isCourseValid = courseName.valid;
+    const isDateRangeValid = isStartDateValid && isEndDateValid;
+    return isCompanyValid && isDateRangeValid && isCourseValid;
+  }
+
+  trainingHistoryValid(): boolean {
+    const { company, startDate, endDate, dept, courseName } =
+      this.searchForm.controls;
+    const isCompanyValid = company.valid;
+    const isStartDateValid = startDate.valid;
+    const isEndDateValid = endDate.valid;
+    const isDeptValid = dept.valid;
+    const isCourseValid = courseName.valid;
+    const isDateRangeValid = isStartDateValid && isEndDateValid;
+
     if (this.role === 'ROLE_Admin') {
-      if (
-        this.searchForm.get('company').valid &&
-        this.searchForm.get('startDate').valid &&
-        this.searchForm.get('endDate').valid &&
-        this.searchForm.get('dept').valid
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    } else if (this.role === 'ROLE_Personnel') {
-      if (
-        this.searchForm.get('company').valid &&
-        this.searchForm.get('startDate').valid &&
-        this.searchForm.get('endDate').valid
-      ) {
-        return true;
-      } else if (
-        this.searchForm.get('company').valid &&
-        this.searchForm.get('courseName').valid
-      ) {
-        return true;
-      } else {
-        return false;
-      }
+      return (
+        isCompanyValid && isStartDateValid && isEndDateValid && isDeptValid
+      );
     } else {
-      return true;
+      // Personnel ROLE
+      return (
+        isCourseValid ||
+        isDateRangeValid ||
+        (isDateRangeValid && isCourseValid) ||
+        (isDateRangeValid && isDeptValid) ||
+        (isDateRangeValid && isDeptValid && isCourseValid)
+      );
     }
   }
 
-  // isSearchDisabled2(): boolean {
-  //   const isCompanyInvalid = this.searchForm.get('company').invalid;
-  //   const isStartDateInvalid = this.searchForm.get('startDate').invalid;
-  //   const isEndDateInvalid = this.searchForm.get('endDate').invalid;
-  //   const isDeptInvalid = this.searchForm.get('dept').invalid;
+  isSearchDisabled2(): boolean {
+    const isCompanyInvalid = this.searchForm.get('company').invalid;
+    const isStartDateInvalid = this.searchForm.get('startDate').invalid;
+    const isEndDateInvalid = this.searchForm.get('endDate').invalid;
+    const isDeptInvalid = this.searchForm.get('dept').invalid;
 
-  //   return isCompanyInvalid || isStartDateInvalid || isEndDateInvalid || isDeptInvalid;
-  // }
+    return (
+      isCompanyInvalid ||
+      isStartDateInvalid ||
+      isEndDateInvalid ||
+      isDeptInvalid
+    );
+  }
 
   courses!: any;
 
@@ -699,7 +759,6 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
     this.ftroj1.getCourses().subscribe(
       (res) => {
         this.courses = res;
-        // console.log(res);
         // เมื่อคุณได้รับข้อมูล course จาก API
         // คุณสามารถกำหนดค่าเริ่มต้นให้กับฟิลด์ courseName ด้วยค่าที่คุณต้องการ
         this.searchForm.get('courseName')?.setValue(this.courses.CourseName); // ตั้งค่า courseName
@@ -728,10 +787,8 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
 
   createEditForm(id: number) {
     this.toggleModal();
-    // console.log('edit id :', id);
 
     this.ftroj1.getDatabyId(id).subscribe((res) => {
-      // console.log('data :', res);
       this.populateFormGroup(this.sectionOne, res);
       this.populateFormGroup(this.sectionTwo, res);
 
@@ -753,8 +810,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
         this.onBudegetRadio.nativeElement.checked = true;
         this.etcDetails.nativeElement.value = '';
       }
-      // console.log(this.sectionTwo.get('result')?.value);
-      // console.log(this.sectionOne.get('action')?.value);
+
       if (this.sectionTwo.get('result')?.value != null) {
         this.resultSelect(this.sectionTwo.get('result')?.value);
       }
@@ -794,27 +850,18 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
     getCer: string
   ) => {
     this.trainDate.nativeElement.value = train;
-    // this.getResultDate.nativeElement.value = getResult;
-    // this.testDate.nativeElement.value = test;
+
     this.getCerDate.nativeElement.value = getCer;
   };
 
   initActionDate(action: string) {
-    // console.log(this.sectionOne.get('actionDate'));
     const actionDateControl = this.sectionOne.get('actionDate');
 
     if (actionDateControl) {
       switch (action) {
         case 'training':
-          // console.log(actionDateControl.value);
           this.setInputValues(actionDateControl.value, '');
           break;
-        // case 'getResult':
-        //   this.setInputValues('', actionDateControl.value, '', '');
-        //   break;
-        // case 'test':
-        //   this.setInputValues('', '', actionDateControl.value, '');
-        //   break;
         case 'getCertificate':
           this.setInputValues('', actionDateControl.value);
           break;
@@ -865,13 +912,13 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
         if (this.EditSectionTwo.result == 'pass') {
           this.EditSectionTwo.plan = '';
           this.EditSectionTwo.cause = '';
-          this.ftroj1.EditSectionTwo(this.ResultId, this.EditSectionTwo);
+          this.saveSectionTwo(this.ResultId, this.EditSectionTwo);
         } else if (this.EditSectionTwo.result == 'fail') {
           if (
-            this.sectionTwo.get('plan')?.value != '' &&
-            this.sectionTwo.get('cause')?.value != ''
+            this.EditSectionTwo.plan != '' &&
+            this.EditSectionTwo.cause != ''
           ) {
-            this.ftroj1.EditSectionTwo(this.ResultId, this.EditSectionTwo);
+            this.saveSectionTwo(this.ResultId, this.EditSectionTwo);
           } else {
             // alert('โปรดระบุ เหตุผล และ แผนการพัฒนา');
             Swal.fire({
@@ -885,19 +932,9 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
             // });
           }
         } else if (this.EditSectionTwo.result == 'noResult') {
-          if (this.sectionTwo.get('plan')?.value == '') {
-            this.ftroj1.EditSectionTwo(this.ResultId, this.EditSectionTwo);
-          } else {
-            // alert('ไม่จำเป็นต้องระบุ แผนการพัฒนา');
-            Swal.fire({
-              // title: "The Internet?",
-              text: 'ไม่จำเป็นต้องระบุ แผนการพัฒนา',
-              icon: 'warning',
-            });
-            // this._snackBar.open('ไม่จำเป็นต้องระบุ แผนการพัฒนา', 'ปิด', {
-            //   horizontalPosition: this.horizontalPosition,
-            //   verticalPosition: this.verticalPosition,
-            // });
+          this.EditSectionTwo.plan = ''
+          if(this.EditSectionTwo.cause != ''){
+            this.saveSectionTwo(this.ResultId, this.EditSectionTwo);
           }
         }
       } else {
@@ -907,31 +944,66 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
           text: 'กรุณาประเมินผล',
           icon: 'warning',
         });
-        // this._snackBar.open('กรุณาประเมินผล', 'ปิด', {
-        //   horizontalPosition: this.horizontalPosition,
-        //   verticalPosition: this.verticalPosition,
-        // });
       }
     }
-
-    // console.log('this G9data: ', this.sectionG9.value);
   }
 
   getGeneric9Data(): void {
-    console.log(this.sectionG9.value);
-    let result: any = {
+    let resultID = this.ResultId;
+    let UID = this.UserId;
+    let resultG9: any = {
       result1: 0,
       result2: 0,
       result3: 0,
       result4: 0,
       result5: 0,
     };
-    result.result1 = this.sectionG9.get('resultGOne')?.value;
-    result.result2 = this.sectionG9.get('resultGTwo')?.value;
-    result.result3 = this.sectionG9.get('resultGThree')?.value;
-    result.result4 = this.sectionG9.get('resultGFour')?.value;
-    result.result5 = this.sectionG9.get('resultGFive')?.value;
-    this.ftroj1.editGeneric9(this.ResultId, result);
+    resultG9.result1 = this.sectionG9.get('resultGOne')?.value;
+    resultG9.result2 = this.sectionG9.get('resultGTwo')?.value;
+    resultG9.result3 = this.sectionG9.get('resultGThree')?.value;
+    resultG9.result4 = this.sectionG9.get('resultGFour')?.value;
+    resultG9.result5 = this.sectionG9.get('resultGFive')?.value;
+
+    Swal.fire({
+      title: 'ยืนยัน',
+      text: 'คุณต้องการยืนยันบันทึกผลการประเมินหรือไม่',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก',
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //fetch new data before close modal
+        this.ftroj1.editGeneric9(resultID, resultG9).subscribe((res) => {
+          Swal.fire({
+            title: 'สำเร็จ',
+            text: 'บันทึกผลการประเมินเสร็จสิ้น',
+            icon: 'success',
+            confirmButtonText: 'ตกลง',
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              if (this.role == 'ROLE_Personnel') {
+                //for personnel
+                // this.getSectorID(UID);
+                this.getFindAll(null);
+                this.clearAndCloseModal();
+              } else {
+                // Role of approver1
+                this.getFindTrainingByApproveId(UID);
+                this.clearAndCloseModal();
+              }
+            }
+          });
+        });
+      } else {
+        //not confirm
+        this.clearAndCloseModal();
+      }
+    });
   }
 
   etcSelect() {
@@ -947,11 +1019,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   }
 
   setCheckRadio(choice: string, result: string) {
-    console.log(choice + ' ' + result);
-
     if (this.canApprove) {
-      console.log('');
-
       this.sectionTwo.get(`result${choice}`)?.setValue(result);
       this.resultSelect(this.calculateResult());
     }
@@ -1150,7 +1218,6 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   company!: string;
   selectCompany(company: string) {
     this.company = company;
-    // console.log(this.company);
     this.searchForm.get('company').setValue(company);
     this.searchForm.get('dept').setValue('');
     if (company == 'PCCTH') {
@@ -1162,7 +1229,6 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
 
   changeCompany(company: string) {
     this.company = company;
-    // console.log(this.company);
     if (company == 'pcc') {
       this.dept1 = this.pccDept;
       //clear val dept pcc select
@@ -1303,21 +1369,17 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
     this.toggleModal();
     this.TrainID = id;
     this.ftroj1.findTrainingByTrainID(id).subscribe(async (res) => {
-      console.log('Approve VIEW RES');
-      console.log(res);
       // const response = Object(res)[0]
       this.statusID = res.training.status[0].id;
-      // console.log(res.result_status);
+
       this.approveStatus = res.result_status;
       this.ResultId = res.training.result[0].id;
-      console.log('training.result[0]', res.training.result[0].id);
 
-      // console.log('APPROVE : ');
       this.genEvalatorData(res.training.approve1.id);
       this.approve_id = res.training.approve1.id;
 
       this.isEval = res.training.result[0].result;
-      // console.log(this.approveStatus);
+
       this.EditSectionTwo.evaluationDate =
         res.training.result[0].evaluationDate;
       //กรณีมีการประเมินแล้วก็ให้โชว์
@@ -1383,8 +1445,6 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   canApprove = false;
   genEvalatorData(id: number) {
     this.ftroj1.getUserById(id).subscribe((res) => {
-      console.log(res);
-
       this.sectionTwo
         .get('evaluatorName')
         ?.setValue(
@@ -1438,14 +1498,13 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   }
   secOneChangeValue(sectionOne: EditSectionOne) {
     this.EditSectionOneForm = sectionOne;
-    // console.log('this is SECONE CHANGE: ', this.EditSectionOneForm);
   }
   statusID = 0;
   async AdminEditSecOne() {
     await this.uploadAndPushFileID();
     let fileID = this.EditSectionOneForm.fileID || [0];
     let filesID = this.filesID || [0];
-
+    let adminId = this.UserId || 0;
     let combinedFileID = Array.from(new Set([...fileID, ...filesID]));
 
     if (!combinedFileID || combinedFileID.length === 0) {
@@ -1466,10 +1525,39 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
       fileID: combinedFileID,
     };
 
-    // console.log('adminEditData: ',adminEditData);
-
-    this.ftroj1.EditSectionOne(this.TrainID, adminEditData).subscribe((res) => {
-      console.log(res);
+    Swal.fire({
+      title: 'แก้ไข',
+      text: 'คุณต้องการแก้ไขข้อมูลหรือไม่',
+      icon: 'warning',
+      showCancelButton: true,
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ตกลง',
+      cancelButtonText: 'ยกเลิก',
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //confirm edit
+        this.ftroj1
+          .EditSectionOne(this.TrainID, adminEditData)
+          .subscribe(async (res) => {
+            await this.getFindAll(this.alldeptManage);
+            Swal.fire({
+              title: 'สำเร็จ',
+              text: 'แก้ไขข้อมูลสำเร็จ',
+              icon: 'success',
+              confirmButtonText: 'ตกลง',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                //fetch data by admin
+              }
+              this.clearAndCloseModal();
+            });
+          });
+      } else {
+        // not confirm edit
+        this.clearAndCloseModal();
+      }
     });
   }
 
@@ -1494,7 +1582,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   signatureImageUrlApprover: SafeUrl | null = null;
   signatureImageUrlVice: SafeUrl | null = null;
   signatureImageUrlMD: SafeUrl | null = null;
-  userId: number | null = 0; // หรือค่าเริ่มต้นที่ไม่ใช่ null
+  // userId: number = 0; // หรือค่าเริ่มต้นที่ไม่ใช่ null
   users: any;
   userIdVice: number = 0;
   userIdApprover: number = 0;
@@ -1505,7 +1593,6 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
     if (userId !== null && userId !== 0) {
       this.loadSignatureImage(userId, position);
     }
-    // console.log('userId', userId);
   }
 
   loadSignatureImage(userId: number, position: string): void {
@@ -1581,7 +1668,11 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
           //   verticalPosition: this.verticalPosition,
           // });
         } else {
-          console.error('ข้อผิดพลาดในการดึงรูปภาพ', error);
+          Swal.fire({
+            title: 'เกิดข้อผิดพลาด',
+            text: 'เกิดข้อผิดพลาดในการเข้าถึงข้อมูล',
+            icon: 'error',
+          });
         }
       }
     );
@@ -1599,14 +1690,14 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   approve1: any = [];
   vicePresidents: any = [];
   signatureParams: any = {};
-  printReport(id: number) {
+  async printReport(id: number) {
+    // this.signatureForm.reset()
+    this.signatureParams = {};
     let training = this.allParentsResult.filter((items: any) => {
       return items.training.id == id;
     });
     let SignatureDetails = training[0].training.status;
     this.signatureParams.trainId = training[0].training.id;
-
-    console.log(this.signatureForm.get('trainId'));
     for (let index = 0; index < SignatureDetails.length; index++) {
       let position = SignatureDetails[index].indexOfSignature;
       let UID = SignatureDetails[index].approveId.id;
@@ -1614,6 +1705,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
     }
     this.printFormValues();
   }
+
   private initsignature(userid: number, position: number) {
     switch (position) {
       case 1:
@@ -1630,12 +1722,8 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
         break;
     }
   }
-  PdfWithSignature(id: number) {
-    // console.log('idddd', id);
-    // this.approve1 = this.users.filter((item:any) => {
-    //   item.id == this.approve_id
-    // })
 
+  PdfWithSignature(id: number) {
     this.approve1 = [];
     this.vicePresidents = [];
 
@@ -1653,7 +1741,6 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
       );
     });
     this.approve1.push(training[0].training.approve1);
-    console.log(this.vicePresidents);
 
     this.Signature = !this.Signature;
     this.TrainID = id;
@@ -1662,10 +1749,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
 
   closeModal() {
     this.Signature = false;
-    // this.approve1 = []
 
-    // location.reload();
-    // this.signatureForm.reset();
     this.signatureForm = this.fb.group({
       trainId: '', // ใช้ TrainID เป็นค่าเริ่มต้น
       userId1: '', // คุณสามารถกำหนดค่า default ให้กับ control ได้ที่นี่
@@ -1700,6 +1784,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   }
 
   printFormValues() {
+    this.showLoading();
     this.ftroj1.getReport(this.signatureParams).subscribe(
       (base64Pdf) => {
         const byteCharacters = atob(base64Pdf);
@@ -1715,9 +1800,31 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
 
         // เปิด PDF ในหน้าต่างใหม่
         window.open(pdfUrl, '_blank');
+        setTimeout(() => {
+          Swal.close();
+        }, 6000);
+        this.signatureForm.reset(); //reset all signature
       },
       (err) => {
         console.error(err);
+        if (
+          err.error.message ==
+          'java.lang.NullPointerException: Cannot invoke "com.pcc.portalservice.model.Signature.getImage()" because the return value of "com.pcc.portalservice.model.User.getSignature()" is null'
+        ) {
+          //wait err text handle from back-end
+          Swal.fire({
+            title: 'ไม่สำเร็จ',
+            text: 'กรุณาเพิ่มลายเซ็น ไม่พบรายเซ็นในระบบ',
+            icon: 'error',
+          });
+        } else {
+          Swal.fire({
+            title: 'ไม่สำเร็จ',
+            text: 'เกิดข้อผิดพลาดในการพิมพ์รายงาน',
+            icon: 'error',
+          });
+        }
+        this.signatureForm.reset(); //reset all signature
       }
     );
   }
@@ -1894,6 +2001,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   }
 
   generic() {
+    this.showLoading();
     let params: any = {};
     let deptname = this.searchForm?.value?.dept;
     let filteredDepts = this.dept1?.filter(
@@ -1923,13 +2031,10 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
       params.courseID = this.getCourseID();
     }
 
-    console.log(params);
-
     this.ftroj1.ReportHistoryTraining(params).subscribe((base64) => {
-      console.log(base64);
-
       if (base64 == 'ไม่มีข้อมูล') {
         // alert("ไม่มีข้อมูล");
+        Swal.close();
         Swal.fire({
           // title: "The Internet?",
           text: 'ไม่มีข้อมูล',
@@ -1954,6 +2059,12 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
 
       // เปิด PDF ในหน้าต่างใหม่
       window.open(pdfUrl, '_blank');
+      Swal.fire({
+        title: 'สำเร็จ!',
+        text: 'ดาวน์โหลดไฟล์สำเร็จ',
+        icon: 'success',
+      });
+      Swal.close();
     });
   }
 
@@ -1961,6 +2072,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   downloadLink: string = ''; // ตัวแปรสำหรับเก็บลิงก์สำหรับดาวน์โหลด
 
   generic9EVO() {
+    this.showLoading();
     const params: any = {};
 
     if (this.searchForm.value.startDate) {
@@ -1970,15 +2082,18 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
     if (this.searchForm.value.endDate) {
       params.endDate = this.searchForm.value.endDate;
     }
-    console.log('Generic: ', params);
+
+    if (this.searchForm.value.courseName) {
+      params.courseId = this.getCourseID();
+    }
 
     this.ftroj1.generic9EVO(params).subscribe(
       (res) => {
-        console.log(res);
         if (
           res.PCC_Jasper === 'ไม่มีข้อมูล' &&
           res.Wisesoft_Jasper === 'ไม่มีข้อมูล'
         ) {
+          Swal.close();
           Swal.fire({
             // title: "The Internet?",
             text: 'ไม่มีข้อมูล',
@@ -2006,6 +2121,12 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
             'data:application/octet-stream;base64,' + this.data;
           downloadLink.download = filename;
           downloadLink.click();
+          Swal.close();
+          Swal.fire({
+            title: 'สำเร็จ!',
+            text: 'ดาวน์โหลดไฟล์สำเร็จ',
+            icon: 'success',
+          });
         }
       },
       (err) => {
@@ -2034,6 +2155,8 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
       cancelButtonColor: '#d33',
       confirmButtonText: 'ยกเลิก',
       cancelButtonText: 'ไม่ยกเลิก',
+      allowEscapeKey: false,
+      allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
@@ -2049,10 +2172,11 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
   headerModal!: string;
   g9modal = false;
   G9modal(id: number) {
-    this.ResultId = id;
+    // this.ResultId = id;
     this.headerModal = ' Generic 9 : ยื่นกรมพัฒนาฝีมือแรงงาน กระทรวงแรงงาน';
-    this.g9modal = true;
+    this.g9modal = true; // show only g9 modal
     this.ftroj1.findTrainingByTrainID(id).subscribe((res) => {
+      this.ResultId = res.training.resultGeneric9[0].id;
       this.sectionG9
         .get('resultGOne')
         ?.setValue(res.training.resultGeneric9[0].result1);
@@ -2076,7 +2200,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
         this.canApprove = false;
       }
     });
-    this.toggleModal();
+    this.showModal = true; // open modal
   }
 
   setCheckRadioG9(number: any, value: any) {
@@ -2085,7 +2209,6 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
     } else {
       this.sectionG9.get(`resultG${number}`)?.setValue(value);
     }
-    console.log(this.sectionG9.value);
   }
 
   gettedFiles: File[] = [];
@@ -2099,7 +2222,7 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
       for (const file of this.gettedFiles) {
         try {
           const response: any = await this.ftroj1.uploadFile(file).toPromise();
-          console.log('File uploaded successfully!', response);
+
           this.filesID.push(response.ID);
         } catch (error) {
           console.error('Error uploading file:', error);
@@ -2110,5 +2233,85 @@ export class FtrOj1PageComponent implements OnInit, AfterViewInit {
       console.error('No files selected.');
       // this.filesID = [0]
     }
+  }
+
+  infoReportAdmin() {
+    Swal.fire({
+      title: 'คำแนะนำ',
+      html: `
+      <h6><b>วิธีการพิมพ์ประวัติฝึกอบรม</b></h6>
+      <div>
+        <p class="text-left"><b>ตัวเลือกที่ 1</b> เลือก บริษัท วันที่เริ่ม วันที่สิ้นสุด และ แผนก </p>
+        <p class="text-left"><b>ตัวเลือกที่ 2</b> เลือก บริษัท วันที่เริ่ม วันที่สิ้นสุด แผนก และ หัวข้อในการอบรม</p>
+      </div>
+      `,
+    });
+  }
+
+  infoReportPersonnel() {
+    Swal.fire({
+      title: 'คำแนะนำ',
+      html: `
+      <h6><b>วิธีการพิมพ์ประวัติฝึกอบรม</b></h6>
+      <div>
+        <p class="text-left"><b>ตัวเลือกที่ 1</b> เลือก บริษัท และ หัวข้อในการอบรม</p>
+        <p class="text-left"><b>ตัวเลือกที่ 2</b> เลือก บริษัท วันที่เริ่ม และ วันที่สิ้นสุด </p>
+        <p class="text-left"><b>ตัวเลือกที่ 3</b> เลือก บริษัท วันที่เริ่ม วันที่สิ้นสุด และ หัวข้อในการอบรม</p>
+        <p class="text-left"><b>ตัวเลือกที่ 4</b> เลือก บริษัท วันที่เริ่ม วันที่สิ้นสุด และ แผนก</p>
+        <p class="text-left"><b>ตัวเลือกที่ 5</b> เลือก บริษัท วันที่เริ่ม วันที่สิ้นสุด หัวข้อในการอบรม และ แผนก</p>
+      </div>
+      <hr/>
+      <h6><b>วิธีการพิมพ์ผลการประเมิน Generic9</b></h6>
+      <div>
+      <p class="text-left"><b>ตัวเลือกที่ 1</b>เลือก บริษัท วันที่เริ่ม วันที่สิ้นสุด และ หัวข้อในการอบรม</p>
+      </div>
+      `,
+    });
+  }
+
+  clearAndCloseModal() {
+    //clear and close form in modal
+    this.ResultId = 0;
+    this.TrainID = 0;
+    this.sectionOne.reset();
+    this.sectionTwo.reset();
+    this.sectionG9.reset();
+    this.showModal = false;
+  }
+
+  private saveSectionTwo(resultId: number, sectionTwo: any) {
+    Swal.fire({
+      title: 'ยืนยัน',
+      text: 'ยืนยันที่จะบันทึกผลการประเมินหริอไม่?',
+      icon: 'warning',
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก',
+      cancelButtonColor: '#d33',
+      showCancelButton: true,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let userId = this.UserId;
+        this.ftroj1.EditSectionTwo(resultId, sectionTwo).subscribe((res) => {
+          Swal.fire({
+            title: 'สำเร็จ',
+            text: 'บันทึกผลการประเมินเสร็จสิ้น',
+            icon: 'success',
+            confirmButtonText: 'ตกลง',
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              //fetch training of approver id
+              this.getFindTrainingByApproveId(userId);
+              this.clearAndCloseModal();
+            }
+          });
+        });
+      } else {
+        this.clearAndCloseModal();
+      }
+    });
   }
 }
