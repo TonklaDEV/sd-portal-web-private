@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 
 import { AsideNavigationService } from '../navigation-aside/services/aside-navigation/aside-navigation.service';
 import { Router } from '@angular/router';
@@ -7,6 +7,8 @@ import { ThemeModeService } from '../../shared/services/theme-mode/theme-mode.se
 import { HeaderService } from './services/header.service';
 import Swal from 'sweetalert2';
 import { AuthService } from 'src/app/api-services/auth.service';
+import { SwalComponent, SwalPortalTargets } from '@sweetalert2/ngx-sweetalert2';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-header-system',
@@ -14,6 +16,14 @@ import { AuthService } from 'src/app/api-services/auth.service';
   styleUrls: ['./header-system.component.scss'],
 })
 export class HeaderSystemComponent {
+  @ViewChild('changePassSwal')
+  public readonly changePassSwal!: SwalComponent;
+  changePassForm!: FormGroup;
+  secondsLeft: any;
+  sendForm(arg0: any) {
+    console.log(arg0);
+    
+  }
   user: any;
   protected themeMode: boolean = false;
   protected showProfile: boolean = false;
@@ -25,9 +35,16 @@ export class HeaderSystemComponent {
     private readonly elementRef: ElementRef,
     private jwtService: JwtHelperService,
     private headerService: HeaderService,
-    private authService: AuthService
+    private authService: AuthService,
+    public readonly swalTargets: SwalPortalTargets,
+    private fb: FormBuilder
   ) {
     this.themeMode = this.themeModeService.$themeMode.value;
+    this.changePassForm = this.fb.group({
+      oldPass: [''],
+      newPass: [''],
+      confPass: [''],
+    });
   }
 
   @HostListener('document:click', ['$event'])
@@ -61,8 +78,6 @@ export class HeaderSystemComponent {
     }
   }
 
-
-
   signout() {
     this.user = '';
     localStorage.removeItem('access_token');
@@ -85,7 +100,7 @@ export class HeaderSystemComponent {
   async changePassModal() {
     try {
       const result = await Swal.fire({
-        title: "เปลี่ยนรหัสผ่าน",
+        title: 'เปลี่ยนรหัสผ่าน',
         html: `
           <input id="swal-input1" class="swal2-input" placeholder="รหัสเดิม...">
           <input id="swal-input2" class="swal2-input" placeholder="รหัสใหม่...">
@@ -94,17 +109,17 @@ export class HeaderSystemComponent {
         focusConfirm: false,
         preConfirm: () => {
           return [
-            (<HTMLInputElement>document.getElementById("swal-input1")).value,
-            (<HTMLInputElement>document.getElementById("swal-input2")).value,
-            (<HTMLInputElement>document.getElementById("swal-input3")).value
+            (<HTMLInputElement>document.getElementById('swal-input1')).value,
+            (<HTMLInputElement>document.getElementById('swal-input2')).value,
+            (<HTMLInputElement>document.getElementById('swal-input3')).value,
           ];
-        }
+        },
       });
       if (result.isConfirmed) {
-        let uid = this.user.sub
+        let uid = this.user.sub;
         const formValues = result.value;
         console.log(formValues);
-        
+
         Swal.fire(JSON.stringify(formValues));
         // ทำอะไรก็ตามที่คุณต้องการกับค่า formValues ที่ได้รับ
       }
@@ -112,6 +127,4 @@ export class HeaderSystemComponent {
       console.error('Error in changePassModal', error);
     }
   }
-
-
 }
