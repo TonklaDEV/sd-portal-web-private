@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
+  [x: string]: any;
 
   constructor(private http: HttpClient, private jwtService: JwtHelperService) {}
 

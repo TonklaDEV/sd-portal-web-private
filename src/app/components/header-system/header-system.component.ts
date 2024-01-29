@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 
 import { AsideNavigationService } from '../navigation-aside/services/aside-navigation/aside-navigation.service';
 import { Router } from '@angular/router';
@@ -7,6 +7,8 @@ import { ThemeModeService } from '../../shared/services/theme-mode/theme-mode.se
 import { HeaderService } from './services/header.service';
 import Swal from 'sweetalert2';
 import { AuthService } from 'src/app/api-services/auth.service';
+import { SwalComponent, SwalPortalTargets } from '@sweetalert2/ngx-sweetalert2';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-header-system',
@@ -14,6 +16,14 @@ import { AuthService } from 'src/app/api-services/auth.service';
   styleUrls: ['./header-system.component.scss'],
 })
 export class HeaderSystemComponent {
+  @ViewChild('changePassSwal')
+  public readonly changePassSwal!: SwalComponent;
+  changePassForm!: FormGroup;
+  secondsLeft: any;
+  sendForm(arg0: any) {
+    console.log(arg0);
+    
+  }
   user: any;
   protected themeMode: boolean = false;
   protected showProfile: boolean = false;
@@ -26,9 +36,16 @@ export class HeaderSystemComponent {
     private readonly elementRef: ElementRef,
     private jwtService: JwtHelperService,
     private headerService: HeaderService,
-    private authService: AuthService
+    private authService: AuthService,
+    public readonly swalTargets: SwalPortalTargets,
+    private fb: FormBuilder
   ) {
     this.themeMode = this.themeModeService.$themeMode.value;
+    this.changePassForm = this.fb.group({
+      oldPass: [''],
+      newPass: [''],
+      confPass: [''],
+    });
   }
 
   @HostListener('document:click', ['$event'])
@@ -62,8 +79,6 @@ export class HeaderSystemComponent {
     }
   }
 
-
-
   signout() {
     this.user = '';
     localStorage.removeItem('access_token');
@@ -86,85 +101,32 @@ export class HeaderSystemComponent {
   async changePassModal() {
     try {
       const result = await Swal.fire({
-        title: "เปลี่ยนรหัสผ่าน",
+        title: 'เปลี่ยนรหัสผ่าน',
         html: `
           <input id="oldPassword" class="swal2-input" placeholder="รหัสเดิม...">
           <input id="newPassword" class="swal2-input" placeholder="รหัสใหม่...">
           <input id="confirmPassword" class="swal2-input" placeholder="ยืนยันรหัสใหม่...">
         `,
         focusConfirm: false,
-        preConfirm: async () => {
-          const oldPassword = (<HTMLInputElement>document.getElementById("oldPassword")).value;
-          const newPassword = (<HTMLInputElement>document.getElementById("newPassword")).value;
-          const confirmPassword = (<HTMLInputElement>document.getElementById("confirmPassword")).value;
-  
-          // เรียกใช้ service เพื่อเปลี่ยนรหัสผ่าน
-          const uid = this.user.sub;
-  
-          // ตรวจสอบข้อมูลที่กรอกเพื่อดำเนินการต่อ
-          if (!uid) {
-            Swal.fire({
-              icon: 'error',
-              title: 'ไม่พบผู้ใช้งาน',
-            });
-            return;
-          }
-  
-          if (oldPassword.length === 0) {
-            Swal.fire({
-              icon: 'error',
-              title: 'กรุณากรอกรหัสเดิม',
-            });
-            return;
-          }
-          if (oldPassword.length === 0 || newPassword.length === 0|| confirmPassword.length === 0) {
-            Swal.fire({
-              icon: 'error',
-              title: 'ไม่ควรใช้รหัสเดิม',
-            });
-            return;
-          }
-  
-          if (newPassword.length === 0 || confirmPassword.length === 0) {
-            Swal.fire({
-              icon: 'error',
-              title: 'กรุณากรอกรหัสผ่านใหม่และยืนยันรหัสผ่านใหม่',
-            });
-            return;
-          }
-  
-          if (newPassword !== confirmPassword) {
-            Swal.fire({
-              icon: 'error',
-              title: 'รหัสผ่านใหม่และยืนยันรหัสผ่านใหม่ไม่ตรงกัน',
-            });
-            return;
-          }
-  
-          try {
-            await this.headerService.changePassword(uid, oldPassword, newPassword, confirmPassword).toPromise();
-            Swal.fire({
-              icon: 'success',
-              title: 'เปลี่ยนรหัสผ่านเรียบร้อย',
-            });
-          } catch (error) {
-            console.error('Error changing password', error);
-            Swal.fire({
-              icon: 'error',
-              title: 'ไม่สามารถเปลี่ยนรหัสผ่านได้',
-            });
-          }
-        }
+        preConfirm: () => {
+          return [
+            (<HTMLInputElement>document.getElementById('swal-input1')).value,
+            (<HTMLInputElement>document.getElementById('swal-input2')).value,
+            (<HTMLInputElement>document.getElementById('swal-input3')).value,
+          ];
+        },
       });
+      if (result.isConfirmed) {
+        let uid = this.user.sub;
+        const formValues = result.value;
+        console.log(formValues);
+
+        Swal.fire(JSON.stringify(formValues));
+        // ทำอะไรก็ตามที่คุณต้องการกับค่า formValues ที่ได้รับ
+      }
     } catch (error) {
       console.error('Error in changePassModal', error);
       Swal.fire('เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน');
     }
   }
-  
-  
-  
-
-
-
 }
