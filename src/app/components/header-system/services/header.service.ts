@@ -8,8 +8,10 @@ import { Observable } from 'rxjs';
 export class HeaderService {
   private api = 'http://localhost:8080';
 
-  constructor(private http: HttpClient) {}
+  // แก้ไขการ inject จาก HeaderService เป็น HttpClient
+  constructor(private http: HttpClient) { }
 
+  // ฟังก์ชันเปลี่ยนรหัสผ่าน
   changePassword(userId: number, oldPassword: string, newPassword: string, confirmPassword: string): Observable<any> {
     const url = `${this.api}/changePassword?userId=${userId}`;
 
@@ -21,5 +23,4 @@ export class HeaderService {
 
     return this.http.put(url, payload);
   }
-  
 }

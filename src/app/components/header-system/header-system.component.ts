@@ -17,6 +17,7 @@ export class HeaderSystemComponent {
   user: any;
   protected themeMode: boolean = false;
   protected showProfile: boolean = false;
+  changePassword: any;
 
   constructor(
     private router: Router,
@@ -87,31 +88,83 @@ export class HeaderSystemComponent {
       const result = await Swal.fire({
         title: "เปลี่ยนรหัสผ่าน",
         html: `
-          <input id="swal-input1" class="swal2-input" placeholder="รหัสเดิม...">
-          <input id="swal-input2" class="swal2-input" placeholder="รหัสใหม่...">
-          <input id="swal-input3" class="swal2-input" placeholder="ยืนยันรหัสใหม่...">
+          <input id="oldPassword" class="swal2-input" placeholder="รหัสเดิม...">
+          <input id="newPassword" class="swal2-input" placeholder="รหัสใหม่...">
+          <input id="confirmPassword" class="swal2-input" placeholder="ยืนยันรหัสใหม่...">
         `,
         focusConfirm: false,
-        preConfirm: () => {
-          return [
-            (<HTMLInputElement>document.getElementById("swal-input1")).value,
-            (<HTMLInputElement>document.getElementById("swal-input2")).value,
-            (<HTMLInputElement>document.getElementById("swal-input3")).value
-          ];
+        preConfirm: async () => {
+          const oldPassword = (<HTMLInputElement>document.getElementById("oldPassword")).value;
+          const newPassword = (<HTMLInputElement>document.getElementById("newPassword")).value;
+          const confirmPassword = (<HTMLInputElement>document.getElementById("confirmPassword")).value;
+  
+          // เรียกใช้ service เพื่อเปลี่ยนรหัสผ่าน
+          const uid = this.user.sub;
+  
+          // ตรวจสอบข้อมูลที่กรอกเพื่อดำเนินการต่อ
+          if (!uid) {
+            Swal.fire({
+              icon: 'error',
+              title: 'ไม่พบผู้ใช้งาน',
+            });
+            return;
+          }
+  
+          if (oldPassword.length === 0) {
+            Swal.fire({
+              icon: 'error',
+              title: 'กรุณากรอกรหัสเดิม',
+            });
+            return;
+          }
+          if (oldPassword.length === 0 || newPassword.length === 0|| confirmPassword.length === 0) {
+            Swal.fire({
+              icon: 'error',
+              title: 'ไม่ควรใช้รหัสเดิม',
+            });
+            return;
+          }
+  
+          if (newPassword.length === 0 || confirmPassword.length === 0) {
+            Swal.fire({
+              icon: 'error',
+              title: 'กรุณากรอกรหัสผ่านใหม่และยืนยันรหัสผ่านใหม่',
+            });
+            return;
+          }
+  
+          if (newPassword !== confirmPassword) {
+            Swal.fire({
+              icon: 'error',
+              title: 'รหัสผ่านใหม่และยืนยันรหัสผ่านใหม่ไม่ตรงกัน',
+            });
+            return;
+          }
+  
+          try {
+            await this.headerService.changePassword(uid, oldPassword, newPassword, confirmPassword).toPromise();
+            Swal.fire({
+              icon: 'success',
+              title: 'เปลี่ยนรหัสผ่านเรียบร้อย',
+            });
+          } catch (error) {
+            console.error('Error changing password', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'ไม่สามารถเปลี่ยนรหัสผ่านได้',
+            });
+          }
         }
       });
-      if (result.isConfirmed) {
-        let uid = this.user.sub
-        const formValues = result.value;
-        console.log(formValues);
-        
-        Swal.fire(JSON.stringify(formValues));
-        // ทำอะไรก็ตามที่คุณต้องการกับค่า formValues ที่ได้รับ
-      }
     } catch (error) {
       console.error('Error in changePassModal', error);
+      Swal.fire('เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน');
     }
   }
+  
+  
+  
+
 
 
 }
